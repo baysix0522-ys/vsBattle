@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.turbo/
+.cache/
+.parcel-cache/
+
+.env
+.env.*
+!.env.example
+
+coverage/
+
+.DS_Store
+Thumbs.db

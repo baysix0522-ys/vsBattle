@@ -1,0 +1,29 @@
+{
+  "name": "saju-battle",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c blue,green \"npm run -w @saju-battle/frontend dev\" \"npm run -w @saju-battle/backend dev\"",
+    "build": "npm run --workspaces --if-present build",
+    "typecheck": "npm run -w @saju-battle/frontend typecheck && npm run -w @saju-battle/backend typecheck",
+    "lint": "eslint \"apps/**/*.{js,jsx,ts,tsx}\"",
+    "format": "prettier -w .",
+    "format:check": "prettier -c ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.19.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.22.0"
+  }
+}

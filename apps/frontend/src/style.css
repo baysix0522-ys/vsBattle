@@ -2258,3 +2258,502 @@ a {
     height: 90px;
   }
 }
+
+/* ===== Tennis Tarot Styles ===== */
+.tennis-tarot-page {
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+    linear-gradient(135deg, #0a1a0f 0%, #1a2e1a 100%);
+}
+
+.tarot-header.tennis h1 {
+  background: linear-gradient(135deg, #fff 0%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Tennis Intro */
+.tennis-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.tennis-intro-visual {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 40px;
+}
+
+.floating-cards.tennis .floating-card {
+  filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.5));
+}
+
+.tennis-intro h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tennis-intro p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+/* Spread Selection - now moved below with category styles */
+
+.spread-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s;
+}
+
+.spread-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-3px);
+}
+
+.spread-icon {
+  font-size: 24px;
+}
+
+.spread-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.spread-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Tennis Card Back */
+.card-back.tennis {
+  background: linear-gradient(145deg, #065f46 0%, #047857 50%, #059669 100%);
+}
+
+.card-back.tennis .card-back-pattern span:first-child,
+.card-back.tennis .card-back-pattern span:last-child {
+  color: #bbf7d0;
+}
+
+.card-back.tennis .card-back-pattern span:nth-child(2) {
+  color: #fef3c7;
+}
+
+/* Tennis selecting styles */
+.tarot-selecting.tennis .selecting-guide p {
+  color: #a7f3d0;
+}
+
+.spread-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: block;
+  margin-top: 4px;
+}
+
+/* Tennis reveal single card */
+.reveal-cards.single {
+  justify-content: center;
+}
+
+.reveal-cards.single .reveal-card-wrapper {
+  flex: 0 0 auto;
+  width: 180px;
+}
+
+/* Tennis interpretation */
+.tennis-interpretation {
+  padding: 20px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.one-card-reading {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.one-card-reading .reading-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.one-card-reading .reading-header h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #a7f3d0;
+  margin-bottom: 4px;
+}
+
+.card-name-en {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.reading-section {
+  margin-bottom: 20px;
+}
+
+.reading-section.summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.reading-section.summary .section-icon {
+  font-size: 24px;
+}
+
+.reading-section.summary p {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.reading-section p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.reading-section.focus {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+.focus-keywords {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.focus-keyword {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a7f3d0;
+}
+
+.focus-keywords.small .focus-keyword {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+/* Three card reading */
+.three-card-reading {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card-reading-section {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.card-reading-section .reading-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.position-badge.tennis {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+}
+
+.card-reading-section .reading-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.reading-content {
+  padding-left: 4px;
+}
+
+.reading-content p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.reading-content .sub-reading {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding-left: 8px;
+  border-left: 2px solid rgba(16, 185, 129, 0.3);
+  margin-top: 12px;
+}
+
+/* Tennis action buttons */
+.tarot-action-btn.tennis {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+}
+
+.tarot-action-btn.tennis:hover {
+  box-shadow: 0 6px 28px rgba(16, 185, 129, 0.4);
+}
+
+/* Tennis reveal styles */
+.tarot-reveal.tennis .position-label {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Category Selection */
+.category-selection {
+  width: 100%;
+  max-width: 400px;
+}
+
+.category-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.category-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: var(--radius-md);
+  transition: all 0.3s;
+}
+
+.category-btn:hover {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+.category-btn:active {
+  transform: translateY(0);
+}
+
+.category-icon {
+  font-size: 28px;
+}
+
+.category-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.category-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Spread selection with category */
+.spread-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.selected-category-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.selected-category-badge:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
+
+.selected-category-badge span:first-child {
+  font-size: 18px;
+}
+
+.selected-category-badge span:nth-child(2) {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a7f3d0;
+}
+
+.change-hint {
+  font-size: 11px !important;
+  color: var(--text-muted) !important;
+  font-weight: 400 !important;
+}
+
+.spread-buttons {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Category context in result */
+.category-context {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 24px;
+}
+
+.context-icon {
+  font-size: 20px;
+}
+
+.context-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a7f3d0;
+}
+
+/* Category focus section */
+.reading-section.category-focus {
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.reading-section.category-focus .section-label {
+  color: #fbbf24;
+}
+
+.reading-section.category-focus p {
+  color: #fcd34d;
+  font-weight: 500;
+}
+
+.category-focus-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.category-focus-section .focus-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 8px;
+}
+
+.category-focus-section p {
+  font-size: 14px;
+  color: #fcd34d;
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .category-btn {
+    padding: 12px 8px;
+  }
+
+  .category-icon {
+    font-size: 24px;
+  }
+
+  .spread-buttons {
+    flex-direction: column;
+  }
+
+  .spread-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .spread-btn .spread-icon {
+    font-size: 32px;
+  }
+
+  .one-card-reading {
+    padding: 16px;
+  }
+
+  .reading-section.summary {
+    flex-direction: column;
+    text-align: center;
+  }
+}

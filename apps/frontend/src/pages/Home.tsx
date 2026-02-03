@@ -46,6 +46,13 @@ const fortuneMenus: FortuneMenu[] = [
     isNew: true,
   },
   {
+    id: 'tennis-tarot',
+    icon: '🎾',
+    title: '테니스 타로',
+    description: '오늘의 테니스 운세',
+    isNew: true,
+  },
+  {
     id: 'yearly',
     icon: '📅',
     title: '2026년 신년운세',
@@ -73,6 +80,9 @@ export default function Home() {
         break
       case 'tarot':
         navigate('/tarot')
+        break
+      case 'tennis-tarot':
+        navigate('/tennis-tarot')
         break
       default:
         alert('준비 중인 서비스입니다.')

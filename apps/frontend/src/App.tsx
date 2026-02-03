@@ -8,6 +8,7 @@ import FortuneHistory from './pages/FortuneHistory'
 import FortuneRecordDetail from './pages/FortuneRecordDetail'
 import KakaoCallback from './pages/KakaoCallback'
 import Tarot from './pages/Tarot'
+import TennisTarot from './pages/TennisTarot'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/fortune/record/:id" element={<FortuneRecordDetail />} />
           <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
           <Route path="/tarot" element={<Tarot />} />
+          <Route path="/tennis-tarot" element={<TennisTarot />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

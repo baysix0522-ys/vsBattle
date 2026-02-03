@@ -43,6 +43,7 @@ const fortuneMenus: FortuneMenu[] = [
     icon: '🃏',
     title: '타로 카드',
     description: '카드가 전하는 메시지',
+    isNew: true,
   },
   {
     id: 'yearly',
@@ -69,6 +70,9 @@ export default function Home() {
         // 사주 정보가 있으면 바로 운세, 없으면 입력 페이지로
         const savedInfo = localStorage.getItem('saju_birth_info')
         navigate(savedInfo ? '/fortune/today' : '/fortune/input')
+        break
+      case 'tarot':
+        navigate('/tarot')
         break
       default:
         alert('준비 중인 서비스입니다.')

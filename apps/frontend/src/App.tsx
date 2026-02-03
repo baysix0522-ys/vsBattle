@@ -1,51 +1,25 @@
-import { useEffect, useState } from 'react'
-
-type HealthResponse = {
-  ok: boolean
-  service: string
-  ts: number
-}
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import Login from './pages/Login'
+import Home from './pages/Home'
+import BirthInput from './pages/BirthInput'
+import TodayFortune from './pages/TodayFortune'
+import FortuneHistory from './pages/FortuneHistory'
+import FortuneRecordDetail from './pages/FortuneRecordDetail'
 
 export default function App() {
-  const [health, setHealth] = useState<HealthResponse | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function run() {
-      try {
-        const res = await fetch('/api/health')
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const json = (await res.json()) as HealthResponse
-        if (!cancelled) setHealth(json)
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Unknown error')
-      }
-    }
-
-    void run()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
   return (
-    <main className="page">
-      <header className="header">
-        <h1>사주 배틀</h1>
-        <p className="sub">React + Node 기본 개발환경</p>
-      </header>
-
-      <section className="card">
-        <h2>Backend Health</h2>
-        {error ? <p className="error">{error}</p> : null}
-        {health ? (
-          <pre className="code">{JSON.stringify(health, null, 2)}</pre>
-        ) : (
-          <p className="muted">Loading...</p>
-        )}
-      </section>
-    </main>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/fortune/input" element={<BirthInput />} />
+          <Route path="/fortune/today" element={<TodayFortune />} />
+          <Route path="/fortune/history" element={<FortuneHistory />} />
+          <Route path="/fortune/record/:id" element={<FortuneRecordDetail />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }

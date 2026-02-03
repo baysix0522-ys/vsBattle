@@ -1,6 +1,8 @@
 import cors from 'cors'
 import 'dotenv/config'
 import express from 'express'
+import authRouter from './routes/auth.js'
+import fortuneRouter from './routes/fortune.js'
 
 const app = express()
 app.disable('x-powered-by')
@@ -17,9 +19,16 @@ app.use(
 )
 app.use(express.json())
 
+// Health check
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'backend', ts: Date.now() })
 })
+
+// Auth routes
+app.use('/api/auth', authRouter)
+
+// Fortune routes
+app.use('/api/fortune', fortuneRouter)
 
 const port = Number(process.env.PORT ?? 4000)
 app.listen(port, () => {

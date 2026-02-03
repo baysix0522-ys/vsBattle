@@ -1590,3 +1590,48 @@ a {
   font-size: 12px;
   color: var(--text-muted);
 }
+
+/* ===== 카카오 콜백 페이지 ===== */
+.kakao-callback-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.callback-container {
+  text-align: center;
+}
+
+.callback-spinner {
+  font-size: 48px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.callback-icon {
+  font-size: 48px;
+  margin-bottom: 24px;
+}
+
+.callback-icon.error {
+  color: var(--danger);
+}
+
+.callback-message {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.callback-submessage {
+  font-size: 14px;
+  color: var(--text-secondary);
+}

@@ -43,12 +43,16 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
 }
 
 // Auth API
+export type AuthProvider = 'local' | 'kakao' | 'naver'
+
 export type User = {
   id: string
   email: string
   nickname: string
   isGuest: boolean
   rice: number
+  provider: AuthProvider
+  profileImage: string | null
 }
 
 export type AuthResponse = {
@@ -78,6 +82,17 @@ export const authApi = {
   me: (token: string) =>
     apiRequest<{ user: User }>('/auth/me', {
       token,
+    }),
+
+  // 카카오 로그인 URL 가져오기
+  getKakaoLoginUrl: () =>
+    apiRequest<{ url: string }>('/auth/kakao'),
+
+  // 카카오 콜백 처리
+  kakaoCallback: (code: string) =>
+    apiRequest<AuthResponse>('/auth/kakao/callback', {
+      method: 'POST',
+      body: { code },
     }),
 }
 

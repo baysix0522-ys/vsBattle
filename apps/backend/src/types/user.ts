@@ -1,3 +1,5 @@
+export type AuthProvider = 'local' | 'kakao' | 'naver'
+
 export interface User {
   id: string
   email: string
@@ -6,6 +8,9 @@ export interface User {
   createdAt: Date
   isGuest: boolean
   rice: number // 재화(쌀)
+  provider: AuthProvider
+  providerId: string | null
+  profileImage: string | null
 }
 
 export interface UserPublic {
@@ -14,6 +19,8 @@ export interface UserPublic {
   nickname: string
   isGuest: boolean
   rice: number
+  provider: AuthProvider
+  profileImage: string | null
 }
 
 export interface AuthPayload {
@@ -28,5 +35,7 @@ export function toPublicUser(user: User): UserPublic {
     nickname: user.nickname,
     isGuest: user.isGuest,
     rice: user.rice,
+    provider: user.provider,
+    profileImage: user.profileImage,
   }
 }

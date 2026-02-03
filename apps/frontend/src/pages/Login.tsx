@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ApiError } from '../api/client'
+import { ApiError, authApi } from '../api/client'
 import { useAuth } from '../contexts/AuthContext'
 
 type FormMode = 'login' | 'register'
@@ -40,8 +40,25 @@ export default function Login() {
     }
   }
 
-  const handleSocialLogin = (provider: string) => {
-    alert(`${provider} 로그인은 준비 중입니다.`)
+  const handleKakaoLogin = async () => {
+    setError(null)
+    setIsLoading(true)
+
+    try {
+      const { url } = await authApi.getKakaoLoginUrl()
+      window.location.href = url
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message)
+      } else {
+        setError('카카오 로그인 준비에 실패했습니다.')
+      }
+      setIsLoading(false)
+    }
+  }
+
+  const handleNaverLogin = () => {
+    alert('네이버 로그인은 준비 중입니다.')
   }
 
   const handleGuestLogin = async () => {
@@ -149,7 +166,7 @@ export default function Login() {
         <div className="login-buttons">
           <button
             className="login-btn kakao"
-            onClick={() => handleSocialLogin('카카오')}
+            onClick={handleKakaoLogin}
             disabled={isLoading}
           >
             <svg viewBox="0 0 24 24" className="btn-icon">
@@ -160,7 +177,7 @@ export default function Login() {
 
           <button
             className="login-btn naver"
-            onClick={() => handleSocialLogin('네이버')}
+            onClick={handleNaverLogin}
             disabled={isLoading}
           >
             <span className="btn-icon naver-icon">N</span>

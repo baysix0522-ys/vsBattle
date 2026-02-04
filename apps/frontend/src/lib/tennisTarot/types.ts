@@ -1,5 +1,40 @@
 // Tennis Tarot Card Types
 
+export type Category = 'match' | 'practice' | 'mental' | 'body' | 'doubles'
+
+// 카드 정방향/역방향 의미
+export interface CardMeaning {
+  keywords: string[]
+  meaning: string
+}
+
+// 카드 자체 정보
+export interface CardInfo {
+  image: string
+  upright: CardMeaning
+  reversed: CardMeaning
+}
+
+// 카테고리별 테니스 해석
+export interface CategoryReading {
+  message: string
+  focus: string[]
+  action: string
+  caution: string
+}
+
+// 정방향/역방향 테니스 해석
+export interface TennisOrientation {
+  keywords: string[]
+  general: string
+  match: CategoryReading
+  practice: CategoryReading
+  mental: CategoryReading
+  body: CategoryReading
+  doubles: CategoryReading
+}
+
+// 테니스 타로 카드
 export interface TennisTarotCard {
   id: string
   arcana: 'major' | 'minor'
@@ -8,100 +43,45 @@ export interface TennisTarotCard {
   rank: string | null
   name_en: string
   name_ko: string
+  card: CardInfo
   tennis: {
-    upright: TennisReading
-    reversed: TennisReading
+    upright: TennisOrientation
+    reversed: TennisOrientation
   }
 }
 
-export interface TennisReading {
-  one: OneCardReading
-  three: ThreeCardReading
-}
-
-export interface OneCardReading {
-  summary_pool: string[]
-  action_pool: string[]
-  caution_pool: string[]
-  focus_pool: string[][]
-}
-
-export interface ThreeCardReading {
-  condition_pool: string[]
-  strategy_pool: string[]
-  warning_pool: string[]
-}
-
-export type SpreadType = 'one' | 'three'
-
-export interface DrawnTennisCard {
+// 뽑힌 카드
+export interface DrawnCard {
   card: TennisTarotCard
   isReversed: boolean
   isFlipped: boolean
-  position: number
-  reading: GeneratedReading
 }
 
-export interface GeneratedReading {
-  // For 1-card spread
-  summary?: string
-  action?: string
-  caution?: string
-  focus?: string[]
-  // For 3-card spread (position-based)
-  condition?: string
-  strategy?: string
-  warning?: string
+// 카테고리별 리딩 결과
+export interface Reading {
+  message: string
+  focus: string[]
+  action: string
+  caution: string
+  keywords: string[]
+  general: string
 }
 
-// Helper function to pick random from pool
-export function pickRandom<T>(pool: T[]): T {
-  if (pool.length === 0) {
-    throw new Error('Cannot pick from empty pool')
-  }
-  return pool[Math.floor(Math.random() * pool.length)] as T
-}
-
-// Generate reading from card based on spread type and position
+// 리딩 생성 함수
 export function generateReading(
   card: TennisTarotCard,
   isReversed: boolean,
-  spreadType: SpreadType,
-  position: number // 0, 1, 2 for three-card spread
-): GeneratedReading {
+  category: Category
+): Reading {
   const orientation = isReversed ? card.tennis.reversed : card.tennis.upright
+  const categoryReading = orientation[category]
 
-  if (spreadType === 'one') {
-    const oneReading = orientation.one
-    return {
-      summary: pickRandom(oneReading.summary_pool),
-      action: pickRandom(oneReading.action_pool),
-      caution: pickRandom(oneReading.caution_pool),
-      focus: pickRandom(oneReading.focus_pool),
-    }
-  } else {
-    // three-card spread: each position gets different aspect
-    const threeReading = orientation.three
-    const oneReading = orientation.one
-
-    // Position 0: Condition (컨디션)
-    // Position 1: Strategy (전략)
-    // Position 2: Warning (주의)
-    if (position === 0) {
-      return {
-        condition: pickRandom(threeReading.condition_pool),
-        focus: pickRandom(oneReading.focus_pool),
-      }
-    } else if (position === 1) {
-      return {
-        strategy: pickRandom(threeReading.strategy_pool),
-        action: pickRandom(oneReading.action_pool),
-      }
-    } else {
-      return {
-        warning: pickRandom(threeReading.warning_pool),
-        caution: pickRandom(oneReading.caution_pool),
-      }
-    }
+  return {
+    message: categoryReading.message,
+    focus: categoryReading.focus,
+    action: categoryReading.action,
+    caution: categoryReading.caution,
+    keywords: orientation.keywords,
+    general: orientation.general,
   }
 }

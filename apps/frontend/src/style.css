@@ -99,6 +99,22 @@ a {
   50% { transform: translateY(-10px); }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .logo-text {
   font-size: 36px;
   font-weight: 800;
@@ -1883,6 +1899,7 @@ a {
 /* 카드 선택 화면 */
 .tarot-selecting {
   padding: 20px;
+  animation: fadeIn 0.4s ease;
 }
 
 .selecting-guide {
@@ -1941,7 +1958,7 @@ a {
   overflow: hidden;
 }
 
-.spread-card:hover:not(.selected):not(.fly-away) {
+.spread-card:hover:not(.selected):not(.fly-away):not(.fade-out) {
   transform: translateX(var(--translateX)) translateY(-25px) rotate(var(--rotation)) scale(1.08) !important;
   z-index: 50 !important;
 }
@@ -2022,6 +2039,23 @@ a {
   }
 }
 
+/* 선택되지 않은 카드 페이드 아웃 */
+.spread-card.fade-out {
+  animation: fadeOutCard 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeOutCard {
+  0% {
+    transform: translateX(var(--translateX)) rotate(var(--rotation)) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(var(--translateX)) rotate(var(--rotation)) scale(0.9);
+    opacity: 0;
+  }
+}
+
 .card-back {
   width: 100%;
   height: 100%;
@@ -2050,6 +2084,7 @@ a {
   padding: 20px;
   max-width: 480px;
   margin: 0 auto;
+  animation: fadeIn 0.4s ease;
 }
 
 .reveal-cards {
@@ -2069,7 +2104,7 @@ a {
 .position-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #fff;
   padding: 4px 12px;
   background: var(--bg-card);
   border-radius: var(--radius-sm);
@@ -2286,6 +2321,7 @@ a {
   min-height: calc(100vh - 80px);
   padding: 40px 20px;
   text-align: center;
+  animation: fadeIn 0.4s ease;
 }
 
 .tennis-intro-visual {
@@ -2609,6 +2645,254 @@ a {
   color: var(--text-muted);
 }
 
+.category-btn.selected {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.category-btn.selected .category-label {
+  color: #a7f3d0;
+}
+
+/* Start Reading Button */
+.start-reading-btn {
+  margin-top: 24px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  animation: fadeInUp 0.3s ease;
+}
+
+.start-reading-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 28px rgba(16, 185, 129, 0.4);
+}
+
+.start-reading-btn:active {
+  transform: translateY(0);
+}
+
+/* Selected Category Tag (in selecting phase) */
+.selected-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a7f3d0;
+  margin-top: 8px;
+}
+
+/* Card Info Section (Result) */
+.card-info-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.card-info-section h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #a7f3d0;
+  margin-bottom: 4px;
+}
+
+.card-info-section .card-name-en {
+  display: block;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.card-keywords {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keyword-tag {
+  padding: 6px 12px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a7f3d0;
+}
+
+/* Card Description Section */
+.card-description-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.card-description {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* Card Image Description */
+.card-image-description {
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.card-image-description p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* Card Meaning Section */
+.card-meaning-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.meaning-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.card-meaning {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+/* Tennis General Section */
+.tennis-general-section {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.general-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a7f3d0;
+  margin-bottom: 12px;
+}
+
+.general-message {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* Category Reading Section */
+.category-reading-section {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #059669, #047857);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.reading-message {
+  margin-bottom: 20px;
+}
+
+.reading-message p {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.reading-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.reading-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.reading-item .item-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.reading-item p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.reading-item.action {
+  border-left: 3px solid #10b981;
+}
+
+.reading-item.caution {
+  border-left: 3px solid #f59e0b;
+}
+
+/* Focus Section */
+.focus-section {
+  padding-top: 16px;
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.focus-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
 /* Spread selection with category */
 .spread-selection {
   display: flex;
@@ -2718,6 +3002,48 @@ a {
   font-size: 14px;
   color: #fcd34d;
   font-weight: 500;
+}
+
+/* One-liner + Hashtag Section */
+.one-liner-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(245, 158, 11, 0.08));
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.one-liner-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a7f3d0;
+  margin-bottom: 12px;
+}
+
+.one-liner-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.hashtag-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hashtag {
+  padding: 6px 12px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fbbf24;
 }
 
 @media (max-width: 480px) {

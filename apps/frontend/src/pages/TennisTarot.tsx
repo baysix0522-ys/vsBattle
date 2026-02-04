@@ -6,32 +6,30 @@ import {
   getTennisCardImagePath,
   generateReading,
   type TennisTarotCard,
-  type DrawnTennisCard,
-  type SpreadType,
+  type DrawnCard,
+  type Category,
+  type Reading,
 } from '../lib/tennisTarot'
 
 type GamePhase = 'intro' | 'selecting' | 'revealing' | 'result'
-type Category = 'match' | 'practice' | 'mental' | 'body' | 'doubles'
 
-const categoryInfo: Record<Category, { icon: string; label: string; desc: string; prefix: string; focus: string }> = {
-  match: { icon: '🏆', label: '경기/매치', desc: '오늘 경기 운세', prefix: '오늘 경기에서', focus: '경기 운영에 집중하세요' },
-  practice: { icon: '🎯', label: '연습/훈련', desc: '연습 효율 UP', prefix: '오늘 연습에서', focus: '루틴과 교정에 집중하세요' },
-  mental: { icon: '🧠', label: '멘탈/집중', desc: '정신력 강화', prefix: '멘탈 관리 측면에서', focus: '호흡과 집중력에 신경 쓰세요' },
-  body: { icon: '💪', label: '컨디션/부상예방', desc: '몸 상태 체크', prefix: '컨디션 관리 측면에서', focus: '워밍업과 스트레칭을 충분히 하세요' },
-  doubles: { icon: '🤝', label: '복식/파트너', desc: '팀워크 운세', prefix: '파트너와 함께할 때', focus: '소통과 포지셔닝에 신경 쓰세요' },
+const categoryInfo: Record<Category, { icon: string; label: string; desc: string }> = {
+  match: { icon: '🏆', label: '경기/매치', desc: '오늘 경기 운세' },
+  practice: { icon: '🎯', label: '연습/훈련', desc: '연습 효율 UP' },
+  mental: { icon: '🧠', label: '멘탈/집중', desc: '정신력 강화' },
+  body: { icon: '💪', label: '컨디션/부상예방', desc: '몸 상태 체크' },
+  doubles: { icon: '🤝', label: '복식/파트너', desc: '팀워크 운세' },
 }
 
 export default function TennisTarot() {
   const navigate = useNavigate()
   const [phase, setPhase] = useState<GamePhase>('intro')
   const [category, setCategory] = useState<Category | null>(null)
-  const [spreadType, setSpreadType] = useState<SpreadType>('one')
   const [shuffledDeck, setShuffledDeck] = useState<TennisTarotCard[]>([])
-  const [selectedCards, setSelectedCards] = useState<DrawnTennisCard[]>([])
-  const [revealIndex, setRevealIndex] = useState(0)
+  const [drawnCard, setDrawnCard] = useState<DrawnCard | null>(null)
+  const [reading, setReading] = useState<Reading | null>(null)
   const [isShuffling, setIsShuffling] = useState(false)
-
-  const cardCount = spreadType === 'one' ? 1 : 3
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   // 덱 셔플
   const doShuffle = () => {
@@ -39,83 +37,71 @@ export default function TennisTarot() {
   }
 
   // 시작하기
-  const startReading = (type: SpreadType) => {
-    setSpreadType(type)
+  const startReading = () => {
+    if (!category) return
     doShuffle()
-    setSelectedCards([])
-    setRevealIndex(0)
+    setDrawnCard(null)
+    setReading(null)
     setPhase('selecting')
   }
 
-  // 카드 섞기 (선택 화면에서)
+  // 카드 섞기
   const handleShuffle = () => {
     if (isShuffling) return
     setIsShuffling(true)
-
-    setTimeout(() => {
-      doShuffle()
-    }, 400)
-
-    setTimeout(() => {
-      setIsShuffling(false)
-    }, 800)
+    setTimeout(() => doShuffle(), 400)
+    setTimeout(() => setIsShuffling(false), 800)
   }
 
   // 카드 선택
   const selectCard = (index: number) => {
-    if (selectedCards.length >= cardCount) return
-    if (selectedCards.some((c) => c.position === index)) return
+    if (drawnCard || !category) return
 
     const card = shuffledDeck[index]
     if (!card) return
 
     const isReversed = Math.random() < 0.3
-    const reading = generateReading(card, isReversed, spreadType, selectedCards.length)
+    const generatedReading = generateReading(card, isReversed, category)
 
-    setSelectedCards((prev) => [
-      ...prev,
-      {
-        card,
-        isReversed,
-        isFlipped: false,
-        position: index,
-        reading,
-      },
-    ])
+    setSelectedIndex(index)
+    setDrawnCard({ card, isReversed, isFlipped: false })
+    setReading(generatedReading)
   }
 
-  // 선택 완료 시 결과 단계로
+  // 선택 완료 시 revealing으로
   useEffect(() => {
-    if (selectedCards.length === cardCount && phase === 'selecting') {
+    if (drawnCard && phase === 'selecting') {
       setTimeout(() => setPhase('revealing'), 500)
     }
-  }, [selectedCards, phase, cardCount])
+  }, [drawnCard, phase])
 
-  // 카드 뒤집기 애니메이션
+  // 카드 뒤집기
   useEffect(() => {
-    if (phase === 'revealing' && revealIndex < cardCount) {
+    if (phase === 'revealing' && drawnCard && !drawnCard.isFlipped) {
       const timer = setTimeout(() => {
-        setSelectedCards((prev) =>
-          prev.map((c, i) => (i === revealIndex ? { ...c, isFlipped: true } : c))
-        )
-        setRevealIndex((prev) => prev + 1)
+        setDrawnCard((prev) => prev && { ...prev, isFlipped: true })
       }, 800)
       return () => clearTimeout(timer)
     }
-    if (phase === 'revealing' && revealIndex >= cardCount) {
+    if (phase === 'revealing' && drawnCard?.isFlipped) {
       setTimeout(() => setPhase('result'), 500)
     }
-  }, [phase, revealIndex, cardCount])
+  }, [phase, drawnCard])
 
   // 다시하기
   const resetReading = () => {
     setPhase('intro')
     setCategory(null)
-    setSelectedCards([])
-    setRevealIndex(0)
+    setDrawnCard(null)
+    setReading(null)
+    setSelectedIndex(null)
   }
 
-  const threeCardLabels = ['컨디션', '전략', '주의']
+  // 한줄평 생성
+  const generateOneLiner = (): string => {
+    if (!reading || !reading.focus || reading.focus.length < 2) return ''
+    return `${reading.focus[0]}에 집중, ${reading.focus[1]} 챙기기`
+  }
 
   return (
     <div className="tennis-tarot-page">
@@ -143,87 +129,60 @@ export default function TennisTarot() {
           </p>
 
           {/* 카테고리 선택 */}
-          {!category ? (
-            <div className="category-selection">
-              <h3 className="category-title">어떤 상황인가요?</h3>
-              <div className="category-grid">
-                {(Object.keys(categoryInfo) as Category[]).map((cat) => (
-                  <button
-                    key={cat}
-                    className="category-btn"
-                    onClick={() => setCategory(cat)}
-                  >
-                    <span className="category-icon">{categoryInfo[cat].icon}</span>
-                    <span className="category-label">{categoryInfo[cat].label}</span>
-                    <span className="category-desc">{categoryInfo[cat].desc}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* 스프레드 선택 */
-            <div className="spread-selection">
-              <div className="selected-category-badge" onClick={() => setCategory(null)}>
-                <span>{categoryInfo[category].icon}</span>
-                <span>{categoryInfo[category].label}</span>
-                <span className="change-hint">← 변경</span>
-              </div>
-              <div className="spread-buttons">
-                <button className="spread-btn one" onClick={() => startReading('one')}>
-                  <span className="spread-icon">🃏</span>
-                  <span className="spread-title">원카드</span>
-                  <span className="spread-desc">핵심 메시지 1장</span>
+          <div className="category-selection">
+            <h3 className="category-title">어떤 상황인가요?</h3>
+            <div className="category-grid">
+              {(Object.keys(categoryInfo) as Category[]).map((cat) => (
+                <button
+                  key={cat}
+                  className={`category-btn ${category === cat ? 'selected' : ''}`}
+                  onClick={() => setCategory(cat)}
+                >
+                  <span className="category-icon">{categoryInfo[cat].icon}</span>
+                  <span className="category-label">{categoryInfo[cat].label}</span>
+                  <span className="category-desc">{categoryInfo[cat].desc}</span>
                 </button>
-                <button className="spread-btn three" onClick={() => startReading('three')}>
-                  <span className="spread-icon">🃏🃏🃏</span>
-                  <span className="spread-title">쓰리카드</span>
-                  <span className="spread-desc">컨디션 / 전략 / 주의</span>
-                </button>
-              </div>
+              ))}
             </div>
-          )}
+
+            {category && (
+              <button className="start-reading-btn" onClick={startReading}>
+                🃏 카드 뽑으러 가기
+              </button>
+            )}
+          </div>
         </div>
       )}
 
       {phase === 'selecting' && (
         <div className="tarot-selecting tennis">
           <div className="selecting-guide">
-            <p>
-              카드 {cardCount}장을 선택하세요
-              {spreadType === 'three' && <span className="spread-hint"> (컨디션 → 전략 → 주의)</span>}
-            </p>
-            <div className="selection-progress">
-              {Array.from({ length: cardCount }).map((_, i) => (
-                <span key={i} className={`progress-dot ${selectedCards.length > i ? 'filled' : ''}`}>
-                  {selectedCards.length > i
-                    ? spreadType === 'three'
-                      ? threeCardLabels[i]
-                      : '✓'
-                    : '?'}
-                </span>
-              ))}
-            </div>
+            <p>카드 1장을 선택하세요</p>
+            {category && (
+              <div className="selected-category-tag">
+                {categoryInfo[category].icon} {categoryInfo[category].label}
+              </div>
+            )}
           </div>
 
           <div className={`card-spread ${isShuffling ? 'shuffling' : ''}`}>
             {shuffledDeck.slice(0, 10).map((_, index) => {
-              const isSelected = selectedCards.some((c) => c.position === index)
+              const isThisSelected = selectedIndex === index
+              const isOtherSelected = selectedIndex !== null && selectedIndex !== index
               const rotation = (index - 4.5) * 6
               const translateX = (index - 4.5) * 42
               return (
                 <div
                   key={index}
-                  className={`spread-card ${isSelected ? 'selected fly-away' : ''}`}
+                  className={`spread-card ${isThisSelected ? 'fly-away' : ''} ${isOtherSelected ? 'fade-out' : ''}`}
                   onClick={() => !isShuffling && selectCard(index)}
-                  style={
-                    {
-                      '--rotation': `${rotation}deg`,
-                      '--translateX': `${translateX}px`,
-                      '--i': index,
-                      transform: `translateX(${translateX}px) rotate(${rotation}deg)`,
-                      zIndex: isSelected ? 100 : 10 - Math.abs(index - 4.5),
-                    } as React.CSSProperties
-                  }
+                  style={{
+                    '--rotation': `${rotation}deg`,
+                    '--translateX': `${translateX}px`,
+                    '--i': index,
+                    transform: `translateX(${translateX}px) rotate(${rotation}deg)`,
+                    zIndex: isThisSelected ? 20 : 10 - Math.abs(index - 4.5),
+                  } as React.CSSProperties}
                 >
                   <div className="card-back tennis">
                     <div className="card-back-pattern">
@@ -245,161 +204,104 @@ export default function TennisTarot() {
         </div>
       )}
 
-      {(phase === 'revealing' || phase === 'result') && (
+      {(phase === 'revealing' || phase === 'result') && drawnCard && (
         <div className="tarot-reveal tennis">
-          <div className={`reveal-cards ${spreadType === 'one' ? 'single' : ''}`}>
-            {selectedCards.map((drawn, index) => (
-              <div key={index} className="reveal-card-wrapper">
-                {spreadType === 'three' && (
-                  <span className="position-label">{threeCardLabels[index]}</span>
-                )}
-                <div
-                  className={`reveal-card ${drawn.isFlipped ? 'flipped' : ''} ${drawn.isReversed ? 'reversed' : ''}`}
-                >
-                  <div className="card-inner">
-                    <div className="card-back tennis">
-                      <div className="card-back-pattern">
-                        <span>🎾</span>
-                        <span>★</span>
-                        <span>🎾</span>
-                      </div>
+          <div className="reveal-cards single">
+            <div className="reveal-card-wrapper">
+              <div className={`reveal-card ${drawnCard.isFlipped ? 'flipped' : ''} ${drawnCard.isReversed ? 'reversed' : ''}`}>
+                <div className="card-inner">
+                  <div className="card-back tennis">
+                    <div className="card-back-pattern">
+                      <span>🎾</span>
+                      <span>★</span>
+                      <span>🎾</span>
                     </div>
-                    <div className="card-front">
-                      <img
-                        src={getTennisCardImagePath(drawn.card)}
-                        alt={drawn.card.name_ko}
-                        className="card-image"
-                      />
-                      {drawn.isReversed && <div className="reversed-badge">역방향</div>}
-                    </div>
+                  </div>
+                  <div className="card-front">
+                    <img
+                      src={getTennisCardImagePath(drawnCard.card)}
+                      alt={drawnCard.card.name_ko}
+                      className="card-image"
+                    />
+                    {drawnCard.isReversed && <div className="reversed-badge">역방향</div>}
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
 
-          {phase === 'result' && (
+          {phase === 'result' && reading && category && (
             <div className="tennis-interpretation">
-              {/* 카테고리 컨텍스트 표시 */}
-              {category && (
-                <div className="category-context">
-                  <span className="context-icon">{categoryInfo[category].icon}</span>
-                  <span className="context-label">{categoryInfo[category].label}</span>
-                </div>
-              )}
-
-              {spreadType === 'one' && selectedCards[0] ? (
-                // 원카드 해석
-                <div className="one-card-reading">
-                  <div className="reading-header">
-                    <h3>
-                      🎾 {selectedCards[0].card.name_ko}
-                      {selectedCards[0].isReversed && ' (역방향)'}
-                    </h3>
-                    <span className="card-name-en">{selectedCards[0].card.name_en}</span>
-                  </div>
-
-                  <div className="reading-section summary">
-                    <div className="section-icon">💫</div>
-                    <p>
-                      {category && <strong>{categoryInfo[category].prefix} </strong>}
-                      {selectedCards[0].reading.summary}
-                    </p>
-                  </div>
-
-                  <div className="reading-section action">
-                    <div className="section-label">🎯 오늘의 액션</div>
-                    <p>{selectedCards[0].reading.action}</p>
-                  </div>
-
-                  <div className="reading-section caution">
-                    <div className="section-label">⚠️ 주의 포인트</div>
-                    <p>{selectedCards[0].reading.caution}</p>
-                  </div>
-
-                  {selectedCards[0].reading.focus && (
-                    <div className="reading-section focus">
-                      <div className="section-label">🔍 집중 키워드</div>
-                      <div className="focus-keywords">
-                        {selectedCards[0].reading.focus.map((kw, i) => (
-                          <span key={i} className="focus-keyword">
-                            {kw}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 카테고리별 포커스 메시지 */}
-                  {category && (
-                    <div className="reading-section category-focus">
-                      <div className="section-label">{categoryInfo[category].icon} {categoryInfo[category].label} 포인트</div>
-                      <p>{categoryInfo[category].focus}</p>
-                    </div>
-                  )}
-                </div>
-              ) : spreadType === 'three' ? (
-                // 쓰리카드 해석
-                <div className="three-card-reading">
-                  {selectedCards.map((drawn, index) => (
-                    <div key={index} className="card-reading-section">
-                      <div className="reading-header">
-                        <span className="position-badge tennis">{threeCardLabels[index]}</span>
-                        <h3>
-                          {drawn.card.name_ko}
-                          {drawn.isReversed && ' (역)'}
-                        </h3>
-                      </div>
-
-                      {index === 0 && drawn.reading.condition && (
-                        <div className="reading-content">
-                          <p>
-                            {category && <strong>{categoryInfo[category].prefix} </strong>}
-                            {drawn.reading.condition}
-                          </p>
-                          {drawn.reading.focus && (
-                            <div className="focus-keywords small">
-                              {drawn.reading.focus.map((kw, i) => (
-                                <span key={i} className="focus-keyword">
-                                  {kw}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {index === 1 && drawn.reading.strategy && (
-                        <div className="reading-content">
-                          <p>{drawn.reading.strategy}</p>
-                          {drawn.reading.action && (
-                            <p className="sub-reading">💡 {drawn.reading.action}</p>
-                          )}
-                        </div>
-                      )}
-
-                      {index === 2 && drawn.reading.warning && (
-                        <div className="reading-content">
-                          <p>{drawn.reading.warning}</p>
-                          {drawn.reading.caution && (
-                            <p className="sub-reading">⚠️ {drawn.reading.caution}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
+              {/* 카드 정보 */}
+              <div className="card-info-section">
+                <h3>{drawnCard.card.name_ko} {drawnCard.isReversed && '(역방향)'}</h3>
+                <span className="card-name-en">{drawnCard.card.name_en}</span>
+                <div className="card-keywords">
+                  {reading.keywords.map((kw, i) => (
+                    <span key={i} className="keyword-tag">{kw}</span>
                   ))}
-
-                  {/* 카테고리별 포커스 메시지 */}
-                  {category && (
-                    <div className="category-focus-section">
-                      <div className="focus-badge">
-                        {categoryInfo[category].icon} {categoryInfo[category].label} 포인트
-                      </div>
-                      <p>{categoryInfo[category].focus}</p>
-                    </div>
-                  )}
                 </div>
-              ) : null}
+              </div>
+
+              {/* 카드 이미지 설명 */}
+              <div className="card-image-description">
+                <p>{drawnCard.card.card.image}</p>
+              </div>
+
+              {/* 카드 의미 */}
+              <div className="card-meaning-section">
+                <div className="meaning-label">
+                  {drawnCard.isReversed ? '🔄 역방향 의미' : '✨ 정방향 의미'}
+                </div>
+                <p className="card-meaning">
+                  {drawnCard.isReversed
+                    ? drawnCard.card.card.reversed.meaning
+                    : drawnCard.card.card.upright.meaning}
+                </p>
+              </div>
+
+              {/* 테니스 총평 */}
+              <div className="tennis-general-section">
+                <div className="general-label">🎾 테니스 운세</div>
+                <p className="general-message">{reading.general}</p>
+              </div>
+
+              {/* 카테고리별 해석 */}
+              <div className="category-reading-section">
+                <div className="category-badge">
+                  {categoryInfo[category].icon} {categoryInfo[category].label}
+                </div>
+
+                <div className="reading-message">
+                  <p>{reading.message}</p>
+                </div>
+
+                <div className="reading-details">
+                  <div className="reading-item action">
+                    <span className="item-label">🎯 액션</span>
+                    <p>{reading.action}</p>
+                  </div>
+                  <div className="reading-item caution">
+                    <span className="item-label">⚠️ 주의</span>
+                    <p>{reading.caution}</p>
+                  </div>
+                </div>
+
+                <div className="focus-section">
+                  <span className="focus-label">🔍 집중 키워드</span>
+                  <div className="focus-keywords">
+                    {reading.focus.map((kw, i) => (
+                      <span key={i} className="focus-keyword">{kw}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* 오늘의 한줄 */}
+              <div className="one-liner-section">
+                <div className="one-liner-label">🎾 오늘의 한줄</div>
+                <p className="one-liner-text">{generateOneLiner()}</p>
+              </div>
 
               <div className="tarot-actions">
                 <button className="tarot-action-btn primary tennis" onClick={resetReading}>

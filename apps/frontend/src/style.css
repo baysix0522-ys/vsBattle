@@ -3083,3 +3083,1112 @@ a {
     text-align: center;
   }
 }
+
+/* ===== 명리학 상세 분석 섹션 ===== */
+
+/* 12운성 & 신살 빠른 보기 */
+.analysis-quick-view {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.analysis-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+}
+
+.analysis-item.twelve-stage {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.analysis-item.spirit-stars {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.analysis-emoji {
+  font-size: 28px;
+}
+
+.analysis-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.analysis-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.analysis-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 카테고리 추가 메시지 */
+.category-extra-messages {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.extra-message {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.extra-message:last-child {
+  margin-bottom: 0;
+}
+
+/* 조언 리스트 */
+.advice-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.advice-list li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.advice-list li:last-child {
+  margin-bottom: 0;
+}
+
+.advice-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--primary-light);
+}
+
+/* 상세 분석 토글 섹션 */
+.detailed-analysis-section {
+  margin-bottom: 20px;
+}
+
+.toggle-analysis-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-analysis-btn:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(99, 102, 241, 0.2) 100%);
+}
+
+.toggle-arrow {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 상세 분석 내용 */
+.detailed-analysis-content {
+  margin-top: 12px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.analysis-block {
+  margin-bottom: 24px;
+}
+
+.analysis-block:last-child {
+  margin-bottom: 0;
+}
+
+.analysis-block h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.analysis-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.analysis-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.analysis-list li {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.analysis-list li:last-child {
+  margin-bottom: 0;
+}
+
+.analysis-list.detailed li {
+  border-left: 3px solid var(--primary);
+}
+
+/* 신살 배지 */
+.spirit-star-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.spirit-star-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .analysis-quick-view {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-item {
+    padding: 14px;
+  }
+
+  .analysis-emoji {
+    font-size: 24px;
+  }
+
+  .toggle-analysis-btn {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .detailed-analysis-content {
+    padding: 16px;
+  }
+
+  .analysis-block h4 {
+    font-size: 13px;
+  }
+
+  .analysis-text,
+  .analysis-list li {
+    font-size: 12px;
+  }
+
+  .spirit-star-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ===== 오늘의 운세 V2 페이지 ===== */
+.fortune-page-v2 {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 30% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 90%, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.fortune-header-v2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.fortune-header-v2 h1 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.fortune-content-v2 {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 20px 100px;
+}
+
+/* 날짜 바 */
+.fortune-date-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin: 16px 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+}
+
+.date-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.saved-badge {
+  font-size: 12px;
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* 게스트 배너 */
+.guest-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.guest-banner p {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.guest-banner button {
+  padding: 8px 16px;
+  background: var(--primary);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+/* 섹션 타이틀 */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+/* ===== 메인 점수 섹션 ===== */
+.main-score-section {
+  padding: 24px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: var(--radius-xl);
+  text-align: center;
+}
+
+.saju-badge-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.saju-badge {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+.saju-badge.day-master {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--primary-light);
+}
+
+.saju-badge.today-energy {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.score-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 4px solid;
+}
+
+.score-display.excellent .score-ring { border-color: #10b981; }
+.score-display.good .score-ring { border-color: #34d399; }
+.score-display.normal .score-ring { border-color: #60a5fa; }
+.score-display.low .score-ring { border-color: #f87171; }
+
+.score-value {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.score-display.excellent .score-value { color: #10b981; }
+.score-display.good .score-value { color: #34d399; }
+.score-display.normal .score-value { color: #60a5fa; }
+.score-display.low .score-value { color: #f87171; }
+
+.score-unit {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.grade-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grade-emoji {
+  font-size: 28px;
+}
+
+.grade-text {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.grade-description {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.fortune-summary {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ===== 오늘의 기운 분석 ===== */
+.energy-analysis-section {
+  margin-bottom: 24px;
+}
+
+.energy-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.energy-card {
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+}
+
+.energy-card.ten-god {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.03) 100%);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.energy-card.twelve-stage {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.03) 100%);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.energy-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.energy-card .card-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.energy-card .card-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.energy-card .card-keyword {
+  font-size: 12px;
+  color: var(--primary-light);
+  margin-bottom: 8px;
+}
+
+.energy-card .card-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.energy-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.energy-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.energy-bars {
+  display: flex;
+  gap: 3px;
+}
+
+.energy-bar {
+  width: 16px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.energy-bar.filled {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.element-relation-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+}
+
+.relation-icon {
+  font-size: 24px;
+}
+
+.element-relation-box p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ===== 카테고리별 운세 ===== */
+.categories-section {
+  margin-bottom: 24px;
+}
+
+.category-cards-v2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.category-card-v2 {
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+}
+
+.category-card-v2.excellent { border-left: 3px solid #10b981; }
+.category-card-v2.good { border-left: 3px solid #34d399; }
+.category-card-v2.normal { border-left: 3px solid #60a5fa; }
+.category-card-v2.low { border-left: 3px solid #f87171; }
+
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.cat-icon {
+  font-size: 18px;
+}
+
+.cat-name {
+  font-size: 13px;
+  font-weight: 700;
+  flex: 1;
+}
+
+.cat-grade {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cat-score-bar {
+  position: relative;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.cat-score-bar .score-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.category-card-v2.excellent .score-fill { background: #10b981; }
+.category-card-v2.good .score-fill { background: #34d399; }
+.category-card-v2.normal .score-fill { background: #60a5fa; }
+.category-card-v2.low .score-fill { background: #f87171; }
+
+.cat-score-bar .score-text {
+  position: absolute;
+  right: 0;
+  top: -18px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.cat-main-msg {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.cat-details {
+  margin-bottom: 10px;
+}
+
+.detail-msg {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.cat-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.tip-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary-light);
+}
+
+.tip-text {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ===== 특수 분석 (합충형파해 & 신살) ===== */
+.special-analysis-section {
+  margin-bottom: 24px;
+}
+
+.analysis-box {
+  margin-bottom: 12px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.analysis-box .box-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.analysis-box .box-header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.box-icon {
+  font-size: 18px;
+}
+
+.box-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.toggle-icon {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.box-content {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.2s ease;
+}
+
+.relation-item {
+  padding: 12px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+}
+
+.relation-item.positive {
+  border-left: 3px solid #10b981;
+}
+
+.relation-item.negative {
+  border-left: 3px solid #f87171;
+}
+
+.relation-item.neutral {
+  border-left: 3px solid #60a5fa;
+}
+
+.rel-type {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin-right: 8px;
+}
+
+.rel-pillars {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.rel-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.analysis-summary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spirit-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.spirit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.spirit-interpretation {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ===== 오늘의 행운 V2 ===== */
+.lucky-section-v2 {
+  margin-bottom: 24px;
+}
+
+.lucky-grid-v2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.lucky-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+}
+
+.lucky-card.wide {
+  grid-column: span 2;
+}
+
+.lucky-card .lucky-icon {
+  font-size: 24px;
+}
+
+.lucky-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lucky-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.lucky-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.lucky-reason {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ===== 오늘의 조언 V2 ===== */
+.advice-section-v2 {
+  margin-bottom: 24px;
+}
+
+.main-advice-card {
+  padding: 20px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.main-advice-text {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.dos-donts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.advice-list {
+  padding: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+}
+
+.advice-list.dos {
+  border-left: 3px solid #10b981;
+}
+
+.advice-list.donts {
+  border-left: 3px solid #f87171;
+}
+
+.advice-list h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.advice-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.advice-list li {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  padding-left: 12px;
+  position: relative;
+}
+
+.advice-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+}
+
+.advice-list li:last-child {
+  margin-bottom: 0;
+}
+
+.mindset-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.03) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.mindset-icon {
+  font-size: 28px;
+}
+
+.mindset-content {
+  flex: 1;
+}
+
+.mindset-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.mindset-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ===== 상세 해석 섹션 ===== */
+.detailed-reading-section {
+  margin-bottom: 24px;
+}
+
+.detailed-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.detailed-toggle:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(99, 102, 241, 0.2) 100%);
+}
+
+.toggle-arrow {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.detailed-content {
+  margin-top: 12px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  animation: slideDown 0.3s ease;
+}
+
+.saju-profile {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.saju-profile h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.profile-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.profile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.profile-tags .tag {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  color: var(--text-secondary);
+}
+
+.balance-info {
+  padding: 14px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+.balance-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-light);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.balance-desc {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.full-reading h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.reading-text {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  white-space: pre-line;
+}
+
+/* 하단 버튼 */
+.fortune-actions-v2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .fortune-content-v2 {
+    padding: 0 16px 100px;
+  }
+
+  .main-score-section {
+    padding: 20px;
+  }
+
+  .score-ring {
+    width: 100px;
+    height: 100px;
+  }
+
+  .score-value {
+    font-size: 36px;
+  }
+
+  .energy-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .category-cards-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .dos-donts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lucky-grid-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .lucky-card.wide {
+    grid-column: span 1;
+  }
+}

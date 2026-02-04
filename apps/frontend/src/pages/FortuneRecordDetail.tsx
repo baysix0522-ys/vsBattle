@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import type { FortuneResult } from '../utils/fortune'
 
@@ -9,10 +10,40 @@ type LocationState = {
   }
 }
 
+// 일간 심볼
+const DAY_MASTER_SYMBOLS: Record<string, string> = {
+  갑: '🌲', 을: '🌿', 병: '☀️', 정: '🕯️', 무: '⛰️',
+  기: '🌾', 경: '⚔️', 신: '💎', 임: '🌊', 계: '💧',
+}
+
+// 12운성 심볼
+const TWELVE_STAGE_SYMBOLS: Record<string, string> = {
+  장생: '🌱', 목욕: '🛁', 관대: '👔', 건록: '📈', 제왕: '👑',
+  쇠: '📉', 병: '🏥', 사: '💀', 묘: '⚰️', 절: '🔄', 태: '🤰', 양: '👶',
+}
+
+// 신살 심볼
+const SPIRIT_STAR_SYMBOLS: Record<string, string> = {
+  천을귀인: '🌟', 문창귀인: '📚', 학당귀인: '🎓', 태극귀인: '☯',
+  천덕귀인: '🙏', 월덕귀인: '🌙', 삼기귀인: '✨', 복성귀인: '🍀',
+  역마살: '🐎', 화개살: '🎨', 도화살: '🌸', 장성살: '⭐',
+  겁살: '⚠️', 망신살: '😰', 백호대살: '🐯', 천라지망: '🕸️',
+}
+
+// 카테고리 아이콘
+const CATEGORY_ICONS: Record<string, string> = {
+  love: '💕', money: '💰', health: '💪', work: '💼',
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  love: '연애운', money: '금전운', health: '건강운', work: '직장운',
+}
+
 export default function FortuneRecordDetail() {
   const navigate = useNavigate()
   const location = useLocation()
   const state = location.state as LocationState | null
+  const [activeSection, setActiveSection] = useState<string | null>(null)
 
   if (!state?.record) {
     navigate('/fortune/history')
@@ -25,172 +56,375 @@ export default function FortuneRecordDetail() {
   // 이전 형식 데이터 호환성 체크
   const isNewFormat = !!fortune.todayEnergy && !!fortune.sajuAnalysis
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'score-excellent'
-    if (score >= 60) return 'score-good'
-    if (score >= 40) return 'score-normal'
-    return 'score-low'
+  const getScoreClass = (score: number) => {
+    if (score >= 80) return 'excellent'
+    if (score >= 60) return 'good'
+    if (score >= 40) return 'normal'
+    return 'low'
+  }
+
+  const getGradeEmoji = (grade: string) => {
+    const emojis: Record<string, string> = {
+      대길: '🌟', 길: '✨', 중길: '☀️', 소길: '🌤️', 평: '☁️', 주의: '⚠️',
+    }
+    return emojis[grade] || '☀️'
+  }
+
+  const getEnergyBars = (energy: number) => {
+    return Array(5).fill(0).map((_, i) => (
+      <span key={i} className={`energy-bar ${i < energy ? 'filled' : ''}`} />
+    ))
+  }
+
+  const toggleSection = (section: string) => {
+    setActiveSection(activeSection === section ? null : section)
   }
 
   return (
-    <div className="today-fortune-page">
-      <div className="fortune-container">
-        <header className="fortune-header">
-          <button className="back-btn" onClick={() => navigate('/fortune/history')}>←</button>
-          <h1>운세 기록</h1>
-          <button className="share-btn">📤</button>
-        </header>
+    <div className="fortune-page-v2">
+      {/* 헤더 */}
+      <header className="fortune-header-v2">
+        <button className="back-btn" onClick={() => navigate('/fortune/history')}>←</button>
+        <h1>운세 기록</h1>
+        <button className="share-btn">📤</button>
+      </header>
 
-        <div className="fortune-date">
-          <span>{fortune.date}</span>
+      <div className="fortune-content-v2">
+        {/* 날짜 */}
+        <div className="fortune-date-bar">
+          <span className="date-text">{fortune.date}</span>
         </div>
 
-        {/* 메인 점수 카드 */}
-        <div className="main-score-card">
-          <div className="saju-info">
-            <span className="day-master-badge">
-              일간 {fortune.dayMaster} ({fortune.dayMasterElement})
+        {/* ===== 메인 점수 카드 ===== */}
+        <section className="main-score-section">
+          <div className="saju-badge-row">
+            <span className="saju-badge day-master">
+              {DAY_MASTER_SYMBOLS[fortune.dayMaster]} 일간 {fortune.dayMaster} ({fortune.dayMasterElement})
             </span>
-            <span className="today-energy">
-              오늘의 기운: {fortune.todayElement}
+            <span className="saju-badge today-energy">
+              오늘: {isNewFormat ? `${fortune.todayStem}${fortune.todayBranch}` : ''} ({fortune.todayElement})
             </span>
           </div>
 
-          <div className="score-circle">
-            <span className="score-number">{fortune.overall.score}</span>
-            <span className="score-label">점</span>
+          <div className={`score-display ${getScoreClass(fortune.overall.score)}`}>
+            <div className="score-ring">
+              <span className="score-value">{fortune.overall.score}</span>
+              <span className="score-unit">점</span>
+            </div>
+            <div className="grade-info">
+              <span className="grade-emoji">{getGradeEmoji(fortune.overall.grade)}</span>
+              <span className="grade-text">{fortune.overall.grade}</span>
+            </div>
           </div>
 
-          <div className="grade-badge">
-            <span className="grade-emoji">
-              {fortune.overall.grade === '대길' ? '🌟' :
-               fortune.overall.grade === '길' ? '✨' :
-               fortune.overall.grade === '중길' ? '☀️' :
-               fortune.overall.grade === '소길' ? '🌤️' : '☁️'}
-            </span>
-            <span className="grade-text">{fortune.overall.grade}</span>
-          </div>
-
+          {isNewFormat && fortune.overall.gradeDescription && (
+            <p className="grade-description">{fortune.overall.gradeDescription}</p>
+          )}
           <p className="fortune-summary">{fortune.overall.summary}</p>
-        </div>
+        </section>
 
-        {/* 상세 운세 */}
-        <div className="fortune-detail-card">
-          <h3>📖 오늘의 운세 풀이</h3>
-          <p>{fortune.overall.detailedReading || (fortune.overall as any).detail || '상세 풀이 정보가 없습니다.'}</p>
-        </div>
+        {/* ===== 오늘의 기운 분석 ===== */}
+        {isNewFormat && fortune.todayEnergy && (
+          <section className="energy-analysis-section">
+            <h2 className="section-title">⚡ 오늘의 기운</h2>
 
-        {/* 카테고리별 운세 */}
-        <div className="category-section">
-          <h3>📊 분야별 운세</h3>
-          <div className="category-grid">
-            <div className="category-card">
-              <div className="category-header">
-                <span className="category-icon">💕</span>
-                <span className="category-name">연애운</span>
+            <div className="energy-cards">
+              {/* 십신 */}
+              <div className="energy-card ten-god">
+                <div className="card-header">
+                  <span className="card-label">십신</span>
+                  <span className="card-value">{fortune.todayEnergy.tenGod}</span>
+                </div>
+                <p className="card-keyword">#{fortune.todayEnergy.tenGodKeyword}</p>
+                <p className="card-desc">{fortune.todayEnergy.tenGodDescription}</p>
               </div>
-              <div className={`category-score ${getScoreColor(fortune.categories.love.score)}`}>
-                {fortune.categories.love.score}점
+
+              {/* 12운성 */}
+              <div className="energy-card twelve-stage">
+                <div className="card-header">
+                  <span className="card-label">12운성</span>
+                  <span className="card-value">
+                    {TWELVE_STAGE_SYMBOLS[fortune.todayEnergy.twelveStage]} {fortune.todayEnergy.twelveStage}
+                  </span>
+                </div>
+                <div className="energy-level">
+                  <span className="energy-label">기운</span>
+                  <div className="energy-bars">{getEnergyBars(fortune.todayEnergy.twelveStageEnergy)}</div>
+                </div>
+                <p className="card-desc">{fortune.todayEnergy.twelveStageDescription}</p>
               </div>
-              <p className="category-message">{fortune.categories.love.mainMessage || (fortune.categories.love as any).message || ''}</p>
             </div>
 
-            <div className="category-card">
-              <div className="category-header">
-                <span className="category-icon">💰</span>
-                <span className="category-name">금전운</span>
-              </div>
-              <div className={`category-score ${getScoreColor(fortune.categories.money.score)}`}>
-                {fortune.categories.money.score}점
-              </div>
-              <p className="category-message">{fortune.categories.money.mainMessage || (fortune.categories.money as any).message || ''}</p>
+            {/* 오행 관계 */}
+            <div className="element-relation-box">
+              <span className="relation-icon">☯</span>
+              <p>{fortune.todayEnergy.elementRelation}</p>
             </div>
+          </section>
+        )}
 
-            <div className="category-card">
-              <div className="category-header">
-                <span className="category-icon">💪</span>
-                <span className="category-name">건강운</span>
-              </div>
-              <div className={`category-score ${getScoreColor(fortune.categories.health.score)}`}>
-                {fortune.categories.health.score}점
-              </div>
-              <p className="category-message">{fortune.categories.health.mainMessage || (fortune.categories.health as any).message || ''}</p>
-            </div>
+        {/* ===== 카테고리별 운세 ===== */}
+        <section className="categories-section">
+          <h2 className="section-title">📊 세부 운세</h2>
 
-            <div className="category-card">
-              <div className="category-header">
-                <span className="category-icon">💼</span>
-                <span className="category-name">직장/학업운</span>
-              </div>
-              <div className={`category-score ${getScoreColor(fortune.categories.work.score)}`}>
-                {fortune.categories.work.score}점
-              </div>
-              <p className="category-message">{fortune.categories.work.mainMessage || (fortune.categories.work as any).message || ''}</p>
-            </div>
+          <div className="category-cards-v2">
+            {(Object.entries(fortune.categories) as [string, any][]).map(([key, cat]) => {
+              const mainMsg = cat.mainMessage || cat.message || '좋은 하루 되세요'
+              const detailMsgs = cat.detailMessages || []
+              const catGrade = cat.grade || ''
+              const catTip = cat.tip || ''
+
+              return (
+                <div key={key} className={`category-card-v2 ${getScoreClass(cat.score)}`}>
+                  <div className="cat-header">
+                    <span className="cat-icon">{CATEGORY_ICONS[key]}</span>
+                    <span className="cat-name">{CATEGORY_LABELS[key]}</span>
+                    {catGrade && <span className="cat-grade">{catGrade}</span>}
+                  </div>
+
+                  <div className="cat-score-bar">
+                    <div className="score-fill" style={{ width: `${cat.score}%` }} />
+                    <span className="score-text">{cat.score}점</span>
+                  </div>
+
+                  <p className="cat-main-msg">{mainMsg}</p>
+
+                  {detailMsgs.length > 1 && (
+                    <div className="cat-details">
+                      {detailMsgs.slice(1).map((msg: string, i: number) => (
+                        <p key={i} className="detail-msg">• {msg}</p>
+                      ))}
+                    </div>
+                  )}
+
+                  {catTip && (
+                    <div className="cat-tip">
+                      <span className="tip-label">TIP</span>
+                      <span className="tip-text">{catTip}</span>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
-        </div>
+        </section>
 
-        {/* 행운 정보 */}
-        <div className="lucky-section">
-          <h3>🍀 오늘의 행운</h3>
-          <div className="lucky-grid">
-            <div className="lucky-item">
-              <span className="lucky-icon">🎨</span>
-              <span className="lucky-label">행운의 색</span>
-              <span className="lucky-value">{fortune.lucky.color}</span>
+        {/* ===== 합충형파해 & 신살 ===== */}
+        {isNewFormat && fortune.branchAnalysis && fortune.spiritStars && (fortune.branchAnalysis.hasRelation || fortune.spiritStars.active.length > 0) && (
+          <section className="special-analysis-section">
+            <h2 className="section-title">🔮 특수 분석</h2>
+
+            {/* 합충형파해 */}
+            {fortune.branchAnalysis.hasRelation && (
+              <div className="analysis-box branch-analysis">
+                <div className="box-header" onClick={() => toggleSection('branch')}>
+                  <span className="box-icon">⚡</span>
+                  <span className="box-title">지지 관계 (합충형파해)</span>
+                  <span className="toggle-icon">{activeSection === 'branch' ? '▲' : '▼'}</span>
+                </div>
+                {activeSection === 'branch' && (
+                  <div className="box-content">
+                    {fortune.branchAnalysis.relations.map((rel, i) => (
+                      <div key={i} className={`relation-item ${rel.effect}`}>
+                        <span className="rel-type">{rel.type}</span>
+                        <span className="rel-pillars">{rel.pillars}과 오늘</span>
+                        <p className="rel-desc">{rel.description}</p>
+                      </div>
+                    ))}
+                    <p className="analysis-summary">{fortune.branchAnalysis.summary}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 신살 */}
+            {fortune.spiritStars.active.length > 0 && (
+              <div className="analysis-box spirit-analysis">
+                <div className="box-header" onClick={() => toggleSection('spirit')}>
+                  <span className="box-icon">✨</span>
+                  <span className="box-title">발동 신살</span>
+                  <span className="toggle-icon">{activeSection === 'spirit' ? '▲' : '▼'}</span>
+                </div>
+                {activeSection === 'spirit' && (
+                  <div className="box-content">
+                    <div className="spirit-badges">
+                      {fortune.spiritStars.active.map((star, i) => (
+                        <span key={i} className="spirit-badge">
+                          {SPIRIT_STAR_SYMBOLS[star] || '✦'} {star}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="spirit-interpretation">{fortune.spiritStars.interpretation}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ===== 오늘의 행운 ===== */}
+        <section className="lucky-section-v2">
+          <h2 className="section-title">🍀 오늘의 행운</h2>
+
+          <div className="lucky-grid-v2">
+            <div className="lucky-card">
+              <div className="lucky-icon">🎨</div>
+              <div className="lucky-info">
+                <span className="lucky-label">행운의 색</span>
+                <span className="lucky-value">{fortune.lucky.color}</span>
+                {isNewFormat && fortune.lucky.colorReason && (
+                  <span className="lucky-reason">{fortune.lucky.colorReason}</span>
+                )}
+              </div>
             </div>
-            <div className="lucky-item">
-              <span className="lucky-icon">🔢</span>
-              <span className="lucky-label">행운의 숫자</span>
-              <span className="lucky-value">{fortune.lucky.number}</span>
+
+            <div className="lucky-card">
+              <div className="lucky-icon">🔢</div>
+              <div className="lucky-info">
+                <span className="lucky-label">행운의 숫자</span>
+                <span className="lucky-value">{fortune.lucky.number}</span>
+                {isNewFormat && fortune.lucky.numberReason && (
+                  <span className="lucky-reason">{fortune.lucky.numberReason}</span>
+                )}
+              </div>
             </div>
-            <div className="lucky-item">
-              <span className="lucky-icon">🧭</span>
-              <span className="lucky-label">행운의 방향</span>
-              <span className="lucky-value">{fortune.lucky.direction}</span>
+
+            <div className="lucky-card">
+              <div className="lucky-icon">🧭</div>
+              <div className="lucky-info">
+                <span className="lucky-label">행운의 방향</span>
+                <span className="lucky-value">{fortune.lucky.direction}</span>
+                {isNewFormat && fortune.lucky.directionReason && (
+                  <span className="lucky-reason">{fortune.lucky.directionReason}</span>
+                )}
+              </div>
             </div>
-            <div className="lucky-item">
-              <span className="lucky-icon">⏰</span>
-              <span className="lucky-label">행운의 시간</span>
-              <span className="lucky-value">{fortune.lucky.time}</span>
+
+            <div className="lucky-card">
+              <div className="lucky-icon">⏰</div>
+              <div className="lucky-info">
+                <span className="lucky-label">행운의 시간</span>
+                <span className="lucky-value">{fortune.lucky.time}</span>
+                {isNewFormat && fortune.lucky.timeReason && (
+                  <span className="lucky-reason">{fortune.lucky.timeReason}</span>
+                )}
+              </div>
             </div>
+
+            {isNewFormat && fortune.lucky.item && (
+              <div className="lucky-card wide">
+                <div className="lucky-icon">🎁</div>
+                <div className="lucky-info">
+                  <span className="lucky-label">행운의 아이템</span>
+                  <span className="lucky-value">{fortune.lucky.item}</span>
+                </div>
+              </div>
+            )}
+
+            {isNewFormat && fortune.lucky.activity && (
+              <div className="lucky-card wide">
+                <div className="lucky-icon">🎯</div>
+                <div className="lucky-info">
+                  <span className="lucky-label">추천 활동</span>
+                  <span className="lucky-value">{fortune.lucky.activity}</span>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        </section>
 
-        {/* 조언 */}
-        <div className="advice-card">
-          <h3>💡 오늘의 조언</h3>
-          <p>
-            {isNewFormat && fortune.advice.main
-              ? fortune.advice.main
-              : typeof fortune.advice === 'string'
-                ? fortune.advice
-                : '오늘 하루도 긍정적인 마음으로 보내세요!'}
-          </p>
-          {isNewFormat && fortune.advice.dos && fortune.advice.dos.length > 0 && (
-            <div className="advice-dos">
-              <h4>✅ 하면 좋은 것</h4>
-              <ul>
-                {fortune.advice.dos.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
+        {/* ===== 오늘의 조언 ===== */}
+        <section className="advice-section-v2">
+          <h2 className="section-title">💡 오늘의 조언</h2>
+
+          <div className="main-advice-card">
+            <p className="main-advice-text">
+              {isNewFormat && fortune.advice.main
+                ? fortune.advice.main
+                : typeof fortune.advice === 'string'
+                  ? fortune.advice
+                  : '오늘 하루도 긍정적인 마음으로 보내세요!'}
+            </p>
+          </div>
+
+          {isNewFormat && fortune.advice.dos && fortune.advice.donts && (
+            <div className="dos-donts-grid">
+              {fortune.advice.dos.length > 0 && (
+                <div className="advice-list dos">
+                  <h4>✅ 하면 좋은 것</h4>
+                  <ul>
+                    {fortune.advice.dos.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {fortune.advice.donts.length > 0 && (
+                <div className="advice-list donts">
+                  <h4>❌ 피해야 할 것</h4>
+                  <ul>
+                    {fortune.advice.donts.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
-          {isNewFormat && fortune.advice.donts && fortune.advice.donts.length > 0 && (
-            <div className="advice-donts">
-              <h4>❌ 피해야 할 것</h4>
-              <ul>
-                {fortune.advice.donts.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
+
+          {isNewFormat && fortune.advice.mindset && (
+            <div className="mindset-card">
+              <span className="mindset-icon">🧠</span>
+              <div className="mindset-content">
+                <span className="mindset-label">오늘의 마인드셋</span>
+                <p className="mindset-text">{fortune.advice.mindset}</p>
+              </div>
             </div>
           )}
-        </div>
+        </section>
+
+        {/* ===== 상세 운세 (펼치기) ===== */}
+        <section className="detailed-reading-section">
+          <div
+            className="detailed-toggle"
+            onClick={() => toggleSection('detailed')}
+          >
+            <span>📜 {isNewFormat ? '명리학 상세 해석' : '상세 운세'}</span>
+            <span className="toggle-arrow">{activeSection === 'detailed' ? '▲' : '▼'}</span>
+          </div>
+
+          {activeSection === 'detailed' && (
+            <div className="detailed-content">
+              {isNewFormat && fortune.sajuAnalysis && (
+                <div className="saju-profile">
+                  <h4>{DAY_MASTER_SYMBOLS[fortune.dayMaster]} 나의 사주 프로필</h4>
+                  <p className="profile-desc">{fortune.sajuAnalysis.dayMasterDescription}</p>
+                  <div className="profile-tags">
+                    <span className="tag">성격: {fortune.sajuAnalysis.dayMasterPersonality}</span>
+                    <span className="tag">강점: {fortune.sajuAnalysis.dayMasterStrength}</span>
+                  </div>
+                  <div className="balance-info">
+                    <span className="balance-label">
+                      신강/신약: {fortune.sajuAnalysis.balance === 'strong' ? '신강' : fortune.sajuAnalysis.balance === 'weak' ? '신약' : '중화'}
+                    </span>
+                    <p className="balance-desc">{fortune.sajuAnalysis.balanceDescription}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="full-reading">
+                <h4>📖 오늘의 상세 풀이</h4>
+                <p className="reading-text">
+                  {fortune.overall.detailedReading || (fortune.overall as any).detail || '상세 풀이 정보가 없습니다.'}
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
 
         {/* 하단 버튼 */}
-        <div className="fortune-actions">
+        <div className="fortune-actions-v2">
           <button className="action-btn secondary" onClick={() => navigate('/fortune/history')}>
             목록으로
           </button>

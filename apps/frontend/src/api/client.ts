@@ -131,3 +131,213 @@ export const fortuneApi = {
       token,
     }),
 }
+
+// Battle API Types
+export type BattleBirthInfo = {
+  birthDate: string
+  birthTime?: string
+  isTimeUnknown: boolean
+  gender: 'male' | 'female'
+}
+
+export type BattleStat = {
+  score: number
+  grade: string
+}
+
+export type BattleStats = {
+  money: BattleStat
+  love: BattleStat
+  children: BattleStat
+  career: BattleStat
+  study: BattleStat
+  health: BattleStat
+}
+
+export type SajuPillars = {
+  year: { heavenlyStem: string; earthlyBranch: string }
+  month: { heavenlyStem: string; earthlyBranch: string }
+  day: { heavenlyStem: string; earthlyBranch: string }
+  hour: { heavenlyStem: string; earthlyBranch: string } | null
+}
+
+export type SajuBasicAnalysis = {
+  dayMaster: string
+  dayMasterElement: string
+  yinYang: string
+  balance: string
+  yongShin: string
+  heeShin: string
+  giShin: string
+  geukGuk: string
+  elementDistribution: {
+    wood: number
+    fire: number
+    earth: number
+    metal: number
+    water: number
+  }
+}
+
+export type SajuDetailedReport = {
+  summary: string
+  personality: string
+  moneyAnalysis: string
+  loveAnalysis: string
+  childrenAnalysis: string
+  careerAnalysis: string
+  studyAnalysis: string
+  healthAnalysis: string
+}
+
+export type SajuAdvice = {
+  mainAdvice: string
+  luckyColor: string
+  luckyNumber: number
+  luckyDirection: string
+}
+
+export type Chemistry = {
+  type: '천생연분' | '숙명의라이벌' | '일반'
+  stemRelation: {
+    type: '합' | '충' | '없음'
+    description: string
+  }
+  compatibility: number
+  description: string
+}
+
+export type BattleRound = {
+  id: string
+  name: string
+  icon: string
+  challenger: BattleStat
+  opponent: BattleStat
+  winner: 'challenger' | 'opponent' | 'draw'
+  scoreDiff: number
+}
+
+export type BattleResultData = {
+  rounds: BattleRound[]
+  challengerWins: number
+  opponentWins: number
+  draws: number
+  winner: 'challenger' | 'opponent' | 'draw'
+  chemistry: Chemistry
+}
+
+export type BattleListItem = {
+  id: string
+  status: 'pending' | 'completed'
+  share_code: string
+  winner_id: string | null
+  challenger_id: string
+  opponent_id: string | null
+  challenger_nickname: string
+  opponent_nickname: string | null
+  challenger_day_master: string
+  opponent_day_master: string | null
+  chemistry: Chemistry | null
+  created_at: string
+  completed_at: string | null
+}
+
+// Battle API
+export const battleApi = {
+  // 사주 분석 요청
+  analyze: (token: string, birthInfo: BattleBirthInfo) =>
+    apiRequest<{
+      reportId: string
+      isExisting: boolean
+      result: {
+        birthInfo: BattleBirthInfo
+        pillars: SajuPillars
+        basic: SajuBasicAnalysis
+        battleStats: BattleStats
+        report: SajuDetailedReport
+        advice: SajuAdvice
+      }
+    }>('/battle/analyze', {
+      method: 'POST',
+      token,
+      body: birthInfo,
+    }),
+
+  // 내 사주 리포트 목록
+  getMyReports: (token: string) =>
+    apiRequest<{ reports: unknown[] }>('/battle/my-reports', { token }),
+
+  // 대결 생성
+  createBattle: (token: string, reportId: string) =>
+    apiRequest<{
+      battleId: string
+      shareCode: string
+      shareUrl: string
+      createdAt: string
+    }>('/battle/create', {
+      method: 'POST',
+      token,
+      body: { reportId },
+    }),
+
+  // 대결 정보 조회 (공유 코드로)
+  getBattleByCode: (token: string, shareCode: string) =>
+    apiRequest<{
+      battleId: string
+      status: string
+      challenger: {
+        nickname: string
+        dayMaster: string
+        dayMasterElement: string
+        ilju: string
+      }
+      createdAt: string
+    }>(`/battle/join/${shareCode}`, { token }),
+
+  // 대결 참가
+  joinBattle: (token: string, shareCode: string, reportId: string) =>
+    apiRequest<{
+      battleId: string
+      status: string
+      result: BattleResultData
+    }>(`/battle/join/${shareCode}`, {
+      method: 'POST',
+      token,
+      body: { reportId },
+    }),
+
+  // 대결 결과 조회
+  getBattleResult: (token: string, battleId: string) =>
+    apiRequest<{
+      battleId: string
+      status: string
+      result: BattleResultData
+      chemistry: Chemistry
+      winnerId: string | null
+      challenger: {
+        id: string
+        nickname: string
+        dayMaster: string
+        dayMasterElement: string
+        ilju: string
+        stats: BattleStats
+        basic: SajuBasicAnalysis
+        report: SajuDetailedReport
+      }
+      opponent: {
+        id: string
+        nickname: string
+        dayMaster: string
+        dayMasterElement: string
+        ilju: string
+        stats: BattleStats
+        basic: SajuBasicAnalysis
+        report: SajuDetailedReport
+      }
+      completedAt: string
+    }>(`/battle/${battleId}/result`, { token }),
+
+  // 내 대결 목록
+  getMyBattles: (token: string) =>
+    apiRequest<{ battles: BattleListItem[] }>('/battle/my-battles', { token }),
+}

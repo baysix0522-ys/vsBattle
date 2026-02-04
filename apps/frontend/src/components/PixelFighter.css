@@ -1,0 +1,467 @@
+.pixel-fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.fighter-sprite {
+  width: 64px;
+  height: 64px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  transform: scale(1.5);
+  transition: transform 0.1s ease;
+}
+
+/* silver 스프라이트: 4프레임 x 1행 */
+.fighter-sprite.sprite-silver {
+  background-size: 256px 64px;
+}
+
+/* red 스프라이트: 6프레임 x 3행 */
+.fighter-sprite.sprite-red {
+  background-size: 384px 192px;
+}
+
+/* 좌우 반전 (오른쪽 캐릭터) */
+.pixel-fighter.flipped .fighter-sprite {
+  transform: scale(1.5) scaleX(-1);
+}
+
+/* 액션별 애니메이션 */
+.fighter-sprite.action-idle {
+  animation: fighter-bounce 1s ease-in-out infinite;
+}
+
+.fighter-sprite.action-attack {
+  animation: fighter-attack 0.6s ease-out;
+}
+
+.fighter-sprite.action-hit {
+  animation: fighter-hit 0.6s ease-out;
+}
+
+.fighter-sprite.action-victory {
+  animation: fighter-victory 1.2s ease-out;
+}
+
+.fighter-sprite.action-ultimate {
+  animation: fighter-ultimate 0.8s ease-out;
+}
+
+.fighter-sprite.action-defeat {
+  animation: fighter-defeat 0.8s ease-out forwards;
+}
+
+@keyframes fighter-bounce {
+  0%, 100% { transform: scale(1.5) translateY(0); }
+  50% { transform: scale(1.5) translateY(-4px); }
+}
+
+.pixel-fighter.flipped .fighter-sprite.action-idle {
+  animation: fighter-bounce-flipped 1s ease-in-out infinite;
+}
+
+@keyframes fighter-bounce-flipped {
+  0%, 100% { transform: scale(1.5) scaleX(-1) translateY(0); }
+  50% { transform: scale(1.5) scaleX(-1) translateY(-4px); }
+}
+
+@keyframes fighter-attack {
+  0% {
+    transform: scale(1.5) translateX(0) translateY(0);
+  }
+  20% {
+    transform: scale(1.5) translateX(10px) translateY(-30px); /* 점프 시작 */
+  }
+  40% {
+    transform: scale(1.8) translateX(60px) translateY(-40px); /* 점프 정점 */
+  }
+  60% {
+    transform: scale(2) translateX(80px) translateY(-20px) rotate(10deg); /* 공격 순간 */
+    filter: brightness(1.3);
+  }
+  80% {
+    transform: scale(1.6) translateX(40px) translateY(0); /* 착지 */
+  }
+  100% {
+    transform: scale(1.5) translateX(0) translateY(0); /* 원위치 */
+  }
+}
+
+.pixel-fighter.flipped .fighter-sprite.action-attack {
+  animation: fighter-attack-flipped 0.6s ease-out;
+}
+
+@keyframes fighter-attack-flipped {
+  0% {
+    transform: scale(1.5) scaleX(-1) translateX(0) translateY(0);
+  }
+  20% {
+    transform: scale(1.5) scaleX(-1) translateX(-10px) translateY(-30px);
+  }
+  40% {
+    transform: scale(1.8) scaleX(-1) translateX(-60px) translateY(-40px);
+  }
+  60% {
+    transform: scale(2) scaleX(-1) translateX(-80px) translateY(-20px) rotate(-10deg);
+    filter: brightness(1.3);
+  }
+  80% {
+    transform: scale(1.6) scaleX(-1) translateX(-40px) translateY(0);
+  }
+  100% {
+    transform: scale(1.5) scaleX(-1) translateX(0) translateY(0);
+  }
+}
+
+@keyframes fighter-hit {
+  0% {
+    transform: scale(1.5) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
+  10% {
+    transform: scale(1.3) translateX(-20px) translateY(-10px);
+    filter: brightness(3) saturate(0); /* 피격 플래시 */
+  }
+  25% {
+    transform: scale(1.4) translateX(-40px) translateY(5px) rotate(-5deg);
+    filter: brightness(1.5);
+  }
+  40% {
+    transform: scale(1.3) translateX(-50px) translateY(0) rotate(-8deg);
+    filter: brightness(1);
+  }
+  55% {
+    transform: scale(1.5) translateX(-35px) translateY(-5px) rotate(3deg);
+  }
+  70% {
+    transform: scale(1.5) translateX(-20px) translateY(0) rotate(-2deg);
+  }
+  85% {
+    transform: scale(1.5) translateX(-8px) translateY(0) rotate(1deg);
+  }
+  100% {
+    transform: scale(1.5) translateX(0) translateY(0) rotate(0deg);
+  }
+}
+
+.pixel-fighter.flipped .fighter-sprite.action-hit {
+  animation: fighter-hit-flipped 0.6s ease-out;
+}
+
+@keyframes fighter-hit-flipped {
+  0% {
+    transform: scale(1.5) scaleX(-1) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
+  10% {
+    transform: scale(1.3) scaleX(-1) translateX(20px) translateY(-10px);
+    filter: brightness(3) saturate(0);
+  }
+  25% {
+    transform: scale(1.4) scaleX(-1) translateX(40px) translateY(5px) rotate(5deg);
+    filter: brightness(1.5);
+  }
+  40% {
+    transform: scale(1.3) scaleX(-1) translateX(50px) translateY(0) rotate(8deg);
+    filter: brightness(1);
+  }
+  55% {
+    transform: scale(1.5) scaleX(-1) translateX(35px) translateY(-5px) rotate(-3deg);
+  }
+  70% {
+    transform: scale(1.5) scaleX(-1) translateX(20px) translateY(0) rotate(2deg);
+  }
+  85% {
+    transform: scale(1.5) scaleX(-1) translateX(8px) translateY(0) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1.5) scaleX(-1) translateX(0) translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes fighter-victory {
+  0% {
+    transform: scale(1.5) translateY(0);
+  }
+  15% {
+    transform: scale(1.8) translateY(-50px); /* 첫번째 점프 */
+  }
+  25% {
+    transform: scale(1.5) translateY(0);
+  }
+  35% {
+    transform: scale(1.6) translateY(-35px) rotate(10deg); /* 두번째 점프 */
+  }
+  45% {
+    transform: scale(1.5) translateY(0);
+  }
+  55% {
+    transform: scale(1.7) translateY(-45px) rotate(-10deg); /* 세번째 점프 */
+  }
+  65% {
+    transform: scale(1.5) translateY(0);
+  }
+  75% {
+    transform: scale(2) translateY(-30px); /* 마지막 승리 포즈 */
+    filter: brightness(1.3) drop-shadow(0 0 10px gold);
+  }
+  100% {
+    transform: scale(1.8) translateY(0);
+    filter: brightness(1.2) drop-shadow(0 0 8px gold);
+  }
+}
+
+.pixel-fighter.flipped .fighter-sprite.action-victory {
+  animation: fighter-victory-flipped 1.2s ease-out;
+}
+
+@keyframes fighter-victory-flipped {
+  0% {
+    transform: scale(1.5) scaleX(-1) translateY(0);
+  }
+  15% {
+    transform: scale(1.8) scaleX(-1) translateY(-50px);
+  }
+  25% {
+    transform: scale(1.5) scaleX(-1) translateY(0);
+  }
+  35% {
+    transform: scale(1.6) scaleX(-1) translateY(-35px) rotate(-10deg);
+  }
+  45% {
+    transform: scale(1.5) scaleX(-1) translateY(0);
+  }
+  55% {
+    transform: scale(1.7) scaleX(-1) translateY(-45px) rotate(10deg);
+  }
+  65% {
+    transform: scale(1.5) scaleX(-1) translateY(0);
+  }
+  75% {
+    transform: scale(2) scaleX(-1) translateY(-30px);
+    filter: brightness(1.3) drop-shadow(0 0 10px gold);
+  }
+  100% {
+    transform: scale(1.8) scaleX(-1) translateY(0);
+    filter: brightness(1.2) drop-shadow(0 0 8px gold);
+  }
+}
+
+/* 필살기 애니메이션 */
+@keyframes fighter-ultimate {
+  0% {
+    transform: scale(1.5) translateX(0) translateY(0);
+  }
+  15% {
+    transform: scale(1.8) translateY(-20px);
+    filter: brightness(1.5) drop-shadow(0 0 15px orange);
+  }
+  30% {
+    transform: scale(2.2) translateX(30px) translateY(-30px);
+    filter: brightness(2) drop-shadow(0 0 25px #ff4500);
+  }
+  50% {
+    transform: scale(2.5) translateX(100px) translateY(-10px) rotate(15deg);
+    filter: brightness(2.5) drop-shadow(0 0 40px #ff0000);
+  }
+  70% {
+    transform: scale(2) translateX(60px) translateY(0);
+    filter: brightness(1.8) drop-shadow(0 0 20px orange);
+  }
+  100% {
+    transform: scale(1.5) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
+}
+
+.pixel-fighter.flipped .fighter-sprite.action-ultimate {
+  animation: fighter-ultimate-flipped 0.8s ease-out;
+}
+
+@keyframes fighter-ultimate-flipped {
+  0% {
+    transform: scale(1.5) scaleX(-1) translateX(0) translateY(0);
+  }
+  15% {
+    transform: scale(1.8) scaleX(-1) translateY(-20px);
+    filter: brightness(1.5) drop-shadow(0 0 15px orange);
+  }
+  30% {
+    transform: scale(2.2) scaleX(-1) translateX(-30px) translateY(-30px);
+    filter: brightness(2) drop-shadow(0 0 25px #ff4500);
+  }
+  50% {
+    transform: scale(2.5) scaleX(-1) translateX(-100px) translateY(-10px) rotate(-15deg);
+    filter: brightness(2.5) drop-shadow(0 0 40px #ff0000);
+  }
+  70% {
+    transform: scale(2) scaleX(-1) translateX(-60px) translateY(0);
+    filter: brightness(1.8) drop-shadow(0 0 20px orange);
+  }
+  100% {
+    transform: scale(1.5) scaleX(-1) translateX(0) translateY(0);
+    filter: brightness(1);
+  }
+}
+
+/* 패배 애니메이션 */
+@keyframes fighter-defeat {
+  0% {
+    transform: scale(1.5) translateX(0) translateY(0) rotate(0deg);
+    filter: brightness(1);
+  }
+  20% {
+    transform: scale(1.3) translateX(-30px) translateY(-20px) rotate(-15deg);
+    filter: brightness(2) saturate(0);
+  }
+  40% {
+    transform: scale(1.2) translateX(-50px) translateY(10px) rotate(-30deg);
+    filter: brightness(1.2);
+  }
+  60% {
+    transform: scale(1.1) translateX(-40px) translateY(20px) rotate(-60deg);
+  }
+  100% {
+    transform: scale(1.3) translateX(-30px) translateY(15px) rotate(-80deg);
+    filter: brightness(0.7);
+  }
+}
+
+.pixel-fighter.flipped .fighter-sprite.action-defeat {
+  animation: fighter-defeat-flipped 0.8s ease-out forwards;
+}
+
+@keyframes fighter-defeat-flipped {
+  0% {
+    transform: scale(1.5) scaleX(-1) translateX(0) translateY(0) rotate(0deg);
+    filter: brightness(1);
+  }
+  20% {
+    transform: scale(1.3) scaleX(-1) translateX(30px) translateY(-20px) rotate(15deg);
+    filter: brightness(2) saturate(0);
+  }
+  40% {
+    transform: scale(1.2) scaleX(-1) translateX(50px) translateY(10px) rotate(30deg);
+    filter: brightness(1.2);
+  }
+  60% {
+    transform: scale(1.1) scaleX(-1) translateX(40px) translateY(20px) rotate(60deg);
+  }
+  100% {
+    transform: scale(1.3) scaleX(-1) translateX(30px) translateY(15px) rotate(80deg);
+    filter: brightness(0.7);
+  }
+}
+
+.fighter-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin-top: 8px;
+}
+
+/* 충격 이펙트 */
+.pixel-fighter.hit-effect::after {
+  content: '💥';
+  position: absolute;
+  font-size: 32px;
+  animation: impact-pop 0.4s ease-out forwards;
+}
+
+@keyframes impact-pop {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* 대결 스테이지 */
+.battle-stage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 20px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 충격시 스테이지 흔들림 */
+.battle-stage.shaking {
+  animation: stage-shake 0.3s ease-out;
+}
+
+@keyframes stage-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-0.5deg); }
+  40% { transform: translateX(6px) rotate(0.3deg); }
+  60% { transform: translateX(-4px) rotate(-0.2deg); }
+  80% { transform: translateX(2px) rotate(0.1deg); }
+}
+
+.battle-stage::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, rgba(100,100,100,0.3));
+}
+
+.battle-vs {
+  font-size: 32px;
+  font-weight: 900;
+  color: #f97316;
+  text-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+  animation: vs-pulse 1s ease-in-out infinite;
+}
+
+@keyframes vs-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* 라운드 결과 애니메이션 */
+.round-battle-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  padding: 30px;
+  margin-bottom: 16px;
+}
+
+.round-result-flash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: 900;
+  color: #22c55e;
+  text-shadow: 0 0 30px rgba(34, 197, 94, 0.8);
+  animation: result-flash 0.5s ease-out;
+  z-index: 10;
+}
+
+@keyframes result-flash {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}

@@ -1,0 +1,992 @@
+/* ===== 사주 대결 페이지 ===== */
+.battle-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+  padding-bottom: 40px;
+}
+
+.battle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.battle-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.battle-content {
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.battle-intro {
+  text-align: center;
+  padding: 30px 0;
+}
+
+.battle-intro .intro-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: battle-bounce 2s ease-in-out infinite;
+}
+
+@keyframes battle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.battle-intro h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.battle-intro p {
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.battle-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.battle-steps .step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  font-size: 12px;
+  color: #71717a;
+}
+
+.battle-steps .step.active {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #fff;
+}
+
+.battle-steps .step-num {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.battle-steps .step-arrow {
+  color: #71717a;
+  font-size: 14px;
+}
+
+.battle-form {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 20px;
+}
+
+.battle-form .form-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.battle-note {
+  text-align: center;
+  color: #71717a;
+  font-size: 12px;
+  margin-top: 24px;
+}
+
+.guest-block {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.guest-block .block-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.guest-block h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.guest-block p {
+  color: #a1a1aa;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+/* 사주 프로필 카드 */
+.saju-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.profile-symbol {
+  font-size: 48px;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-ilju {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2px;
+}
+
+.profile-element {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.profile-balance {
+  font-size: 12px;
+  color: #a1a1aa;
+  margin-top: 2px;
+}
+
+/* 배틀 스탯 */
+.battle-stats-section {
+  margin-bottom: 24px;
+}
+
+.battle-stats-section .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 14px 8px;
+  text-align: center;
+  border: 1px solid transparent;
+}
+
+.stat-card.excellent {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.stat-card.good {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.stat-card.normal {
+  border-color: rgba(234, 179, 8, 0.5);
+  background: rgba(234, 179, 8, 0.1);
+}
+
+.stat-card.low {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.stat-icon {
+  font-size: 20px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.stat-name {
+  font-size: 11px;
+  color: #a1a1aa;
+  display: block;
+}
+
+.stat-score {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+  margin: 4px 0;
+}
+
+.stat-grade {
+  font-size: 11px;
+  color: #a1a1aa;
+  display: block;
+}
+
+/* 리포트 섹션 */
+.report-summary,
+.report-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.report-summary .section-title,
+.report-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.report-summary p,
+.report-section p {
+  font-size: 14px;
+  color: #a1a1aa;
+  line-height: 1.6;
+}
+
+.advice-card {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.1) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.advice-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.advice-card .main-advice {
+  font-size: 14px;
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.lucky-items {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lucky-items span {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
+/* 공유 섹션 */
+.share-section {
+  margin-top: 24px;
+}
+
+.share-code-box {
+  background: rgba(249, 115, 22, 0.1);
+  border: 2px dashed rgba(249, 115, 22, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.share-label {
+  font-size: 12px;
+  color: #a1a1aa;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.share-code {
+  font-size: 32px;
+  font-weight: 700;
+  color: #f97316;
+  letter-spacing: 4px;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.share-note {
+  text-align: center;
+  color: #71717a;
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+/* 도전자 카드 */
+.challenger-card {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.challenger-badge {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: #f97316;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.challenger-avatar {
+  font-size: 48px;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  margin-bottom: 12px;
+}
+
+.challenger-info {
+  margin-bottom: 16px;
+}
+
+.challenger-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+}
+
+.challenger-saju {
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.vs-badge {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f97316;
+  margin: 12px 0;
+  padding: 8px 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+}
+
+.opponent-placeholder {
+  padding: 20px;
+}
+
+.placeholder-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  font-size: 14px;
+  color: #71717a;
+}
+
+/* 대결 결과 페이지 */
+.battle-result-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+}
+
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+}
+
+/* 인트로 애니메이션 */
+.battle-intro-animation {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: battle-fadeIn 0.5s ease-out;
+}
+
+@keyframes battle-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.intro-vs-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.intro-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.6s ease-out;
+}
+
+.intro-player.left {
+  animation-name: slideInLeft;
+}
+
+.intro-player.right {
+  animation-name: slideInRight;
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.player-symbol {
+  font-size: 48px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.player-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.player-ilju {
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.intro-vs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.vs-text {
+  font-size: 32px;
+  font-weight: 700;
+  color: #f97316;
+  animation: battle-pulse 1s ease-in-out infinite;
+}
+
+@keyframes battle-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.chemistry-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: #a1a1aa;
+}
+
+.chemistry-badge.match {
+  background: rgba(236, 72, 153, 0.2);
+  color: #ec4899;
+}
+
+.chemistry-badge.rival {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.intro-message {
+  margin-top: 40px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  animation: fadeInUp 0.5s ease-out 1s both;
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* 라운드 애니메이션 */
+.battle-rounds-animation {
+  padding: 60px 20px 40px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.round-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  animation: slideUp 0.5s ease-out;
+  border: 2px solid transparent;
+}
+
+.round-card.current {
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.round-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.round-icon {
+  font-size: 24px;
+}
+
+.round-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.round-scores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.score-side {
+  text-align: center;
+  flex: 1;
+}
+
+.score-side .score-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+}
+
+.score-side .score-grade {
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
+.score-side.winner .score-value {
+  color: #22c55e;
+}
+
+.score-vs {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f97316;
+}
+
+.round-winner-tag {
+  text-align: center;
+  margin-top: 12px;
+  padding: 6px 16px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.round-progress {
+  text-align: center;
+  color: #71717a;
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+/* 최종 결과 */
+.final-result {
+  padding: 40px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+  animation: battle-fadeIn 0.5s ease-out;
+}
+
+.result-banner {
+  text-align: center;
+  padding: 40px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.result-banner.win {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(22, 163, 74, 0.1) 100%);
+  border: 2px solid rgba(34, 197, 94, 0.5);
+}
+
+.result-banner.lose {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.result-banner.draw {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(202, 138, 4, 0.1) 100%);
+  border: 2px solid rgba(234, 179, 8, 0.3);
+}
+
+.result-icon {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 16px;
+  animation: battle-bounce 1s ease-in-out infinite;
+}
+
+.result-text {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.score-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.score-box {
+  flex: 1;
+  text-align: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.summary-name {
+  font-size: 14px;
+  color: #a1a1aa;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.summary-wins {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.score-vs-final {
+  color: #71717a;
+}
+
+.score-vs-final .draws {
+  font-size: 14px;
+}
+
+/* 케미스트리 카드 */
+.chemistry-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid transparent;
+}
+
+.chemistry-card.match {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(219, 39, 119, 0.1) 100%);
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.chemistry-card.rival {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.1) 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.chemistry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.chemistry-type {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.chemistry-score {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f97316;
+}
+
+.chemistry-desc {
+  font-size: 14px;
+  color: #a1a1aa;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.chemistry-relation {
+  font-size: 12px;
+  color: #71717a;
+}
+
+/* 라운드 상세 */
+.rounds-detail {
+  margin-bottom: 24px;
+}
+
+.rounds-detail h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.detail-icon {
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+.detail-name {
+  flex: 1;
+  font-size: 14px;
+  color: #a1a1aa;
+}
+
+.detail-scores {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #71717a;
+}
+
+.detail-scores .winner {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.detail-vs {
+  color: #3f3f46;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 패자 굴복 메시지 */
+.loser-message-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.loser-speech,
+.winner-speech,
+.draw-message {
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.loser-speech:last-child,
+.winner-speech:last-child,
+.draw-message:last-child {
+  margin-bottom: 0;
+}
+
+.loser-speech {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.08) 100%);
+  border-left: 3px solid #ef4444;
+}
+
+.winner-speech {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.08) 100%);
+  border-left: 3px solid #22c55e;
+}
+
+.draw-message {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(202, 138, 4, 0.08) 100%);
+  border-left: 3px solid #eab308;
+}
+
+.message-speaker {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a1a1aa;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.message-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* 미니 스코어 요약 */
+.score-summary.mini {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 14px;
+  color: #71717a;
+}
+
+.score-summary.mini .draws {
+  color: #eab308;
+}
+
+/* 로딩, 에러 상태 */
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
+  text-align: center;
+}
+
+.error-state span {
+  font-size: 48px;
+}
+
+.error-state p {
+  color: #a1a1aa;
+}
+
+/* 캐릭터 배틀 스테이지 */
+.battle-stage {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 30px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.battle-stage::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, rgba(100,100,100,0.3));
+}
+
+.battle-stage.final {
+  background: linear-gradient(180deg, rgba(249, 115, 22, 0.1) 0%, rgba(0,0,0,0.4) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.battle-vs {
+  font-size: 32px;
+  font-weight: 900;
+  color: #f97316;
+  text-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+  animation: vs-pulse 1s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes vs-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}

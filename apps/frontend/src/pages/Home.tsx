@@ -94,6 +94,9 @@ export default function Home() {
           navigate('/fortune/input')
         }
         break
+      case 'battle':
+        navigate('/battle')
+        break
       case 'tarot':
         navigate('/tarot')
         break
@@ -169,7 +172,7 @@ export default function Home() {
             <h3>친구와 운세 대결하기</h3>
             <p>링크를 공유하고 누가 더 운이 좋은지 겨뤄보세요!</p>
           </div>
-          <button className="banner-btn">대결 시작</button>
+          <button className="banner-btn" onClick={() => navigate('/battle')}>대결 시작</button>
         </div>
         <div className="banner-decoration">
           <span className="deco-icon left">⚔️</span>
@@ -203,7 +206,7 @@ export default function Home() {
           <span className="nav-icon">🏠</span>
           <span className="nav-label">홈</span>
         </button>
-        <button className="nav-item" onClick={() => alert('준비 중인 서비스입니다.')}>
+        <button className="nav-item" onClick={() => navigate('/battle')}>
           <span className="nav-icon">⚔️</span>
           <span className="nav-label">대결</span>
         </button>

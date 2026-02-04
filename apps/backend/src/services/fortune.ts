@@ -26,11 +26,13 @@ export type TodayFortune = {
 
 function getTodayDate(): string {
   const now = new Date()
-  const year = now.getFullYear()
-  const month = now.getMonth() + 1
-  const day = now.getDate()
+  // 한국 시간 (UTC+9)
+  const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000)
+  const year = koreaTime.getUTCFullYear()
+  const month = koreaTime.getUTCMonth() + 1
+  const day = koreaTime.getUTCDate()
   const weekdays = ['일', '월', '화', '수', '목', '금', '토']
-  const weekday = weekdays[now.getDay()]
+  const weekday = weekdays[koreaTime.getUTCDay()]
   return `${year}년 ${month}월 ${day}일 ${weekday}요일`
 }
 

@@ -7,6 +7,14 @@ import type { AuthPayload } from '../types/user.js'
 
 const router = Router()
 
+// 한국 시간 기준 오늘 날짜 (YYYY-MM-DD)
+function getKoreanToday(): string {
+  const now = new Date()
+  // 한국은 UTC+9
+  const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000)
+  return koreaTime.toISOString().split('T')[0]!
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'saju-battle-secret-key-change-in-production'
 
 // 인증 미들웨어
@@ -69,13 +77,17 @@ router.get('/today/preview', authenticate, async (req: any, res) => {
       return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' })
     }
 
-    // 간단한 미리보기 (날짜 기반 랜덤 점수)
-    const today = new Date()
-    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+    // 간단한 미리보기 (날짜 기반 랜덤 점수) - 한국 시간 기준
+    const now = new Date()
+    const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000)
+    const year = koreaTime.getUTCFullYear()
+    const month = koreaTime.getUTCMonth() + 1
+    const day = koreaTime.getUTCDate()
+    const seed = year * 10000 + month * 100 + day
     const score = 60 + ((seed * 7 + user.id.charCodeAt(0)) % 35) // 60-94 사이
 
     res.json({
-      date: `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`,
+      date: `${year}년 ${month}월 ${day}일`,
       score,
       summary: '자세한 운세를 확인하려면 1쌀이 필요합니다.',
       userRice: user.rice,
@@ -107,7 +119,7 @@ router.post('/record', authenticate, async (req: any, res) => {
       return res.status(400).json({ error: '생년월일 정보와 운세 결과가 필요합니다.' })
     }
 
-    const today = new Date().toISOString().split('T')[0]! // YYYY-MM-DD
+    const today = getKoreanToday() // YYYY-MM-DD
 
     // 오늘 이미 기록이 있는지 확인 (리워드 중복 지급 방지)
     const existingRecord = await sql`
@@ -207,7 +219,7 @@ router.get('/record/today', authenticate, async (req: any, res) => {
       return res.json({ record: null, isGuest: true })
     }
 
-    const today = new Date().toISOString().split('T')[0]!
+    const today = getKoreanToday()
 
     const records = await sql`
       SELECT id, fortune_date, birth_info, fortune_result, created_at

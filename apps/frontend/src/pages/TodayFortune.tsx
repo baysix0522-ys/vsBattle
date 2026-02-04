@@ -26,29 +26,40 @@ export default function TodayFortune() {
       return
     }
 
-    try {
-      const info = JSON.parse(stored) as StoredBirthInfo
-      setBirthInfo(info)
-      const result = calculateTodayFortune(info)
-      setFortune(result)
+    const loadFortune = async () => {
+      try {
+        const info = JSON.parse(stored) as StoredBirthInfo
+        setBirthInfo(info)
+        const result = calculateTodayFortune(info)
+        setFortune(result)
 
-      // 로그인 사용자(비게스트)만 기록 저장
-      if (token && user && !user.isGuest) {
-        fortuneApi.saveRecord(token, info, result)
-          .then((res) => {
+        // 로그인 사용자(비게스트)만 기록 저장
+        if (token && user && !user.isGuest) {
+          // 먼저 오늘 기록이 있는지 확인
+          const todayRecord = await fortuneApi.getTodayRecord(token)
+
+          if (todayRecord.record) {
+            // 이미 오늘 기록이 있으면 저장 안 함
+            setSaved(true)
+          } else {
+            // 오늘 첫 방문이면 저장
+            const res = await fortuneApi.saveRecord(token, info, result)
             setSaved(true)
             if (res.riceReward > 0) {
               setRiceReward(res.riceReward)
               updateRice(res.totalRice)
             }
-          })
-          .catch((err) => console.error('운세 기록 저장 실패:', err))
+          }
+        }
+      } catch (err) {
+        console.error('운세 로드 실패:', err)
+        navigate('/fortune/input')
+      } finally {
+        setLoading(false)
       }
-    } catch {
-      navigate('/fortune/input')
-    } finally {
-      setLoading(false)
     }
+
+    loadFortune()
   }, [navigate, token, user, updateRice])
 
   if (loading) {

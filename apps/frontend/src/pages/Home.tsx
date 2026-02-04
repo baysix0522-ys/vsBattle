@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { fortuneApi } from '../api/client'
 
 type FortuneMenu = {
   id: string
@@ -63,7 +64,7 @@ const fortuneMenus: FortuneMenu[] = [
 
 export default function Home() {
   const navigate = useNavigate()
-  const { user, logout, isLoading } = useAuth()
+  const { user, token, logout, isLoading } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
 
   const handleLogout = () => {
@@ -71,12 +72,27 @@ export default function Home() {
     navigate('/login')
   }
 
-  const handleMenuClick = (menuId: string) => {
+  const handleMenuClick = async (menuId: string) => {
     switch (menuId) {
       case 'today':
-        // 사주 정보가 있으면 바로 운세, 없으면 입력 페이지로
-        const savedInfo = localStorage.getItem('saju_birth_info')
-        navigate(savedInfo ? '/fortune/today' : '/fortune/input')
+        // 오늘 기록이 있으면 운세 페이지, 없으면 입력 페이지로
+        if (token && user && !user.isGuest) {
+          try {
+            const todayRecord = await fortuneApi.getTodayRecord(token)
+            if (todayRecord.record) {
+              // 오늘 기록이 있으면 운세 페이지로
+              navigate('/fortune/today')
+            } else {
+              // 오늘 기록이 없으면 입력 페이지로
+              navigate('/fortune/input')
+            }
+          } catch {
+            navigate('/fortune/input')
+          }
+        } else {
+          // 게스트는 항상 입력 페이지로
+          navigate('/fortune/input')
+        }
         break
       case 'tarot':
         navigate('/tarot')

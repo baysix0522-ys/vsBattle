@@ -5,6 +5,9 @@ import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import koKR from 'antd/locale/ko_KR'
+import { useAuth } from '../contexts/AuthContext'
+import { fortuneApi } from '../api/client'
+import { calculateTodayFortune } from '../utils/fortune'
 
 dayjs.locale('ko')
 
@@ -28,12 +31,14 @@ const hourOptions = [
 
 export default function BirthInput() {
   const navigate = useNavigate()
+  const { user, token, updateRice } = useAuth()
   const [birthDate, setBirthDate] = useState<Dayjs | null>(null)
   const [hour, setHour] = useState<string>('unknown')
   const [gender, setGender] = useState<Gender | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError(null)
 
     if (!birthDate) {
@@ -56,7 +61,25 @@ export default function BirthInput() {
       hourKnown: hour !== 'unknown',
     }
 
+    // localStorage에 저장 (게스트용)
     localStorage.setItem('saju_birth_info', JSON.stringify(birthInfo))
+
+    // 로그인 사용자는 DB에 저장
+    if (token && user && !user.isGuest) {
+      setIsSubmitting(true)
+      try {
+        const fortuneResult = calculateTodayFortune(birthInfo)
+        const res = await fortuneApi.saveRecord(token, birthInfo, fortuneResult)
+        if (res.riceReward > 0) {
+          updateRice(res.totalRice)
+        }
+      } catch (err) {
+        console.error('운세 저장 실패:', err)
+      } finally {
+        setIsSubmitting(false)
+      }
+    }
+
     navigate('/fortune/today')
   }
 
@@ -144,9 +167,11 @@ export default function BirthInput() {
                 size="large"
                 block
                 onClick={handleSubmit}
+                loading={isSubmitting}
+                disabled={isSubmitting}
                 style={{ height: 52, fontSize: 16, fontWeight: 700, marginTop: 8 }}
               >
-                운세 확인하기
+                {isSubmitting ? '운세 확인 중...' : '운세 확인하기'}
               </Button>
             </div>
 

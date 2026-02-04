@@ -12,7 +12,7 @@ type StoredBirthInfo = BirthInfo & {
 
 export default function TodayFortune() {
   const navigate = useNavigate()
-  const { user, token, updateRice } = useAuth()
+  const { user, token } = useAuth()
   const [fortune, setFortune] = useState<FortuneResult | null>(null)
   const [birthInfo, setBirthInfo] = useState<StoredBirthInfo | null>(null)
   const [loading, setLoading] = useState(true)
@@ -20,36 +20,33 @@ export default function TodayFortune() {
   const [riceReward, setRiceReward] = useState(0)
 
   useEffect(() => {
-    const stored = localStorage.getItem('saju_birth_info')
-    if (!stored) {
-      navigate('/fortune/input')
-      return
-    }
-
     const loadFortune = async () => {
       try {
-        const info = JSON.parse(stored) as StoredBirthInfo
-        setBirthInfo(info)
-        const result = calculateTodayFortune(info)
-        setFortune(result)
-
-        // 로그인 사용자(비게스트)만 기록 저장
+        // 로그인 사용자는 DB에서 오늘 기록 확인
         if (token && user && !user.isGuest) {
-          // 먼저 오늘 기록이 있는지 확인
           const todayRecord = await fortuneApi.getTodayRecord(token)
 
           if (todayRecord.record) {
-            // 이미 오늘 기록이 있으면 저장 안 함
+            // 오늘 기록이 있으면 표시
+            setBirthInfo(todayRecord.record.birthInfo as StoredBirthInfo)
+            setFortune(todayRecord.record.fortuneResult as FortuneResult)
             setSaved(true)
           } else {
-            // 오늘 첫 방문이면 저장
-            const res = await fortuneApi.saveRecord(token, info, result)
-            setSaved(true)
-            if (res.riceReward > 0) {
-              setRiceReward(res.riceReward)
-              updateRice(res.totalRice)
-            }
+            // 오늘 기록이 없으면 입력 페이지로
+            navigate('/fortune/input')
+            return
           }
+        } else {
+          // 게스트는 localStorage에서 생년월일 읽어서 계산
+          const stored = localStorage.getItem('saju_birth_info')
+          if (!stored) {
+            navigate('/fortune/input')
+            return
+          }
+          const info = JSON.parse(stored) as StoredBirthInfo
+          setBirthInfo(info)
+          const result = calculateTodayFortune(info)
+          setFortune(result)
         }
       } catch (err) {
         console.error('운세 로드 실패:', err)
@@ -60,7 +57,7 @@ export default function TodayFortune() {
     }
 
     loadFortune()
-  }, [navigate, token, user, updateRice])
+  }, [navigate, token, user])
 
   if (loading) {
     return (

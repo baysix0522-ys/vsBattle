@@ -15,6 +15,12 @@ const SERVICE_TABS: { id: ServiceType; label: string; icon: string }[] = [
   { id: 'yearly', label: '신년운세', icon: '📅' },
 ]
 
+// 일간 심볼
+const DAY_MASTER_SYMBOLS: Record<string, string> = {
+  갑: '🌲', 을: '🌿', 병: '☀️', 정: '🕯️', 무: '⛰️',
+  기: '🌾', 경: '⚔️', 신: '💎', 임: '🌊', 계: '💧',
+}
+
 export default function FortuneHistory() {
   const navigate = useNavigate()
   const { user, token } = useAuth()
@@ -92,20 +98,16 @@ export default function FortuneHistory() {
 
   const getGradeEmoji = (grade: string) => {
     const emojis: Record<string, string> = {
-      '대길': '🌟',
-      '길': '✨',
-      '중길': '☀️',
-      '소길': '🌤️',
-      '평': '☁️',
+      대길: '🌟', 길: '✨', 중길: '☀️', 소길: '🌤️', 평: '☁️', 주의: '⚠️',
     }
     return emojis[grade] || '☀️'
   }
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'score-excellent'
-    if (score >= 60) return 'score-good'
-    if (score >= 40) return 'score-normal'
-    return 'score-low'
+  const getScoreClass = (score: number) => {
+    if (score >= 80) return 'excellent'
+    if (score >= 60) return 'good'
+    if (score >= 40) return 'normal'
+    return 'low'
   }
 
   const isServiceAvailable = (service: ServiceType) => {
@@ -115,19 +117,19 @@ export default function FortuneHistory() {
   // 게스트 사용자
   if (user?.isGuest) {
     return (
-      <div className="history-page">
-        <div className="history-container">
-          <header className="history-header">
-            <button className="back-btn" onClick={() => navigate('/')}>←</button>
-            <h1>운세 기록</h1>
-            <div style={{ width: 40 }} />
-          </header>
+      <div className="fortune-page-v2">
+        <header className="fortune-header-v2">
+          <button className="back-btn" onClick={() => navigate('/')}>←</button>
+          <h1>운세 기록</h1>
+          <div style={{ width: 40 }} />
+        </header>
 
-          <div className="guest-block">
-            <span className="block-icon">🔒</span>
+        <div className="fortune-content-v2">
+          <div className="empty-state-v2">
+            <span className="empty-icon">🔒</span>
             <h3>게스트는 기록을 볼 수 없어요</h3>
             <p>회원가입하면 운세 기록을 저장하고<br />언제든 다시 볼 수 있어요!</p>
-            <button onClick={() => navigate('/login')} className="signup-btn">
+            <button onClick={() => navigate('/login')} className="action-btn primary">
               회원가입하기
             </button>
           </div>
@@ -137,14 +139,14 @@ export default function FortuneHistory() {
   }
 
   return (
-    <div className="history-page">
-      <div className="history-container">
-        <header className="history-header">
-          <button className="back-btn" onClick={() => navigate('/')}>←</button>
-          <h1>운세 기록</h1>
-          <div style={{ width: 40 }} />
-        </header>
+    <div className="fortune-page-v2">
+      <header className="fortune-header-v2">
+        <button className="back-btn" onClick={() => navigate('/')}>←</button>
+        <h1>운세 기록</h1>
+        <div style={{ width: 40 }} />
+      </header>
 
+      <div className="fortune-content-v2">
         {/* 서비스별 탭 */}
         <div className={`service-tabs-wrapper ${showLeftArrow ? 'show-left' : ''} ${showRightArrow ? 'show-right' : ''}`}>
           {showLeftArrow && (
@@ -176,18 +178,18 @@ export default function FortuneHistory() {
         )}
 
         {loading ? (
-          <div className="loading-state">
+          <div className="loading-state-v2">
             <div className="loading-spinner">☯</div>
             <p>기록을 불러오는 중...</p>
           </div>
         ) : !isServiceAvailable(activeTab) ? (
-          <div className="empty-state">
+          <div className="empty-state-v2">
             <span className="empty-icon">🚧</span>
             <h3>준비 중인 서비스입니다</h3>
             <p>곧 만나볼 수 있어요!</p>
           </div>
         ) : records.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state-v2">
             <span className="empty-icon">📭</span>
             <h3>아직 기록이 없어요</h3>
             <p>오늘의 운세를 확인하면<br />자동으로 기록됩니다!</p>
@@ -196,7 +198,7 @@ export default function FortuneHistory() {
             </button>
           </div>
         ) : (
-          <div className="record-list">
+          <div className="record-list-v2">
             {records.map((record) => {
               // fortuneResult가 문자열인 경우 파싱
               let fortune: FortuneResult | null = null
@@ -210,9 +212,9 @@ export default function FortuneHistory() {
 
               if (!fortune?.overall) {
                 return (
-                  <div key={record.id} className="record-card">
-                    <div className="record-date">{formatDate(record.date)}</div>
-                    <p style={{ color: 'var(--text-muted)' }}>기록을 불러올 수 없습니다</p>
+                  <div key={record.id} className="record-card-v2 error">
+                    <div className="record-date-v2">{formatDate(record.date)}</div>
+                    <p className="error-text">기록을 불러올 수 없습니다</p>
                   </div>
                 )
               }
@@ -224,33 +226,49 @@ export default function FortuneHistory() {
               }
 
               return (
-                <div key={record.id} className="record-card" onClick={handleClick} style={{ cursor: 'pointer' }}>
-                  <div className="record-date">
-                    {formatDate(record.date)}
+                <div key={record.id} className="record-card-v2" onClick={handleClick}>
+                  <div className="record-header-v2">
+                    <span className="record-date-v2">{formatDate(record.date)}</span>
+                    <span className="record-arrow">→</span>
                   </div>
-                  <div className="record-content">
-                    <div className="record-score-section">
-                      <div className={`record-score ${getScoreColor(fortune.overall.score)}`}>
-                        {fortune.overall.score}점
+
+                  <div className="record-main-v2">
+                    <div className={`record-score-circle ${getScoreClass(fortune.overall.score)}`}>
+                      <span className="score-num">{fortune.overall.score}</span>
+                      <span className="score-unit">점</span>
+                    </div>
+
+                    <div className="record-info-v2">
+                      <div className="record-grade-v2">
+                        <span className="grade-emoji">{getGradeEmoji(fortune.overall.grade)}</span>
+                        <span className="grade-text">{fortune.overall.grade}</span>
                       </div>
-                      <div className="record-grade">
-                        <span>{getGradeEmoji(fortune.overall.grade)}</span>
-                        <span>{fortune.overall.grade}</span>
+                      <div className="record-saju-v2">
+                        <span className="day-master-symbol">{DAY_MASTER_SYMBOLS[fortune.dayMaster]}</span>
+                        <span>{fortune.dayMaster}({fortune.dayMasterElement})</span>
                       </div>
                     </div>
-                    <div className="record-info">
-                      <div className="record-saju">
-                        <span className="saju-label">일간</span>
-                        <span className="saju-value">{fortune.dayMaster} ({fortune.dayMasterElement})</span>
-                      </div>
-                      <p className="record-summary">{fortune.overall.summary}</p>
-                    </div>
                   </div>
-                  <div className="record-categories">
-                    <span className="cat-item">💕 {fortune.categories?.love?.score ?? '-'}</span>
-                    <span className="cat-item">💰 {fortune.categories?.money?.score ?? '-'}</span>
-                    <span className="cat-item">💪 {fortune.categories?.health?.score ?? '-'}</span>
-                    <span className="cat-item">💼 {fortune.categories?.work?.score ?? '-'}</span>
+
+                  <p className="record-summary-v2">{fortune.overall.summary}</p>
+
+                  <div className="record-categories-v2">
+                    <div className={`cat-chip ${getScoreClass(fortune.categories?.love?.score ?? 0)}`}>
+                      <span>💕</span>
+                      <span>{fortune.categories?.love?.score ?? '-'}</span>
+                    </div>
+                    <div className={`cat-chip ${getScoreClass(fortune.categories?.money?.score ?? 0)}`}>
+                      <span>💰</span>
+                      <span>{fortune.categories?.money?.score ?? '-'}</span>
+                    </div>
+                    <div className={`cat-chip ${getScoreClass(fortune.categories?.health?.score ?? 0)}`}>
+                      <span>💪</span>
+                      <span>{fortune.categories?.health?.score ?? '-'}</span>
+                    </div>
+                    <div className={`cat-chip ${getScoreClass(fortune.categories?.work?.score ?? 0)}`}>
+                      <span>💼</span>
+                      <span>{fortune.categories?.work?.score ?? '-'}</span>
+                    </div>
                   </div>
                 </div>
               )

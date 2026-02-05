@@ -142,6 +142,24 @@ export default function BattleReport() {
           </header>
 
           <div className="battle-content">
+            {/* 스텝 인디케이터 */}
+            <div className="battle-steps">
+              <div className="step done">
+                <span className="step-num">✓</span>
+                <span className="step-text">내 사주 분석</span>
+              </div>
+              <div className="step-arrow">→</div>
+              <div className="step active">
+                <span className="step-num">2</span>
+                <span className="step-text">대결 링크 공유</span>
+              </div>
+              <div className="step-arrow">→</div>
+              <div className="step">
+                <span className="step-num">3</span>
+                <span className="step-text">대결 결과 확인!</span>
+              </div>
+            </div>
+
             {/* 프로필 카드 */}
             <div className="saju-profile-card">
               <div className="profile-symbol">

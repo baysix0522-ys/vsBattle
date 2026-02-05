@@ -11,6 +11,8 @@ interface BattleOverlayProps {
   opponent: { nickname: string; dayMaster?: string }
   platformSelectors?: string
   onBattleEnd?: (winner: 'p1' | 'p2') => void
+  onScoreReveal?: () => void
+  scoresRevealed?: boolean
   autoStart?: boolean
 }
 
@@ -20,6 +22,8 @@ export default function BattleOverlay({
   opponent,
   platformSelectors,
   onBattleEnd,
+  onScoreReveal,
+  scoresRevealed = false,
   autoStart = true,
 }: BattleOverlayProps) {
   const {
@@ -44,8 +48,8 @@ export default function BattleOverlay({
   const hp1Low = hp1Percent < 30
   const hp2Low = hp2Percent < 30
 
-  // KO 상태
-  const isKO = (p1?.dead || p2?.dead) && !isRunning
+  // KO 상태 (점수 공개 후에는 KO 오버레이 숨김)
+  const isKO = (p1?.dead || p2?.dead) && !isRunning && !scoresRevealed
   const winner = p1?.dead ? p2 : p2?.dead ? p1 : null
 
   return (
@@ -104,9 +108,15 @@ export default function BattleOverlay({
             🏆 {winner.nm} 승리!
           </p>
         )}
-        <button className="ko-restart" onClick={start}>
-          ⚔️ 다시 대결
-        </button>
+        {onScoreReveal && !scoresRevealed ? (
+          <button className="ko-reveal" onClick={onScoreReveal}>
+            📊 점수 확인
+          </button>
+        ) : (
+          <button className="ko-restart" onClick={start}>
+            ⚔️ 다시 대결
+          </button>
+        )}
       </div>
     </>
   )

@@ -58,6 +58,7 @@ export default function BattleResult() {
   const [chemistry, setChemistry] = useState<Chemistry | null>(null)
   const [challengerData, setChallengerData] = useState<Participant | null>(null)
   const [opponentData, setOpponentData] = useState<Participant | null>(null)
+  const [scoresRevealed, setScoresRevealed] = useState(false)
 
   useEffect(() => {
     if (!battleId || !token) return
@@ -128,6 +129,24 @@ export default function BattleResult() {
   return (
     <div className="battle-page-wrapper" ref={containerRef}>
       <div className="saju-screen">
+        {/* 스텝 인디케이터 */}
+        <div className="battle-steps" style={{ padding: '16px 16px 0' }}>
+          <div className="step done">
+            <span className="step-num">✓</span>
+            <span className="step-text">내 사주 분석</span>
+          </div>
+          <div className="step-arrow">→</div>
+          <div className="step done">
+            <span className="step-num">✓</span>
+            <span className="step-text">대결 링크 공유</span>
+          </div>
+          <div className="step-arrow">→</div>
+          <div className="step active">
+            <span className="step-num">3</span>
+            <span className="step-text">대결 결과 확인!</span>
+          </div>
+        </div>
+
         {/* VS 헤더 */}
         <div className="versus-header">
           <div className="vs-player">
@@ -157,9 +176,13 @@ export default function BattleResult() {
         <div className="total-section">
           <div className="total-label">⚔️ 종합 스탯</div>
           <div className="total-scores">
-            <div className="total-val blue">{challengerTotal}</div>
+            <div className={`total-val blue ${scoresRevealed ? 'score-reveal' : 'score-hidden'}`}>
+              {scoresRevealed ? challengerTotal : '???'}
+            </div>
             <div className="total-vs">VS</div>
-            <div className="total-val red">{opponentTotal}</div>
+            <div className={`total-val red ${scoresRevealed ? 'score-reveal' : 'score-hidden'}`}>
+              {scoresRevealed ? opponentTotal : '???'}
+            </div>
           </div>
         </div>
 
@@ -174,14 +197,18 @@ export default function BattleResult() {
                   : 'lose'
 
             return (
-              <div key={round.id} className={`stat-card ${cardClass}`}>
+              <div key={round.id} className={`stat-card ${scoresRevealed ? cardClass : ''}`}>
                 <div className="stat-label">
                   {round.icon} {round.name}
                 </div>
                 <div className="stat-scores">
-                  <span className="stat-val blue">{round.challenger.score}</span>
+                  <span className={`stat-val blue ${scoresRevealed ? 'score-reveal' : 'score-hidden'}`}>
+                    {scoresRevealed ? round.challenger.score : '??'}
+                  </span>
                   <span className="stat-vs">:</span>
-                  <span className="stat-val red">{round.opponent.score}</span>
+                  <span className={`stat-val red ${scoresRevealed ? 'score-reveal' : 'score-hidden'}`}>
+                    {scoresRevealed ? round.opponent.score : '??'}
+                  </span>
                 </div>
               </div>
             )
@@ -204,7 +231,9 @@ export default function BattleResult() {
                 {chemistry.type === '천생연분' ? '💕' : chemistry.type === '숙명의라이벌' ? '⚡' : '🤝'}{' '}
                 {chemistry.type}
               </span>
-              <span className="chemistry-score">{chemistry.compatibility}%</span>
+              <span className={`chemistry-score ${scoresRevealed ? 'score-reveal' : 'score-hidden'}`}>
+                {scoresRevealed ? `${chemistry.compatibility}%` : '??%'}
+              </span>
             </div>
             <p className="chemistry-desc">{chemistry.description}</p>
             <p className="chemistry-relation">{chemistry.stemRelation.description}</p>
@@ -308,6 +337,8 @@ export default function BattleResult() {
         }}
         platformSelectors=".stat-card,.summary-section,.total-section,.chemistry-section"
         autoStart={true}
+        onScoreReveal={() => setScoresRevealed(true)}
+        scoresRevealed={scoresRevealed}
       />
     </div>
   )

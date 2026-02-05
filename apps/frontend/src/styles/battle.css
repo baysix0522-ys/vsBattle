@@ -83,6 +83,11 @@
   color: #fff;
 }
 
+.battle-steps .step.done {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
 .battle-steps .step-num {
   width: 20px;
   height: 20px;

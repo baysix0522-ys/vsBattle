@@ -1,7 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react'
 import {
   drawCharacter,
-  drawArenaBackground,
   drawEffect,
   drawNickname,
   preloadSprites,
@@ -116,7 +115,8 @@ export default function CanvasBattleArena({
       ctx.translate(shakeRef.current.x, shakeRef.current.y)
 
       // 배경
-      drawArenaBackground(ctx, ARENA_WIDTH, ARENA_HEIGHT, frame)
+      ctx.fillStyle = '#0f0f1a'
+      ctx.fillRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT)
 
       // 이펙트 (캐릭터 뒤)
       effects.forEach((effect) => {

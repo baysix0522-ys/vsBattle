@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { DatePicker, Select, Radio, Button, ConfigProvider, theme, App, Spin } from 'antd'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
@@ -36,6 +36,7 @@ const hourOptions = [
 
 export default function BattleJoin() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { shareCode } = useParams<{ shareCode: string }>()
   const { user, token } = useAuth()
 
@@ -86,7 +87,7 @@ export default function BattleJoin() {
             <span className="block-icon">⚔️</span>
             <h3>대결에 도전하세요!</h3>
             <p>참가하려면 로그인이 필요합니다</p>
-            <Button type="primary" size="large" onClick={() => navigate('/login')}>
+            <Button type="primary" size="large" onClick={() => navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`)}>
               로그인하기
             </Button>
           </div>

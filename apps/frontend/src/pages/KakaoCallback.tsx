@@ -33,8 +33,10 @@ export default function KakaoCallback() {
       .then(({ token }) => {
         // AuthContext에 직접 토큰과 유저 설정
         localStorage.setItem('saju_battle_token', token)
-        // 페이지 새로고침하여 AuthContext가 토큰을 읽도록 함
-        window.location.href = '/'
+        // 저장된 리다이렉트 URL이 있으면 해당 페이지로 이동
+        const redirect = sessionStorage.getItem('login_redirect') || '/'
+        sessionStorage.removeItem('login_redirect')
+        window.location.href = redirect
       })
       .catch((err) => {
         console.error('Kakao login error:', err)

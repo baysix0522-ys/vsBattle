@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ApiError, authApi } from '../api/client'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -7,6 +7,8 @@ type FormMode = 'login' | 'register'
 
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/'
   const { login, register, guestLogin } = useAuth()
 
   const [mode, setMode] = useState<FormMode>('login')
@@ -28,7 +30,7 @@ export default function Login() {
       } else {
         await register(email, password, nickname)
       }
-      navigate('/')
+      navigate(redirectTo)
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)
@@ -45,6 +47,9 @@ export default function Login() {
     setIsLoading(true)
 
     try {
+      if (redirectTo !== '/') {
+        sessionStorage.setItem('login_redirect', redirectTo)
+      }
       const { url } = await authApi.getKakaoLoginUrl()
       window.location.href = url
     } catch (err) {
@@ -67,7 +72,7 @@ export default function Login() {
 
     try {
       await guestLogin()
-      navigate('/')
+      navigate(redirectTo)
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)

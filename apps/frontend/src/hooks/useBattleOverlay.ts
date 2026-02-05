@@ -6,8 +6,8 @@ import { useRef, useCallback, useEffect, useState } from 'react'
 
 // 물리 상수
 const G = 800      // 중력
-const JV = -400    // 점프 속도
-const SPD = 200    // 이동 속도
+const JV = -420    // 점프 속도
+const SPD = 240    // 이동 속도
 const CW = 96      // 캐릭터 너비 (192 * 0.5)
 const CH = 96      // 캐릭터 높이
 
@@ -258,7 +258,7 @@ export function useBattleOverlay({
     x, y, vx: 0, vy: 0, gr: false,
     flip: !isBlue,
     an: 'idle', fr: 0, tm: 0,
-    hp: 400, mhp: 400,
+    hp: 320, mhp: 320,
     atk: false, at: 0, ah: false,
     hs: 0, inv: 0, dead: false, ait: 0,
     nm, isBlue
@@ -285,27 +285,27 @@ export function useBattleOverlay({
       c.at = 0
       c.ah = false
       c.vx *= 0.2
-      c.ait = 0.1
+      c.ait = 0.08
     } else if (dist > 95) {
       // 추격
-      c.vx = dx > 0 ? SPD * 0.85 : -SPD * 0.85
+      c.vx = dx > 0 ? SPD * 0.88 : -SPD * 0.88
       if (c.gr && c.an !== 'run') {
         c.an = 'run'
         c.fr = 0
       }
-      if (dy < -60 && c.gr && Math.random() < 0.4) {
+      if (dy < -60 && c.gr && Math.random() < 0.45) {
         c.vy = JV
         c.gr = false
         dust(c.x, c.y)
-      } else if (c.gr && Math.random() < 0.06) {
+      } else if (c.gr && Math.random() < 0.08) {
         c.vy = JV
         c.gr = false
         dust(c.x, c.y)
       }
-      c.ait = 0.08 + Math.random() * 0.12
+      c.ait = 0.06 + Math.random() * 0.1
     } else {
       // 근접 전투
-      if (Math.random() < 0.35) {
+      if (Math.random() < 0.4) {
         c.vx = dx > 0 ? SPD * 0.7 : -SPD * 0.7
         if (c.gr && c.an !== 'run') {
           c.an = 'run'
@@ -323,7 +323,7 @@ export function useBattleOverlay({
           c.fr = 0
         }
       }
-      c.ait = 0.1 + Math.random() * 0.2
+      c.ait = 0.08 + Math.random() * 0.15
     }
   }, [dust])
 
@@ -381,8 +381,8 @@ export function useBattleOverlay({
     // 애니메이션 프레임 업데이트
     c.tm += dt
     const sp: Record<AnimState, number> = {
-      idle: 0.16, run: 0.1, attack: 0.1, hit: 0.14,
-      ko: 0.2, jump: 0.1, air: 1, fall: 1, land: 0.14, win: 0.18
+      idle: 0.14, run: 0.08, attack: 0.08, hit: 0.12,
+      ko: 0.18, jump: 0.08, air: 1, fall: 1, land: 0.12, win: 0.16
     }
 
     if (c.tm >= (sp[c.an] || 0.12)) {
@@ -420,7 +420,7 @@ export function useBattleOverlay({
   // 전투 판정
   const combat = useCallback((a: Fighter, d: Fighter) => {
     if (!a.atk || a.ah || d.dead || d.inv > 0) return
-    if (a.fr < 1 || a.at < 0.12) return
+    if (a.fr < 1 || a.at < 0.1) return
 
     const dist = Math.hypot(a.x - d.x, a.y - d.y)
     const fac = a.flip ? (d.x < a.x) : (d.x > a.x)
@@ -428,12 +428,12 @@ export function useBattleOverlay({
     if (dist < CW * 1.2 && (fac || dist < 40)) {
       a.ah = true
       const crit = Math.random() < 0.18
-      let dmg = 28 + Math.floor(Math.random() * 16)
-      if (crit) dmg = Math.floor(dmg * 2.1)
+      let dmg = 32 + Math.floor(Math.random() * 16)
+      if (crit) dmg = Math.floor(dmg * 2.15)
 
       d.hp = Math.max(0, d.hp - dmg)
-      d.hs = 0.3
-      d.inv = 0.4
+      d.hs = 0.24
+      d.inv = 0.32
       d.an = 'hit'
       d.fr = 0
       d.tm = 0
@@ -603,7 +603,7 @@ export function useBattleOverlay({
           setIsRunning(false)
           addLog(`🏆 ${p2.nm} 승리!`)
           onBattleEnd?.('p2')
-        }, 1500)
+        }, 1000)
       }
 
       if (p2.hp <= 0 && !p2.dead) {
@@ -619,7 +619,7 @@ export function useBattleOverlay({
           setIsRunning(false)
           addLog(`🏆 ${p1.nm} 승리!`)
           onBattleEnd?.('p1')
-        }, 1500)
+        }, 1000)
       }
     }
 

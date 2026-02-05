@@ -4506,3 +4506,95 @@ a {
     font-size: 12px;
   }
 }
+
+/* ===================== 대결 기록 카드 ===================== */
+.record-card-v2.battle-record.pending {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.record-card-v2.battle-record.pending:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.battle-status {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.battle-status.win {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.battle-status.lose {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.battle-status.draw {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+.battle-status.pending {
+  background: rgba(161, 161, 170, 0.15);
+  color: #a1a1aa;
+}
+
+.battle-record-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.battle-record-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.battle-record-player .player-dm {
+  font-size: 28px;
+}
+
+.battle-record-player .player-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e4e4e7;
+}
+
+.battle-record-player .player-sub {
+  font-size: 11px;
+  color: #71717a;
+}
+
+.battle-record-badge {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ff3366;
+  text-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+}
+
+.battle-record-chemistry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #a1a1aa;
+}
+
+.battle-record-chemistry .chemistry-compat {
+  font-weight: 700;
+  color: #ff3366;
+}

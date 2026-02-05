@@ -2,7 +2,7 @@
  * 오버레이 자동 배틀 스타일
  */
 
-/* 캔버스 오버레이 (컨테이너 내부) */
+/* ====== 캔버스 오버레이 (컨테이너 내부) ====== */
 .battle-overlay-canvas {
   position: absolute;
   top: 0;
@@ -13,7 +13,7 @@
   z-index: 1000;
 }
 
-/* HUD */
+/* ====== HUD ====== */
 .battle-overlay-hud {
   position: absolute;
   top: 0;
@@ -49,14 +49,8 @@
   margin-bottom: 2px;
 }
 
-.hud-name.blue {
-  color: #88bbff;
-}
-
-.hud-name.red {
-  color: #ff8866;
-  text-align: right;
-}
+.hud-name.blue { color: #88bbff; }
+.hud-name.red { color: #ff8866; text-align: right; }
 
 .hud-bar {
   height: 10px;
@@ -73,22 +67,10 @@
   border-radius: 1px;
 }
 
-.hud-fill.blue {
-  background: linear-gradient(90deg, #2255cc, #44aaff);
-}
-
-.hud-fill.red {
-  background: linear-gradient(270deg, #cc2233, #ff6644);
-  float: right;
-}
-
-.hud-fill.low.blue {
-  background: linear-gradient(90deg, #cc2222, #ff4444);
-}
-
-.hud-fill.low.red {
-  background: linear-gradient(270deg, #cc2222, #ff4444);
-}
+.hud-fill.blue { background: linear-gradient(90deg, #2255cc, #44aaff); }
+.hud-fill.red { background: linear-gradient(270deg, #cc2233, #ff6644); float: right; }
+.hud-fill.low.blue { background: linear-gradient(90deg, #cc2222, #ff4444); }
+.hud-fill.low.red { background: linear-gradient(270deg, #cc2222, #ff4444); }
 
 .hud-shine {
   position: absolute;
@@ -113,7 +95,7 @@
   padding: 0 4px;
 }
 
-/* 배틀 로그 */
+/* ====== 배틀 로그 ====== */
 .battle-overlay-log {
   position: absolute;
   bottom: 60px;
@@ -140,26 +122,16 @@
 }
 
 @keyframes logFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes logFadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-/* KO 오버레이 (화면 중앙 고정) */
+/* ====== KO 오버레이 ====== */
 .battle-overlay-ko {
   position: fixed;
   top: 0;
@@ -198,17 +170,9 @@
 }
 
 @keyframes koPulse {
-  0% {
-    transform: scale(2);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(2); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .ko-winner {
@@ -216,13 +180,8 @@
   font-weight: 700;
 }
 
-.ko-winner.blue {
-  color: #88bbff;
-}
-
-.ko-winner.red {
-  color: #ff8866;
-}
+.ko-winner.blue { color: #88bbff; }
+.ko-winner.red { color: #ff8866; }
 
 .ko-restart {
   margin-top: 20px;
@@ -242,9 +201,7 @@
   box-shadow: 0 4px 20px rgba(249, 115, 22, 0.5);
 }
 
-.ko-restart:active {
-  transform: scale(0.98);
-}
+.ko-restart:active { transform: scale(0.98); }
 
 .ko-reveal {
   margin-top: 20px;
@@ -265,11 +222,211 @@
   box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
 }
 
-.ko-reveal:active {
-  transform: scale(0.98);
-}
+.ko-reveal:active { transform: scale(0.98); }
 
 @keyframes revealBtnPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
   50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+}
+
+/* ============================================================
+   인트로 오버레이 (격투게임 선수 소개)
+   ============================================================ */
+
+.intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  z-index: 1003;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 5, 15, 0.95);
+  pointer-events: none;
+  animation: introFadeIn 0.2s ease-out;
+}
+
+@keyframes introFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 스캔라인 (격투게임 느낌) */
+.intro-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+}
+
+/* 선수 컨테이너 */
+.intro-players {
+  display: flex;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  height: 280px;
+  align-items: center;
+  padding: 0 16px;
+}
+
+/* 선수 패널 */
+.intro-player {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.22, 0.97, 0.36, 0.97);
+}
+
+.intro-player.left {
+  transform: translateX(-100px);
+}
+
+.intro-player.right {
+  transform: translateX(100px);
+}
+
+.intro-player.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* 스프라이트 원형 프레임 */
+.intro-sprite-wrap {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-sprite-wrap.blue {
+  background: radial-gradient(circle, rgba(68, 130, 255, 0.25), transparent 70%);
+  box-shadow: 0 0 40px rgba(68, 130, 255, 0.25);
+}
+
+.intro-sprite-wrap.red {
+  background: radial-gradient(circle, rgba(220, 50, 50, 0.25), transparent 70%);
+  box-shadow: 0 0 40px rgba(220, 50, 50, 0.25);
+}
+
+/* 스프라이트 캔버스 – 보간 제거로 블리딩 방지 */
+.intro-sprite-canvas {
+  width: 110px;
+  height: 110px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* 오행 표시 */
+.intro-element {
+  font-size: 28px;
+  font-weight: 900;
+  margin-top: 2px;
+  text-shadow: 0 0 15px currentColor;
+}
+
+.intro-element.blue { color: #88bbff; }
+.intro-element.red { color: #ff6655; }
+
+/* 닉네임 */
+.intro-name {
+  font-size: 20px;
+  font-weight: 900;
+  text-shadow: 0 0 20px currentColor;
+}
+
+.intro-name.blue { color: #88bbff; }
+.intro-name.red { color: #ff6655; }
+
+/* 태그 (일간 등) */
+.intro-tag {
+  font-size: 11px;
+  color: #667;
+  padding: 3px 12px;
+  border: 1px solid #334;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* 전기 스파크 라인 (중앙) */
+.intro-spark {
+  position: absolute;
+  left: 50%;
+  top: 25%;
+  bottom: 25%;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(255, 51, 102, 0),
+    #ff3366,
+    rgba(255, 51, 102, 0),
+    transparent
+  );
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.intro-spark.show {
+  opacity: 1;
+  animation: introSparkFlicker 0.15s infinite alternate;
+}
+
+@keyframes introSparkFlicker {
+  0% { opacity: 0.6; filter: blur(0px); }
+  100% { opacity: 1; filter: blur(1px); }
+}
+
+/* VS 텍스트 */
+.intro-vs {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 32px;
+  font-weight: 900;
+  color: #ff3366;
+  text-shadow: 0 0 30px rgba(255, 51, 102, 0.5), 0 0 60px rgba(255, 51, 102, 0.3);
+  z-index: 2;
+  transition: transform 0.35s cubic-bezier(0.22, 0.97, 0.36, 0.97);
+}
+
+.intro-vs.show {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* FIGHT! 텍스트 */
+.intro-fight {
+  margin-top: 24px;
+  font-size: 44px;
+  font-weight: 900;
+  color: #ffcc00;
+  text-shadow: 0 0 30px rgba(255, 204, 0, 0.5), 0 0 60px rgba(255, 204, 0, 0.3);
+  opacity: 0;
+  transform: scale(2.5);
+  transition: all 0.3s cubic-bezier(0.22, 0.97, 0.36, 0.97);
+}
+
+.intro-fight.show {
+  opacity: 1;
+  transform: scale(1);
 }

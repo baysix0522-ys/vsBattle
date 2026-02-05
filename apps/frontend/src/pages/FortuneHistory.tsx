@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { fortuneApi, type FortuneRecord } from '../api/client'
+import { fortuneApi, battleApi, type FortuneRecord, type BattleListItem } from '../api/client'
 import type { FortuneResult } from '../utils/fortune'
 
 type ServiceType = 'today' | 'battle' | 'compatibility' | 'saju' | 'tarot' | 'yearly'
@@ -26,6 +26,7 @@ export default function FortuneHistory() {
   const { user, token } = useAuth()
   const [activeTab, setActiveTab] = useState<ServiceType>('today')
   const [records, setRecords] = useState<FortuneRecord[]>([])
+  const [battles, setBattles] = useState<BattleListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const tabsContainerRef = useRef<HTMLDivElement>(null)
@@ -72,16 +73,21 @@ export default function FortuneHistory() {
       return
     }
 
-    // 현재는 오늘의 운세만 구현됨
     if (activeTab === 'today') {
       setLoading(true)
       fortuneApi.getRecords(token, 30)
         .then((res) => setRecords(res.records))
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false))
+    } else if (activeTab === 'battle') {
+      setLoading(true)
+      battleApi.getMyBattles(token)
+        .then((res) => setBattles(res.battles))
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false))
     } else {
-      // 다른 서비스는 아직 구현되지 않음
       setRecords([])
+      setBattles([])
       setLoading(false)
     }
   }, [token, user, navigate, activeTab])
@@ -111,7 +117,7 @@ export default function FortuneHistory() {
   }
 
   const isServiceAvailable = (service: ServiceType) => {
-    return service === 'today' // 현재 오늘의 운세만 구현됨
+    return service === 'today' || service === 'battle'
   }
 
   // 게스트 사용자
@@ -188,6 +194,85 @@ export default function FortuneHistory() {
             <h3>준비 중인 서비스입니다</h3>
             <p>곧 만나볼 수 있어요!</p>
           </div>
+        ) : activeTab === 'battle' ? (
+          battles.length === 0 ? (
+            <div className="empty-state-v2">
+              <span className="empty-icon">⚔️</span>
+              <h3>아직 대결 기록이 없어요</h3>
+              <p>친구와 사주 대결을 해보세요!</p>
+              <button onClick={() => navigate('/battle')} className="action-btn primary">
+                대결하러 가기
+              </button>
+            </div>
+          ) : (
+            <div className="record-list-v2">
+              {battles.map((battle) => {
+                const isChallenger = battle.challenger_id === user?.id
+                const myName = isChallenger ? battle.challenger_nickname : battle.opponent_nickname
+                const opName = isChallenger ? battle.opponent_nickname : battle.challenger_nickname
+                const myDM = isChallenger ? battle.challenger_day_master : battle.opponent_day_master
+                const opDM = isChallenger ? battle.opponent_day_master : battle.challenger_day_master
+                const isPending = battle.status === 'pending'
+                const isWinner = battle.winner_id === user?.id
+                const isDraw = battle.status === 'completed' && !battle.winner_id
+
+                return (
+                  <div
+                    key={battle.id}
+                    className={`record-card-v2 battle-record ${isPending ? 'pending' : ''}`}
+                    onClick={() => !isPending && navigate(`/battle/result/${battle.id}`)}
+                    style={{ cursor: isPending ? 'default' : 'pointer' }}
+                  >
+                    <div className="record-header-v2">
+                      <span className="record-date-v2">{formatDate(battle.created_at)}</span>
+                      {isPending ? (
+                        <span className="battle-status pending">대기 중</span>
+                      ) : isWinner ? (
+                        <span className="battle-status win">승리</span>
+                      ) : isDraw ? (
+                        <span className="battle-status draw">무승부</span>
+                      ) : (
+                        <span className="battle-status lose">패배</span>
+                      )}
+                    </div>
+
+                    <div className="battle-record-vs">
+                      <div className="battle-record-player">
+                        <span className="player-dm">{DAY_MASTER_SYMBOLS[myDM ?? ''] || '☯'}</span>
+                        <span className="player-name">{myName}</span>
+                        {myDM && <span className="player-sub">{myDM}일간</span>}
+                      </div>
+                      <span className="battle-record-badge">VS</span>
+                      <div className="battle-record-player">
+                        {isPending ? (
+                          <>
+                            <span className="player-dm">❓</span>
+                            <span className="player-name">대기 중</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="player-dm">{DAY_MASTER_SYMBOLS[opDM ?? ''] || '☯'}</span>
+                            <span className="player-name">{opName}</span>
+                            {opDM && <span className="player-sub">{opDM}일간</span>}
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {battle.chemistry && (
+                      <div className="battle-record-chemistry">
+                        <span>
+                          {battle.chemistry.type === '천생연분' ? '💕' : battle.chemistry.type === '숙명의라이벌' ? '⚡' : '🤝'}
+                          {' '}{battle.chemistry.type}
+                        </span>
+                        <span className="chemistry-compat">{battle.chemistry.compatibility}%</span>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )
         ) : records.length === 0 ? (
           <div className="empty-state-v2">
             <span className="empty-icon">📭</span>

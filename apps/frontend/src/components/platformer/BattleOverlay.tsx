@@ -16,6 +16,8 @@ interface BattleOverlayProps {
   onScoreReveal?: () => void
   scoresRevealed?: boolean
   autoStart?: boolean
+  /** 종합 점수 기반 미리 정해진 승자 */
+  predeterminedWinner?: 'p1' | 'p2'
 }
 
 // 오행 표시
@@ -41,6 +43,7 @@ export default function BattleOverlay({
   onScoreReveal,
   scoresRevealed = false,
   autoStart = true,
+  predeterminedWinner,
 }: BattleOverlayProps) {
   const {
     canvasRef,
@@ -55,6 +58,7 @@ export default function BattleOverlay({
     opponent,
     ...(platformSelectors ? { platformSelectors } : {}),
     ...(onBattleEnd ? { onBattleEnd } : {}),
+    ...(predeterminedWinner ? { predeterminedWinner } : {}),
     autoStart: false,
   })
 

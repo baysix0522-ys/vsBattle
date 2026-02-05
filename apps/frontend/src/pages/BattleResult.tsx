@@ -339,6 +339,7 @@ export default function BattleResult() {
         autoStart={true}
         onScoreReveal={() => setScoresRevealed(true)}
         scoresRevealed={scoresRevealed}
+        predeterminedWinner={challengerTotal >= opponentTotal ? 'p1' : 'p2'}
       />
     </div>
   )

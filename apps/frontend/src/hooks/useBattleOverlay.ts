@@ -110,6 +110,8 @@ export interface UseBattleOverlayProps {
   platformSelectors?: string
   onBattleEnd?: (winner: 'p1' | 'p2') => void
   autoStart?: boolean
+  /** 종합 점수 기반 미리 정해진 승자 */
+  predeterminedWinner?: 'p1' | 'p2'
 }
 
 export interface UseBattleOverlayReturn {
@@ -131,11 +133,14 @@ export function useBattleOverlay({
   platformSelectors = '.stat-card,.summary-section,.total-section,.chemistry-card,.rounds-detail,.result-banner',
   onBattleEnd,
   autoStart = true,
+  predeterminedWinner,
 }: UseBattleOverlayProps): UseBattleOverlayReturn {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [shake, setShake] = useState(0)
   const [logs, setLogs] = useState<BattleLog[]>([])
+  const winnerRef = useRef(predeterminedWinner)
+  winnerRef.current = predeterminedWinner
 
   // 게임 상태 refs (리렌더링 방지)
   const p1Ref = useRef<Fighter | null>(null)
@@ -428,7 +433,13 @@ export function useBattleOverlay({
     if (dist < CW * 1.2 && (fac || dist < 40)) {
       a.ah = true
       const crit = Math.random() < 0.18
-      let dmg = 32 + Math.floor(Math.random() * 16)
+      // 승자 편향: 승자 36-56, 패자 26-38, 기본 32-48
+      const pw = winnerRef.current
+      const isWinner = (pw === 'p1' && a.isBlue) || (pw === 'p2' && !a.isBlue)
+      const isLoser = (pw === 'p1' && !a.isBlue) || (pw === 'p2' && a.isBlue)
+      let dmg = isWinner ? 36 + Math.floor(Math.random() * 20)
+             : isLoser  ? 26 + Math.floor(Math.random() * 12)
+             :            32 + Math.floor(Math.random() * 16)
       if (crit) dmg = Math.floor(dmg * 2.15)
 
       d.hp = Math.max(0, d.hp - dmg)
@@ -647,6 +658,16 @@ export function useBattleOverlay({
       false
     )
     p2Ref.current.flip = true
+
+    // 종합 점수 기반 HP 편향: 승자 380, 패자 260
+    const pw = winnerRef.current
+    if (pw === 'p1') {
+      p1Ref.current.hp = 380; p1Ref.current.mhp = 380
+      p2Ref.current.hp = 260; p2Ref.current.mhp = 260
+    } else if (pw === 'p2') {
+      p1Ref.current.hp = 260; p1Ref.current.mhp = 260
+      p2Ref.current.hp = 380; p2Ref.current.mhp = 380
+    }
 
     particlesRef.current = []
     shakeRef.current = 0

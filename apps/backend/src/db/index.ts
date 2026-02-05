@@ -17,7 +17,7 @@ export const sql = postgres(connectionString, {
 export async function testConnection() {
   try {
     const result = await sql`SELECT NOW() as now`
-    console.log('Database connected:', result[0].now)
+    console.log('Database connected:', result[0]?.now)
     return true
   } catch (error) {
     console.error('Database connection failed:', error)

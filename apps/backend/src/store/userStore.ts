@@ -2,29 +2,18 @@ import { sql } from '../db/index.js'
 import type { User, AuthProvider } from '../types/user.js'
 
 // DB row를 User 타입으로 변환
-function rowToUser(row: {
-  id: string
-  email: string | null
-  password_hash: string | null
-  nickname: string
-  is_guest: boolean
-  rice: number
-  provider: string
-  provider_id: string | null
-  profile_image: string | null
-  created_at: Date
-}): User {
+function rowToUser(row: Record<string, unknown>): User {
   return {
-    id: row.id,
-    email: row.email ?? '',
-    passwordHash: row.password_hash ?? '',
-    nickname: row.nickname,
-    isGuest: row.is_guest,
-    rice: row.rice,
-    provider: (row.provider || 'local') as AuthProvider,
-    providerId: row.provider_id,
-    profileImage: row.profile_image,
-    createdAt: row.created_at,
+    id: row.id as string,
+    email: (row.email as string) ?? '',
+    passwordHash: (row.password_hash as string) ?? '',
+    nickname: row.nickname as string,
+    isGuest: row.is_guest as boolean,
+    rice: row.rice as number,
+    provider: ((row.provider as string) || 'local') as AuthProvider,
+    providerId: (row.provider_id as string | null) ?? null,
+    profileImage: (row.profile_image as string | null) ?? null,
+    createdAt: row.created_at as Date,
   }
 }
 
@@ -73,7 +62,7 @@ export const userStore = {
       )
       RETURNING ${USER_SELECT_FIELDS}
     `
-    return rowToUser(rows[0])
+    return rowToUser(rows[0]!)
   },
 
   async createSocial(data: {
@@ -96,7 +85,7 @@ export const userStore = {
       )
       RETURNING ${USER_SELECT_FIELDS}
     `
-    return rowToUser(rows[0])
+    return rowToUser(rows[0]!)
   },
 
   async update(id: string, updates: Partial<User>): Promise<User | undefined> {

@@ -76,12 +76,12 @@ export async function generateTodayFortune(nickname: string): Promise<TodayFortu
   })
 
   const content = message.content[0]
-  if (content.type !== 'text') {
+  if (!content || content.type !== 'text') {
     throw new Error('Unexpected response type')
   }
 
   try {
-    const fortune = JSON.parse(content.text)
+    const fortune = JSON.parse(content.text as string)
     return {
       date: today,
       ...fortune,

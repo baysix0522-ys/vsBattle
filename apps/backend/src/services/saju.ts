@@ -209,7 +209,7 @@ const COLORS = ['빨강', '파랑', '초록', '노랑', '흰색', '검정', '보
 const GEUK_GUKS = ['정관격', '편관격', '정재격', '편재격', '정인격', '편인격', '식신격', '상관격', '비견격', '겁재격']
 
 function getRandomElement<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]
+  return arr[Math.floor(Math.random() * arr.length)]!
 }
 
 function getRandomScore(): { score: number; grade: string } {
@@ -228,25 +228,25 @@ function generateDummySajuResult(birthInfo: BirthInfo): SajuAnalysisResult {
   const dateNum = parseInt(birthInfo.birthDate.replace(/-/g, ''))
   const seed = dateNum % 10
 
-  const dayMaster = HEAVENLY_STEMS[(dateNum % 10)]
-  const dayBranch = EARTHLY_BRANCHES[(dateNum % 12)]
+  const dayMaster = HEAVENLY_STEMS[(dateNum % 10)]!
+  const dayBranch = EARTHLY_BRANCHES[(dateNum % 12)]!
 
   const pillars: SajuPillars = {
     year: {
-      heavenlyStem: HEAVENLY_STEMS[(seed + 0) % 10],
-      earthlyBranch: EARTHLY_BRANCHES[(seed + 0) % 12],
+      heavenlyStem: HEAVENLY_STEMS[(seed + 0) % 10]!,
+      earthlyBranch: EARTHLY_BRANCHES[(seed + 0) % 12]!,
     },
     month: {
-      heavenlyStem: HEAVENLY_STEMS[(seed + 3) % 10],
-      earthlyBranch: EARTHLY_BRANCHES[(seed + 4) % 12],
+      heavenlyStem: HEAVENLY_STEMS[(seed + 3) % 10]!,
+      earthlyBranch: EARTHLY_BRANCHES[(seed + 4) % 12]!,
     },
     day: {
       heavenlyStem: dayMaster,
       earthlyBranch: dayBranch,
     },
     hour: birthInfo.isTimeUnknown ? null : {
-      heavenlyStem: HEAVENLY_STEMS[(seed + 7) % 10],
-      earthlyBranch: EARTHLY_BRANCHES[(seed + 9) % 12],
+      heavenlyStem: HEAVENLY_STEMS[(seed + 7) % 10]!,
+      earthlyBranch: EARTHLY_BRANCHES[(seed + 9) % 12]!,
     },
   }
 
@@ -256,21 +256,22 @@ function generateDummySajuResult(birthInfo: BirthInfo): SajuAnalysisResult {
   const keys = Object.keys(distribution) as (keyof typeof distribution)[]
   let remaining = totalElements
   for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i]!
     const value = Math.floor(Math.random() * (remaining - (keys.length - i - 1)))
-    distribution[keys[i]] = value
+    distribution[key] = value
     remaining -= value
   }
-  distribution[keys[keys.length - 1]] = remaining
+  distribution[keys[keys.length - 1]!] = remaining
 
   const basic: BasicAnalysis = {
     dayMaster,
-    dayMasterElement: ELEMENTS[(seed + 2) % 5],
+    dayMasterElement: ELEMENTS[(seed + 2) % 5]!,
     yinYang: seed % 2 === 0 ? 'yang' : 'yin',
-    balance: ['strong', 'weak', 'balanced'][seed % 3] as 'strong' | 'weak' | 'balanced',
-    yongShin: ELEMENTS[(seed + 3) % 5],
-    heeShin: ELEMENTS[(seed + 4) % 5],
-    giShin: ELEMENTS[(seed + 1) % 5],
-    geukGuk: GEUK_GUKS[(seed) % GEUK_GUKS.length],
+    balance: (['strong', 'weak', 'balanced'] as const)[seed % 3]!,
+    yongShin: ELEMENTS[(seed + 3) % 5]!,
+    heeShin: ELEMENTS[(seed + 4) % 5]!,
+    giShin: ELEMENTS[(seed + 1) % 5]!,
+    geukGuk: GEUK_GUKS[(seed) % GEUK_GUKS.length]!,
     elementDistribution: distribution,
   }
 
@@ -301,7 +302,7 @@ function generateDummySajuResult(birthInfo: BirthInfo): SajuAnalysisResult {
 
   const report: DetailedReport = {
     summary: `${dayMaster}일간으로 ${basic.dayMasterElement}의 기운을 타고나셨습니다. ${basic.geukGuk}의 사주로, ${basic.balance === 'strong' ? '신강한 기운' : basic.balance === 'weak' ? '신약한 기운' : '중화된 기운'}을 지니고 있습니다.`,
-    personality: `${DAY_MASTER_TRAITS[dayMaster]} 기본적으로 ${basic.yinYang === 'yang' ? '활동적이고 적극적인' : '신중하고 내향적인'} 성향이 강합니다.`,
+    personality: `${DAY_MASTER_TRAITS[dayMaster] ?? ''} 기본적으로 ${basic.yinYang === 'yang' ? '활동적이고 적극적인' : '신중하고 내향적인'} 성향이 강합니다.`,
     moneyAnalysis: `${basic.yongShin}의 기운을 잘 활용하면 재물운이 상승합니다. ${battleStats.money.grade}의 금전운으로, ${moneyScore >= 70 ? '재물 복이 있는' : '꾸준한 노력이 필요한'} 사주입니다.`,
     loveAnalysis: `${battleStats.love.grade}의 연애운입니다. ${loveScore >= 70 ? '좋은 인연을 만날 가능성이 높으며' : '인연 복을 키우기 위해 노력이 필요하며'}, 상대방을 이해하는 자세가 중요합니다.`,
     childrenAnalysis: `자식운은 ${battleStats.children.grade}입니다. ${childrenScore >= 70 ? '자녀와 좋은 관계를 유지할 수 있는' : '자녀 교육에 특별한 관심이 필요한'} 사주입니다.`,
@@ -312,9 +313,9 @@ function generateDummySajuResult(birthInfo: BirthInfo): SajuAnalysisResult {
 
   const advice: Advice = {
     mainAdvice: `${basic.yongShin}의 기운을 보충하는 것이 좋습니다. ${basic.giShin}의 기운은 피하시고, 매사에 긍정적인 마음가짐을 유지하세요.`,
-    luckyColor: COLORS[(seed + 2) % COLORS.length],
+    luckyColor: COLORS[(seed + 2) % COLORS.length]!,
     luckyNumber: ((dateNum % 9) + 1) * ((seed % 9) + 1),
-    luckyDirection: DIRECTIONS[(seed) % DIRECTIONS.length],
+    luckyDirection: DIRECTIONS[(seed) % DIRECTIONS.length]!,
   }
 
   console.log('[SAJU] 더미 데이터 사용 - 생년월일:', birthInfo.birthDate, '일주:', dayMaster + dayBranch)

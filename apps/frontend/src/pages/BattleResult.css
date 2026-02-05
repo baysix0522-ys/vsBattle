@@ -197,7 +197,7 @@
 }
 
 /* 요약 섹션 */
-.summary-section {
+.saju-screen .summary-section {
   margin: 14px 16px;
   background: #161628;
   border: 1px solid #222244;
@@ -205,7 +205,7 @@
   padding: 14px;
 }
 
-.summary-title {
+.saju-screen .summary-title {
   font-size: 12px;
   font-weight: 700;
   color: #aab;
@@ -215,7 +215,7 @@
   gap: 6px;
 }
 
-.summary-text {
+.saju-screen .summary-text {
   font-size: 12px;
   color: #889;
   line-height: 1.55;

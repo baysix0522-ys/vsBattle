@@ -21,6 +21,9 @@ app.use(
 app.use(express.json())
 
 // Health check
+app.get('/', (_req, res) => {
+  res.json({ ok: true, service: 'saju-battle-api', ts: Date.now() })
+})
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'backend', ts: Date.now() })
 })

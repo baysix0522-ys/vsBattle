@@ -198,36 +198,36 @@
 
 /* 요약 섹션 */
 .summary-section {
-  margin: 20px 16px;
+  margin: 14px 16px;
   background: #161628;
   border: 1px solid #222244;
   border-radius: 12px;
-  padding: 18px;
+  padding: 14px;
 }
 
 .summary-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #aab;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .summary-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #889;
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
 /* 케미스트리 카드 */
 .chemistry-section {
-  margin: 20px 16px;
+  margin: 14px 16px;
   background: linear-gradient(135deg, #1a1a38, #161630);
   border: 1px solid #2a2a55;
   border-radius: 14px;
-  padding: 20px;
+  padding: 16px;
 }
 
 .chemistry-section.match {
@@ -248,26 +248,26 @@
 }
 
 .chemistry-type {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 900;
   color: #ffcc00;
 }
 
 .chemistry-score {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 900;
   color: #ff3366;
 }
 
 .chemistry-desc {
-  font-size: 13px;
+  font-size: 12px;
   color: #aab;
-  line-height: 1.6;
-  margin-bottom: 8px;
+  line-height: 1.5;
+  margin-bottom: 6px;
 }
 
 .chemistry-relation {
-  font-size: 12px;
+  font-size: 11px;
   color: #889;
   line-height: 1.5;
 }

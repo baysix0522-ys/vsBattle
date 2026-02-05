@@ -990,3 +990,60 @@
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.1); opacity: 0.8; }
 }
+
+/* ===== 플랫포머 모드 ===== */
+.battle-result-page.platformer-mode {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a0a14 0%, #1a1a2e 100%);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.platformer-battle-container {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 스킵 버튼 */
+.skip-button {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.skip-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* 플랫포머 모드 최종 결과 */
+.battle-result-page.platformer-mode .final-result {
+  padding: 30px 20px;
+  max-width: 480px;
+  margin: 0 auto;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,247 @@
+/**
+ * 오버레이 자동 배틀 스타일
+ */
+
+/* 캔버스 오버레이 (컨테이너 내부) */
+.battle-overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* HUD */
+.battle-overlay-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  pointer-events: none;
+  padding: 6px 10px;
+  display: none;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 8, 16, 0.92) 0%,
+    rgba(8, 8, 16, 0.4) 70%,
+    transparent 100%
+  );
+}
+
+.battle-overlay-hud.on {
+  display: flex;
+}
+
+.hud-health {
+  flex: 1;
+  max-width: 175px;
+}
+
+.hud-name {
+  font-size: 9px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.hud-name.blue {
+  color: #88bbff;
+}
+
+.hud-name.red {
+  color: #ff8866;
+  text-align: right;
+}
+
+.hud-bar {
+  height: 10px;
+  background: #0a0a18;
+  border: 1px solid #334;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hud-fill {
+  height: 100%;
+  transition: width 0.3s;
+  border-radius: 1px;
+}
+
+.hud-fill.blue {
+  background: linear-gradient(90deg, #2255cc, #44aaff);
+}
+
+.hud-fill.red {
+  background: linear-gradient(270deg, #cc2233, #ff6644);
+  float: right;
+}
+
+.hud-fill.low.blue {
+  background: linear-gradient(90deg, #cc2222, #ff4444);
+}
+
+.hud-fill.low.red {
+  background: linear-gradient(270deg, #cc2222, #ff4444);
+}
+
+.hud-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hud-text {
+  font-size: 8px;
+  color: #aab;
+  margin-top: 1px;
+}
+
+.hud-vs {
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffcc00;
+  text-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
+  padding: 0 4px;
+}
+
+/* 배틀 로그 */
+.battle-overlay-log {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.log-item {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  animation: logFadeIn 0.3s ease-out, logFadeOut 0.3s ease-in 2.5s forwards;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@keyframes logFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* KO 오버레이 (화면 중앙 고정) */
+.battle-overlay-ko {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+
+.battle-overlay-ko.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ko-title {
+  font-size: 64px;
+  font-weight: 900;
+  color: #ffcc00;
+  text-shadow:
+    0 0 30px rgba(255, 200, 0, 0.8),
+    0 4px 0 #cc8800,
+    0 8px 20px rgba(0, 0, 0, 0.5);
+  letter-spacing: 8px;
+  animation: koPulse 0.5s ease-out;
+}
+
+@keyframes koPulse {
+  0% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.ko-winner {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.ko-winner.blue {
+  color: #88bbff;
+}
+
+.ko-winner.red {
+  color: #ff8866;
+}
+
+.ko-restart {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ko-restart:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.5);
+}
+
+.ko-restart:active {
+  transform: scale(0.98);
+}

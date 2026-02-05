@@ -80,9 +80,9 @@ export default function BattleInput() {
 
     const birthInfo: BattleBirthInfo = {
       birthDate: birthDate.format('YYYY-MM-DD'),
-      birthTime: hour === 'unknown' ? undefined : hour,
       isTimeUnknown: hour === 'unknown',
       gender,
+      ...(hour !== 'unknown' ? { birthTime: hour } : {}),
     }
 
     setIsSubmitting(true)

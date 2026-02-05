@@ -1,0 +1,180 @@
+/* 플랫포머 전투장 */
+
+.platformer-arena {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 60px rgba(255, 100, 50, 0.05);
+}
+
+/* 화면 흔들림 효과 */
+.platformer-arena.shaking {
+  animation: arena-shake 0.4s ease-out;
+}
+
+@keyframes arena-shake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  10% {
+    transform: translate(-8px, -4px) rotate(-0.5deg);
+  }
+  20% {
+    transform: translate(8px, 4px) rotate(0.5deg);
+  }
+  30% {
+    transform: translate(-6px, 2px) rotate(-0.3deg);
+  }
+  40% {
+    transform: translate(6px, -2px) rotate(0.3deg);
+  }
+  50% {
+    transform: translate(-4px, 0) rotate(0);
+  }
+  60% {
+    transform: translate(4px, 0) rotate(0);
+  }
+}
+
+/* 배경 레이어 */
+.arena-background {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* 바닥 조명 */
+.arena-floor-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(
+    to top,
+    rgba(255, 100, 50, 0.15) 0%,
+    transparent 100%
+  );
+}
+
+/* 천장 조명 */
+.arena-ceiling-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(
+    to bottom,
+    rgba(100, 150, 255, 0.1) 0%,
+    transparent 100%
+  );
+}
+
+/* 좌측 조명 */
+.arena-left-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(
+    to right,
+    rgba(100, 200, 255, 0.08) 0%,
+    transparent 100%
+  );
+}
+
+/* 우측 조명 */
+.arena-right-glow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(
+    to left,
+    rgba(255, 100, 150, 0.08) 0%,
+    transparent 100%
+  );
+}
+
+/* 중앙 스포트라이트 */
+.arena-center-light {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* 라운드 표시 */
+.arena-round-indicator {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 20;
+}
+
+.arena-round-indicator .round-icon {
+  font-size: 24px;
+}
+
+.arena-round-indicator .round-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.arena-round-indicator .round-name {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* VS 표시 */
+.arena-vs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.15);
+  text-shadow: 0 0 20px rgba(255, 100, 50, 0.3);
+  letter-spacing: 8px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .platformer-arena {
+    height: 500px;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .platformer-arena {
+    height: 450px;
+  }
+}

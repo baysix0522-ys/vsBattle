@@ -1,0 +1,140 @@
+/* Smooth Battle Arena 추가 스타일 */
+
+.smooth-arena {
+  background: linear-gradient(180deg, #0a0a1a 0%, #151530 30%, #1a1a3a 70%, #0f0f25 100%);
+}
+
+/* 배경 격자 (디버그용) */
+.arena-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 64px 64px;
+  pointer-events: none;
+}
+
+/* Fighter wrapper - 애니메이션 상태 전달용 */
+.fighter-wrapper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* 공격 시 글로우 */
+.fighter-wrapper.attacking .animated-fighter {
+  filter: drop-shadow(0 0 15px rgba(255, 200, 100, 0.8));
+}
+
+/* 피격 시 플래시 */
+.fighter-wrapper.hit .animated-fighter {
+  animation: smooth-hit-flash 0.15s ease-out 2;
+}
+
+@keyframes smooth-hit-flash {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(2.5) saturate(0);
+  }
+}
+
+/* 승리 글로우 */
+.fighter-wrapper.victory .animated-fighter {
+  filter: drop-shadow(0 0 20px gold) drop-shadow(0 0 40px rgba(255, 215, 0, 0.5));
+}
+
+/* 패배 어둡게 */
+.fighter-wrapper.death .animated-fighter {
+  filter: brightness(0.5) grayscale(0.7);
+  opacity: 0.8;
+}
+
+/* 이동 중 트레일 효과 */
+.fighter-wrapper.moving .animated-fighter::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  opacity: 0.3;
+  transform: translateX(-10px);
+  filter: blur(3px);
+  animation: motion-trail 0.2s ease-out infinite;
+}
+
+@keyframes motion-trail {
+  0% { opacity: 0.3; transform: translateX(-5px); }
+  100% { opacity: 0; transform: translateX(-15px); }
+}
+
+/* 라운드 표시 강화 */
+.smooth-arena .arena-round-indicator {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+.smooth-arena .round-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.smooth-arena .round-text {
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.smooth-arena .round-name {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* VS 강화 */
+.smooth-arena .arena-vs {
+  font-size: 36px;
+  color: rgba(255, 255, 255, 0.1);
+  text-shadow:
+    0 0 30px rgba(255, 100, 50, 0.3),
+    0 0 60px rgba(255, 100, 50, 0.1);
+}
+
+/* 바닥/천장 조명 강화 */
+.smooth-arena .arena-floor-glow {
+  height: 100px;
+  background: linear-gradient(
+    to top,
+    rgba(100, 150, 255, 0.15) 0%,
+    rgba(100, 150, 255, 0.05) 50%,
+    transparent 100%
+  );
+}
+
+.smooth-arena .arena-ceiling-glow {
+  height: 80px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 100, 100, 0.1) 0%,
+    transparent 100%
+  );
+}
+
+/* 화면 흔들림 강화 */
+.smooth-arena.shaking {
+  animation: smooth-shake 0.5s ease-out;
+}
+
+@keyframes smooth-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  10% { transform: translate(-10px, -5px) rotate(-1deg); }
+  20% { transform: translate(10px, 5px) rotate(1deg); }
+  30% { transform: translate(-8px, 3px) rotate(-0.5deg); }
+  40% { transform: translate(8px, -3px) rotate(0.5deg); }
+  50% { transform: translate(-5px, 0) rotate(0); }
+  60% { transform: translate(5px, 0) rotate(0); }
+  70% { transform: translate(-3px, 0) rotate(0); }
+  80% { transform: translate(3px, 0) rotate(0); }
+}

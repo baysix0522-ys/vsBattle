@@ -1,0 +1,328 @@
+/**
+ * 사주 대결 결과 페이지 - saju-panda-battle.html 스타일
+ */
+
+/* 480px 래퍼 - 배틀 오버레이의 positioning context */
+.battle-page-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.saju-screen {
+  width: 100%;
+  position: relative;
+  padding-bottom: 40px;
+}
+
+/* VS 헤더 */
+.versus-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 28px 16px 20px;
+  background: linear-gradient(180deg, #14142a, #0f0f1a);
+}
+
+.vs-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.vs-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.vs-avatar.blue {
+  background: linear-gradient(135deg, #1a3a6e, #2a6acc);
+  box-shadow: 0 0 20px rgba(34, 102, 204, 0.27);
+}
+
+.vs-avatar.red {
+  background: linear-gradient(135deg, #6e1a1a, #cc3a2a);
+  box-shadow: 0 0 20px rgba(204, 51, 51, 0.2);
+}
+
+.vs-name {
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.vs-name.blue {
+  color: #88bbff;
+}
+
+.vs-name.red {
+  color: #ff8866;
+}
+
+.vs-sub {
+  font-size: 11px;
+  color: #667;
+}
+
+.vs-badge {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ff3366;
+  text-shadow: 0 0 15px rgba(255, 51, 102, 0.27);
+}
+
+/* 종합 스탯 */
+.total-section {
+  margin: 16px;
+  background: linear-gradient(135deg, #1a1a38, #161630);
+  border: 1px solid #2a2a55;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.total-label {
+  font-size: 12px;
+  color: #778;
+  margin-bottom: 10px;
+}
+
+.total-scores {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.total-val {
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.total-val.blue {
+  color: #88bbff;
+}
+
+.total-val.red {
+  color: #ff8866;
+}
+
+.total-vs {
+  font-size: 14px;
+  color: #556;
+  font-weight: 700;
+}
+
+/* 스탯 카드 그리드 */
+.stats-battle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 16px;
+  margin-top: 8px;
+}
+
+.stat-card {
+  background: #161628;
+  border: 1px solid #222244;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 12px 12px 0 0;
+}
+
+.stat-card.win::before {
+  background: linear-gradient(90deg, #22cc66, #44ff88);
+}
+
+.stat-card.lose::before {
+  background: linear-gradient(90deg, #cc3333, #ff6644);
+}
+
+.stat-card.draw-card::before {
+  background: linear-gradient(90deg, #ccaa33, #ffdd44);
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #778;
+  margin-bottom: 8px;
+}
+
+.stat-scores {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-val {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.stat-val.blue {
+  color: #88bbff;
+}
+
+.stat-val.red {
+  color: #ff8866;
+}
+
+.stat-vs {
+  font-size: 11px;
+  color: #445;
+  font-weight: 700;
+}
+
+/* 요약 섹션 */
+.summary-section {
+  margin: 20px 16px;
+  background: #161628;
+  border: 1px solid #222244;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.summary-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #aab;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.summary-text {
+  font-size: 13px;
+  color: #889;
+  line-height: 1.7;
+}
+
+/* 케미스트리 카드 */
+.chemistry-section {
+  margin: 20px 16px;
+  background: linear-gradient(135deg, #1a1a38, #161630);
+  border: 1px solid #2a2a55;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.chemistry-section.match {
+  border-color: #44ff88;
+  box-shadow: 0 0 20px rgba(68, 255, 136, 0.1);
+}
+
+.chemistry-section.rival {
+  border-color: #ff6644;
+  box-shadow: 0 0 20px rgba(255, 102, 68, 0.1);
+}
+
+.chemistry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.chemistry-type {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffcc00;
+}
+
+.chemistry-score {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ff3366;
+}
+
+.chemistry-desc {
+  font-size: 13px;
+  color: #aab;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.chemistry-relation {
+  font-size: 12px;
+  color: #889;
+  line-height: 1.5;
+}
+
+/* 홈 버튼 */
+.result-bottom-actions {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.home-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.home-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+}
+
+.home-btn:active {
+  transform: scale(0.98);
+}
+
+/* 로딩 / 에러 상태 */
+.saju-screen .loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 60vh;
+  color: #aab;
+}
+
+.saju-screen .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 60vh;
+  text-align: center;
+  color: #aab;
+}
+
+.saju-screen .error-state span {
+  font-size: 48px;
+}

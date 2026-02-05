@@ -1,0 +1,163 @@
+/* 전투 이펙트 */
+
+.battle-effects-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.battle-effect {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+/* 충격파 이펙트 */
+.effect-impact {
+  width: 0;
+  height: 0;
+}
+
+.impact-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  transform: translate(-50%, -50%);
+}
+
+.impact-ring-1 {
+  animation: impact-expand 0.4s ease-out forwards;
+}
+
+.impact-ring-2 {
+  animation: impact-expand 0.4s ease-out 0.05s forwards;
+  border-color: rgba(255, 150, 50, 0.6);
+}
+
+.impact-ring-3 {
+  animation: impact-expand 0.4s ease-out 0.1s forwards;
+  border-color: rgba(255, 100, 100, 0.4);
+}
+
+@keyframes impact-expand {
+  0% {
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+    border-width: 4px;
+  }
+  100% {
+    width: 120px;
+    height: 120px;
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+/* 충격 별 */
+.impact-star {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 200, 100, 0.8) 30%,
+    transparent 70%
+  );
+  animation: impact-flash 0.3s ease-out forwards;
+}
+
+@keyframes impact-flash {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* 스파크 이펙트 */
+.effect-spark {
+  width: 0;
+  height: 0;
+}
+
+.spark-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #ffcc00;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ffcc00;
+  animation: spark-fly 0.5s ease-out forwards;
+  transform-origin: center center;
+}
+
+@keyframes spark-fly {
+  0% {
+    transform: rotate(var(--angle)) translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateX(60px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* 화면 플래시 */
+.effect-flash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  animation: screen-flash 0.15s ease-out forwards;
+}
+
+@keyframes screen-flash {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 속도선 */
+.effect-speedline {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+}
+
+.effect-speedline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 8px,
+    rgba(255, 255, 255, 0.1) 8px,
+    rgba(255, 255, 255, 0.1) 10px
+  );
+  animation: speedline-move 0.3s linear;
+}
+
+@keyframes speedline-move {
+  0% {
+    transform: translateX(-100px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+}

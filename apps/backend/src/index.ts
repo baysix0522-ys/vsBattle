@@ -9,7 +9,7 @@ const app = express()
 app.disable('x-powered-by')
 
 const corsOrigin = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim())
+  ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim().replace(/\/+$/, ''))
   : ['http://localhost:5173']
 
 app.use(

@@ -33,8 +33,8 @@ const ELEMENT_DISPLAY: Record<string, { label: string; hanja: string }> = {
 const ELEMENT_SPRITES: Record<string, string> = {
   wood: '/sprites/green-panda-sheet.png',   // 목 = 녹색
   fire: '/sprites/red-panda-sheet.png',     // 화 = 빨강
-  earth: '/sprites/yellow-panda-sheet.png', // 토 = 노랑
-  metal: '/sprites/brown-panda-sheet.png',  // 금 = 갈색
+  earth: '/sprites/brown-panda-sheet.png',  // 토 = 갈색
+  metal: '/sprites/yellow-panda-sheet.png', // 금 = 노랑
   water: '/sprites/blue-panda-sheet.png',   // 수 = 파랑
 }
 

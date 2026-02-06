@@ -21,18 +21,19 @@ const DAY_MASTER_SYMBOLS: Record<string, string> = {
   기: '🌾', 경: '⚔️', 신: '💎', 임: '🌊', 계: '💧',
 }
 
-// 일간 → 오행 매핑
+// 일간 → 오행 매핑 (명리학 전통 색상)
+// 목=청/녹, 화=적, 토=황, 금=백, 수=흑
 const DAY_MASTER_TO_ELEMENT: Record<string, { element: string; label: string; hanja: string; color: string }> = {
-  갑: { element: 'wood', label: '목', hanja: '木', color: '#4ade80' },
+  갑: { element: 'wood', label: '목', hanja: '木', color: '#4ade80' },  // 청/녹색
   을: { element: 'wood', label: '목', hanja: '木', color: '#4ade80' },
-  병: { element: 'fire', label: '화', hanja: '火', color: '#f87171' },
+  병: { element: 'fire', label: '화', hanja: '火', color: '#f87171' },  // 적색
   정: { element: 'fire', label: '화', hanja: '火', color: '#f87171' },
-  무: { element: 'earth', label: '토', hanja: '土', color: '#a78bfa' },
-  기: { element: 'earth', label: '토', hanja: '土', color: '#a78bfa' },
-  경: { element: 'metal', label: '금', hanja: '金', color: '#fbbf24' },
-  신: { element: 'metal', label: '금', hanja: '金', color: '#fbbf24' },
-  임: { element: 'water', label: '수', hanja: '水', color: '#60a5fa' },
-  계: { element: 'water', label: '수', hanja: '水', color: '#60a5fa' },
+  무: { element: 'earth', label: '토', hanja: '土', color: '#fbbf24' }, // 황색
+  기: { element: 'earth', label: '토', hanja: '土', color: '#fbbf24' },
+  경: { element: 'metal', label: '금', hanja: '金', color: '#e4e4e7' }, // 백색
+  신: { element: 'metal', label: '금', hanja: '金', color: '#e4e4e7' },
+  임: { element: 'water', label: '수', hanja: '水', color: '#6b7280' }, // 흑색 (진한 회색)
+  계: { element: 'water', label: '수', hanja: '水', color: '#6b7280' },
 }
 
 export default function FortuneHistory() {

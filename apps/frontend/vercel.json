@@ -5,7 +5,7 @@
       "destination": "https://vsbattle.onrender.com/api/:path*"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|banners/|sprites/|assets/).*)",
       "destination": "/index.html"
     }
   ]

@@ -1,14 +1,14 @@
 import { Router, type Request, type Response } from 'express'
 import { sql } from '../db/index.js'
-import { authMiddleware, type AuthRequest } from '../middleware/auth.js'
+import { requireAuth } from '../middleware/auth.js'
 
 const router = Router()
 
 // ========================================
 // 마이페이지 데이터 조회
 // ========================================
-router.get('/mypage', authMiddleware, async (req: Request, res: Response) => {
-  const { userId } = req as AuthRequest
+router.get('/mypage', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
 
   try {
     // 1. 사용자 기본 정보 + 쌀 잔액
@@ -131,8 +131,8 @@ router.get('/mypage', authMiddleware, async (req: Request, res: Response) => {
 // ========================================
 // 쌀 거래 내역 조회
 // ========================================
-router.get('/rice/transactions', authMiddleware, async (req: Request, res: Response) => {
-  const { userId } = req as AuthRequest
+router.get('/rice/transactions', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
   const page = Math.max(1, Number(req.query.page) || 1)
   const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20))
   const offset = (page - 1) * limit
@@ -255,8 +255,8 @@ export async function chargeRice(
 // ========================================
 // 닉네임 변경
 // ========================================
-router.patch('/nickname', authMiddleware, async (req: Request, res: Response) => {
-  const { userId } = req as AuthRequest
+router.patch('/nickname', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
   const { nickname } = req.body
 
   if (!nickname || typeof nickname !== 'string') {
@@ -280,8 +280,8 @@ router.patch('/nickname', authMiddleware, async (req: Request, res: Response) =>
 // ========================================
 // 대결 히스토리 전체 조회
 // ========================================
-router.get('/battles', authMiddleware, async (req: Request, res: Response) => {
-  const { userId } = req as AuthRequest
+router.get('/battles', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
   const page = Math.max(1, Number(req.query.page) || 1)
   const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20))
   const offset = (page - 1) * limit

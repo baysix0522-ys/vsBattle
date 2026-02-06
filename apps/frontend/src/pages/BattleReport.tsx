@@ -12,7 +12,7 @@ const DAY_MASTER_SYMBOLS: Record<string, string> = {
 
 // 오행 색상
 const ELEMENT_COLORS: Record<string, string> = {
-  목: '#22c55e', 화: '#ef4444', 토: '#eab308', 금: '#a1a1aa', 수: '#3b82f6',
+  목: '#22c55e', 화: '#ef4444', 토: '#a16207', 금: '#eab308', 수: '#3b82f6',
 }
 
 // 배틀 스탯 아이콘

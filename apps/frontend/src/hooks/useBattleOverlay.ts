@@ -103,13 +103,20 @@ export interface BattleLog {
   timestamp: number
 }
 
-// 오행별 스프라이트 시트 매핑
+// 오행별 스프라이트 시트 매핑 (영어 + 한글 키 모두 지원)
 const ELEMENT_SPRITES: Record<string, string> = {
-  wood: '/sprites/green-panda-sheet.png',   // 목 = 녹색
-  fire: '/sprites/red-panda-sheet.png',     // 화 = 빨강
-  earth: '/sprites/brown-panda-sheet.png',  // 토 = 갈색
-  metal: '/sprites/yellow-panda-sheet.png', // 금 = 노랑
-  water: '/sprites/blue-panda-sheet.png',   // 수 = 파랑
+  // 영어 키
+  wood: '/sprites/green-panda-sheet.png',
+  fire: '/sprites/red-panda-sheet.png',
+  earth: '/sprites/brown-panda-sheet.png',
+  metal: '/sprites/yellow-panda-sheet.png',
+  water: '/sprites/blue-panda-sheet.png',
+  // 한글 키
+  목: '/sprites/green-panda-sheet.png',
+  화: '/sprites/red-panda-sheet.png',
+  토: '/sprites/brown-panda-sheet.png',
+  금: '/sprites/yellow-panda-sheet.png',
+  수: '/sprites/blue-panda-sheet.png',
 }
 
 export interface UseBattleOverlayProps {
@@ -695,15 +702,16 @@ export function useBattleOverlay({
     setIsRunning(false)
   }, [])
 
-  // 초기화 및 정리
+  // 오행별 스프라이트 로드 (element 변경 시 업데이트)
   useEffect(() => {
-    // 오행별 스프라이트 시트 로드 (기본값: blue/red)
     const p1Sprite = challenger.element
       ? ELEMENT_SPRITES[challenger.element] || '/sprites/blue-panda-sheet.png'
       : '/sprites/blue-panda-sheet.png'
     const p2Sprite = opponent.element
       ? ELEMENT_SPRITES[opponent.element] || '/sprites/red-panda-sheet.png'
       : '/sprites/red-panda-sheet.png'
+
+    console.log('[BattleOverlay] 스프라이트 로드:', { p1: challenger.element, p2: opponent.element, p1Sprite, p2Sprite })
 
     const blueImg = new Image()
     blueImg.src = p1Sprite
@@ -712,7 +720,10 @@ export function useBattleOverlay({
     const redImg = new Image()
     redImg.src = p2Sprite
     redImgRef.current = redImg
+  }, [challenger.element, opponent.element])
 
+  // 초기화 및 정리
+  useEffect(() => {
     // 캔버스 리사이즈 (컨테이너 크기에 맞춤)
     const resize = () => {
       const canvas = canvasRef.current

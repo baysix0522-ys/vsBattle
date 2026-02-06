@@ -61,7 +61,7 @@ export function checkElementRelation(
   return 'same'
 }
 
-// 오행별 특성
+// 오행별 특성 (사용자 지정 색상: 목=그린, 화=레드, 토=브라운, 금=옐로우, 수=파랑)
 export const ELEMENT_TRAITS: Record<FiveElement, {
   color: string
   direction: string
@@ -70,39 +70,39 @@ export const ELEMENT_TRAITS: Record<FiveElement, {
   luckyColor: string
 }> = {
   목: {
-    color: '청색/녹색',
+    color: '녹색',
     direction: '동쪽',
     season: '봄',
     personality: '성장, 발전, 창의력',
     luckyColor: '초록색',
   },
   화: {
-    color: '적색',
+    color: '빨간색',
     direction: '남쪽',
     season: '여름',
     personality: '열정, 활력, 표현력',
     luckyColor: '빨간색',
   },
   토: {
-    color: '황색',
+    color: '갈색',
     direction: '중앙',
     season: '환절기',
     personality: '안정, 신뢰, 중재력',
-    luckyColor: '노란색',
+    luckyColor: '갈색',
   },
   금: {
-    color: '백색',
+    color: '노란색',
     direction: '서쪽',
     season: '가을',
     personality: '결단력, 정의감, 실행력',
-    luckyColor: '흰색',
+    luckyColor: '노란색',
   },
   수: {
-    color: '흑색',
+    color: '파란색',
     direction: '북쪽',
     season: '겨울',
     personality: '지혜, 유연함, 적응력',
-    luckyColor: '검정색',
+    luckyColor: '파란색',
   },
 }
 

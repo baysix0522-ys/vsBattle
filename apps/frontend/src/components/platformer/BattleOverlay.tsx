@@ -29,13 +29,20 @@ const ELEMENT_DISPLAY: Record<string, { label: string; hanja: string }> = {
   water: { label: '수', hanja: '水' },
 }
 
-// 오행별 스프라이트 시트 매핑
+// 오행별 스프라이트 시트 매핑 (영어 + 한글 키 모두 지원)
 const ELEMENT_SPRITES: Record<string, string> = {
-  wood: '/sprites/green-panda-sheet.png',   // 목 = 녹색
-  fire: '/sprites/red-panda-sheet.png',     // 화 = 빨강
-  earth: '/sprites/brown-panda-sheet.png',  // 토 = 갈색
-  metal: '/sprites/yellow-panda-sheet.png', // 금 = 노랑
-  water: '/sprites/blue-panda-sheet.png',   // 수 = 파랑
+  // 영어 키
+  wood: '/sprites/green-panda-sheet.png',
+  fire: '/sprites/red-panda-sheet.png',
+  earth: '/sprites/brown-panda-sheet.png',
+  metal: '/sprites/yellow-panda-sheet.png',
+  water: '/sprites/blue-panda-sheet.png',
+  // 한글 키
+  목: '/sprites/green-panda-sheet.png',
+  화: '/sprites/red-panda-sheet.png',
+  토: '/sprites/brown-panda-sheet.png',
+  금: '/sprites/yellow-panda-sheet.png',
+  수: '/sprites/blue-panda-sheet.png',
 }
 
 // 스프라이트 시트 원본 프레임 크기

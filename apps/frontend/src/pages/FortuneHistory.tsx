@@ -21,6 +21,20 @@ const DAY_MASTER_SYMBOLS: Record<string, string> = {
   기: '🌾', 경: '⚔️', 신: '💎', 임: '🌊', 계: '💧',
 }
 
+// 일간 → 오행 매핑
+const DAY_MASTER_TO_ELEMENT: Record<string, { element: string; label: string; hanja: string; color: string }> = {
+  갑: { element: 'wood', label: '목', hanja: '木', color: '#4ade80' },
+  을: { element: 'wood', label: '목', hanja: '木', color: '#4ade80' },
+  병: { element: 'fire', label: '화', hanja: '火', color: '#f87171' },
+  정: { element: 'fire', label: '화', hanja: '火', color: '#f87171' },
+  무: { element: 'earth', label: '토', hanja: '土', color: '#a78bfa' },
+  기: { element: 'earth', label: '토', hanja: '土', color: '#a78bfa' },
+  경: { element: 'metal', label: '금', hanja: '金', color: '#fbbf24' },
+  신: { element: 'metal', label: '금', hanja: '金', color: '#fbbf24' },
+  임: { element: 'water', label: '수', hanja: '水', color: '#60a5fa' },
+  계: { element: 'water', label: '수', hanja: '水', color: '#60a5fa' },
+}
+
 export default function FortuneHistory() {
   const navigate = useNavigate()
   const { user, token } = useAuth()
@@ -238,22 +252,52 @@ export default function FortuneHistory() {
 
                     <div className="battle-record-vs">
                       <div className="battle-record-player">
-                        <span className="player-dm">{DAY_MASTER_SYMBOLS[myDM ?? ''] || '☯'}</span>
+                        <div
+                          className="player-element-badge"
+                          style={{
+                            backgroundColor: myDM ? DAY_MASTER_TO_ELEMENT[myDM]?.color + '22' : '#66666622',
+                            borderColor: myDM ? DAY_MASTER_TO_ELEMENT[myDM]?.color : '#666',
+                          }}
+                        >
+                          <span className="element-hanja" style={{ color: myDM ? DAY_MASTER_TO_ELEMENT[myDM]?.color : '#666' }}>
+                            {myDM ? DAY_MASTER_TO_ELEMENT[myDM]?.hanja : '?'}
+                          </span>
+                        </div>
                         <span className="player-name">{myName}</span>
-                        {myDM && <span className="player-sub">{myDM}일간</span>}
+                        {myDM && (
+                          <span className="player-sub" style={{ color: DAY_MASTER_TO_ELEMENT[myDM]?.color }}>
+                            {DAY_MASTER_TO_ELEMENT[myDM]?.label}({DAY_MASTER_TO_ELEMENT[myDM]?.hanja})
+                          </span>
+                        )}
                       </div>
                       <span className="battle-record-badge">VS</span>
                       <div className="battle-record-player">
                         {isPending ? (
                           <>
-                            <span className="player-dm">❓</span>
+                            <div className="player-element-badge" style={{ backgroundColor: '#33333344', borderColor: '#555' }}>
+                              <span className="element-hanja" style={{ color: '#888' }}>?</span>
+                            </div>
                             <span className="player-name">대기 중</span>
                           </>
                         ) : (
                           <>
-                            <span className="player-dm">{DAY_MASTER_SYMBOLS[opDM ?? ''] || '☯'}</span>
+                            <div
+                              className="player-element-badge"
+                              style={{
+                                backgroundColor: opDM ? DAY_MASTER_TO_ELEMENT[opDM]?.color + '22' : '#66666622',
+                                borderColor: opDM ? DAY_MASTER_TO_ELEMENT[opDM]?.color : '#666',
+                              }}
+                            >
+                              <span className="element-hanja" style={{ color: opDM ? DAY_MASTER_TO_ELEMENT[opDM]?.color : '#666' }}>
+                                {opDM ? DAY_MASTER_TO_ELEMENT[opDM]?.hanja : '?'}
+                              </span>
+                            </div>
                             <span className="player-name">{opName}</span>
-                            {opDM && <span className="player-sub">{opDM}일간</span>}
+                            {opDM && (
+                              <span className="player-sub" style={{ color: DAY_MASTER_TO_ELEMENT[opDM]?.color }}>
+                                {DAY_MASTER_TO_ELEMENT[opDM]?.label}({DAY_MASTER_TO_ELEMENT[opDM]?.hanja})
+                              </span>
+                            )}
                           </>
                         )}
                       </div>

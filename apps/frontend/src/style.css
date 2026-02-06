@@ -4565,6 +4565,21 @@ a {
   font-size: 28px;
 }
 
+.battle-record-player .player-element-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+}
+
+.battle-record-player .element-hanja {
+  font-size: 24px;
+  font-weight: 900;
+}
+
 .battle-record-player .player-name {
   font-size: 14px;
   font-weight: 700;
@@ -4573,7 +4588,7 @@ a {
 
 .battle-record-player .player-sub {
   font-size: 11px;
-  color: #71717a;
+  font-weight: 600;
 }
 
 .battle-record-badge {

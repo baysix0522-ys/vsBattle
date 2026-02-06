@@ -330,10 +330,12 @@ export default function BattleResult() {
         challenger={{
           nickname: challengerData.nickname,
           dayMaster: challengerData.dayMaster,
+          element: challengerData.dayMasterElement,
         }}
         opponent={{
           nickname: opponentData.nickname,
           dayMaster: opponentData.dayMaster,
+          element: opponentData.dayMasterElement,
         }}
         platformSelectors=".stat-card,.summary-section,.total-section,.chemistry-section"
         autoStart={true}

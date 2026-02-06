@@ -29,6 +29,15 @@ const ELEMENT_DISPLAY: Record<string, { label: string; hanja: string }> = {
   water: { label: '수', hanja: '水' },
 }
 
+// 오행별 스프라이트 시트 매핑
+const ELEMENT_SPRITES: Record<string, string> = {
+  wood: '/sprites/green-panda-sheet.png',   // 목 = 녹색
+  fire: '/sprites/red-panda-sheet.png',     // 화 = 빨강
+  earth: '/sprites/yellow-panda-sheet.png', // 토 = 노랑
+  metal: '/sprites/brown-panda-sheet.png',  // 금 = 갈색
+  water: '/sprites/blue-panda-sheet.png',   // 수 = 파랑
+}
+
 // 스프라이트 시트 원본 프레임 크기
 const SPRITE_FS = 192
 // 인트로 캔버스 표시 크기
@@ -101,14 +110,21 @@ export default function BattleOverlay({
       ctx.restore()
     }
 
-    const blueImg = new Image()
-    blueImg.src = '/sprites/blue-panda-sheet.png'
-    blueImg.onload = () => drawFirst(c1, blueImg)
+    const p1Sprite = challenger.element
+      ? ELEMENT_SPRITES[challenger.element] || '/sprites/blue-panda-sheet.png'
+      : '/sprites/blue-panda-sheet.png'
+    const p2Sprite = opponent.element
+      ? ELEMENT_SPRITES[opponent.element] || '/sprites/red-panda-sheet.png'
+      : '/sprites/red-panda-sheet.png'
 
-    const redImg = new Image()
-    redImg.src = '/sprites/red-panda-sheet.png'
-    redImg.onload = () => drawFirst(c2, redImg)
-  }, [])
+    const p1Img = new Image()
+    p1Img.src = p1Sprite
+    p1Img.onload = () => drawFirst(c1, p1Img)
+
+    const p2Img = new Image()
+    p2Img.src = p2Sprite
+    p2Img.onload = () => drawFirst(c2, p2Img)
+  }, [challenger.element, opponent.element])
 
   // ====== 인트로 시퀀스 (총 3초) ======
   useEffect(() => {

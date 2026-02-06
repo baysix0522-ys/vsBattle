@@ -341,3 +341,115 @@ export const battleApi = {
   getMyBattles: (token: string) =>
     apiRequest<{ battles: BattleListItem[] }>('/battle/my-battles', { token }),
 }
+
+// ========================================
+// User/MyPage API Types
+// ========================================
+export type MyPageSaju = {
+  id: string
+  birthDate: string
+  birthTime: string | null
+  gender: string
+  dayMaster: string
+  dayMasterElement: string
+  pillars: SajuPillars
+  basicAnalysis: SajuBasicAnalysis
+  battleStats: BattleStats
+  createdAt: string
+}
+
+export type MyPageBattleStats = {
+  total: number
+  wins: number
+  losses: number
+  draws: number
+  pendingSent: number
+  pendingReceived: number
+}
+
+export type MyPageBattle = {
+  id: string
+  status: 'pending' | 'completed'
+  winnerId: string | null
+  shareCode?: string
+  createdAt: string
+  completedAt: string | null
+  myRole: 'challenger' | 'opponent'
+  challenger: {
+    nickname: string
+    dayMaster: string
+    element: string
+  }
+  opponent: {
+    nickname: string
+    dayMaster: string
+    element: string
+  } | null
+}
+
+export type MyPageData = {
+  user: {
+    id: string
+    nickname: string
+    email: string | null
+    rice: number
+    profileImage: string | null
+    provider: string
+    createdAt: string
+  }
+  saju: MyPageSaju | null
+  battleStats: MyPageBattleStats
+  recentBattles: MyPageBattle[]
+}
+
+export type RiceTransaction = {
+  id: string
+  type: 'charge' | 'consume' | 'refund' | 'bonus'
+  amount: number
+  balanceAfter: number
+  description: string
+  referenceType: string | null
+  referenceId: string | null
+  createdAt: string
+}
+
+export type RiceTransactionsResponse = {
+  balance: number
+  total: number
+  page: number
+  limit: number
+  transactions: RiceTransaction[]
+}
+
+export type BattleHistoryResponse = {
+  total: number
+  page: number
+  limit: number
+  battles: MyPageBattle[]
+}
+
+// User API
+export const userApi = {
+  // 마이페이지 데이터 조회
+  getMyPage: (token: string) =>
+    apiRequest<MyPageData>('/user/mypage', { token }),
+
+  // 쌀 거래 내역 조회
+  getRiceTransactions: (token: string, page = 1, limit = 20) =>
+    apiRequest<RiceTransactionsResponse>(`/user/rice/transactions?page=${page}&limit=${limit}`, { token }),
+
+  // 닉네임 변경
+  updateNickname: (token: string, nickname: string) =>
+    apiRequest<{ success: boolean; nickname: string }>('/user/nickname', {
+      method: 'PATCH',
+      token,
+      body: { nickname },
+    }),
+
+  // 대결 히스토리 전체 조회
+  getBattleHistory: (token: string, page = 1, limit = 20, status?: string) =>
+    apiRequest<BattleHistoryResponse>(
+      `/user/battles?page=${page}&limit=${limit}${status ? `&status=${status}` : ''}`,
+      { token }
+    ),
+}

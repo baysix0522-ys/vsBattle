@@ -4,6 +4,7 @@ import express from 'express'
 import authRouter from './routes/auth.js'
 import fortuneRouter from './routes/fortune.js'
 import battleRouter from './routes/battle.js'
+import userRouter from './routes/user.js'
 
 const app = express()
 app.disable('x-powered-by')
@@ -36,6 +37,9 @@ app.use('/api/fortune', fortuneRouter)
 
 // Battle routes (사주 대결)
 app.use('/api/battle', battleRouter)
+
+// User routes (마이페이지, 쌀 내역)
+app.use('/api/user', userRouter)
 
 const port = Number(process.env.PORT ?? 4000)
 app.listen(port, () => {

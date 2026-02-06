@@ -127,6 +127,68 @@ async function migrate() {
     await sql`CREATE INDEX IF NOT EXISTS idx_battles_status ON battles(status)`
     console.log('Battles indexes created/verified')
 
+    // Rice transactions table (쌀 충전/사용 내역)
+    await sql`
+      CREATE TABLE IF NOT EXISTS rice_transactions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+        -- 거래 유형: charge(충전), consume(소비), refund(환불), bonus(보너스)
+        type VARCHAR(20) NOT NULL,
+
+        -- 변동량 (양수: 증가, 음수: 감소)
+        amount INTEGER NOT NULL,
+
+        -- 거래 후 잔액
+        balance_after INTEGER NOT NULL,
+
+        -- 설명 (예: "사주 리포트 생성", "결제 충전", "회원가입 보너스")
+        description VARCHAR(200) NOT NULL,
+
+        -- 참조 ID (결제ID, 배틀ID, 리포트ID 등)
+        reference_type VARCHAR(50),
+        reference_id UUID,
+
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `
+    console.log('Rice transactions table created/verified')
+
+    await sql`CREATE INDEX IF NOT EXISTS idx_rice_transactions_user_id ON rice_transactions(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_rice_transactions_type ON rice_transactions(type)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_rice_transactions_created_at ON rice_transactions(created_at DESC)`
+    console.log('Rice transactions indexes created/verified')
+
+    // Payments table (결제 내역 - 추후 PG 연동용)
+    await sql`
+      CREATE TABLE IF NOT EXISTS payments (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+        -- 결제 금액 (원)
+        amount INTEGER NOT NULL,
+
+        -- 지급될 쌀
+        rice_amount INTEGER NOT NULL,
+
+        -- PG 정보
+        pg_provider VARCHAR(50),
+        pg_tid VARCHAR(100),
+        pg_response JSONB,
+
+        -- 상태: pending, completed, failed, refunded
+        status VARCHAR(20) NOT NULL DEFAULT 'pending',
+
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        completed_at TIMESTAMP WITH TIME ZONE
+      )
+    `
+    console.log('Payments table created/verified')
+
+    await sql`CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status)`
+    console.log('Payments indexes created/verified')
+
     console.log('Migrations completed successfully!')
   } catch (error) {
     console.error('Migration failed:', error)

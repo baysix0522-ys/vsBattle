@@ -150,6 +150,9 @@ export default function Home() {
                   <span className="user-email">{user.isGuest ? '게스트' : user.email}</span>
                 </div>
                 <hr />
+                <button onClick={() => { setShowUserMenu(false); navigate('/mypage') }} className="mypage-btn">
+                  마이페이지
+                </button>
                 <button onClick={handleLogout} className="logout-btn">
                   로그아웃
                 </button>
@@ -161,7 +164,7 @@ export default function Home() {
 
       {/* 광고 배너 */}
       <section className="ad-banner">
-        <img src="/banners/banner.png" alt="광고" className="ad-image" />
+        <img src="/banners/banner02.png" alt="광고" className="ad-image" />
       </section>
 
       {/* 빠른 대결 배너 */}
@@ -214,7 +217,7 @@ export default function Home() {
           <span className="nav-icon">📊</span>
           <span className="nav-label">기록</span>
         </button>
-        <button className="nav-item" onClick={() => alert('준비 중인 서비스입니다.')}>
+        <button className="nav-item" onClick={() => navigate('/mypage')}>
           <span className="nav-icon">👤</span>
           <span className="nav-label">MY</span>
         </button>

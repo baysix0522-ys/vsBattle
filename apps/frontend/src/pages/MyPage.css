@@ -1,0 +1,612 @@
+.mypage-screen {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  padding: 16px;
+  padding-bottom: 100px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  color: #a1a1aa;
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  color: #a1a1aa;
+}
+
+.error-state span {
+  font-size: 48px;
+}
+
+/* 프로필 헤더 */
+.mypage-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  margin-bottom: 16px;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-emoji {
+  font-size: 36px;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-nickname {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 6px 0;
+}
+
+.profile-saju {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.day-master {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.element-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #71717a;
+}
+
+.provider-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+/* 쌀 카드 */
+.rice-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(234, 179, 8, 0.05) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.rice-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rice-icon {
+  font-size: 32px;
+}
+
+.rice-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.rice-label {
+  font-size: 12px;
+  color: #a1a1aa;
+}
+
+.rice-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #eab308;
+}
+
+.charge-btn {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.charge-btn:hover {
+  transform: scale(1.05);
+}
+
+/* 통계 카드 */
+.stats-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 12px 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-item.win .stat-value { color: #22c55e; }
+.stat-item.lose .stat-value { color: #ef4444; }
+.stat-item.draw .stat-value { color: #eab308; }
+
+.stat-label {
+  font-size: 11px;
+  color: #71717a;
+  margin-top: 4px;
+}
+
+.win-rate {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.win-rate-label {
+  font-size: 12px;
+  color: #a1a1aa;
+  width: 32px;
+}
+
+.win-rate-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.win-rate-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.win-rate-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #22c55e;
+  width: 40px;
+  text-align: right;
+}
+
+/* 탭 네비게이션 */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #71717a;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* 탭 컨텐츠 */
+.tab-content {
+  min-height: 200px;
+}
+
+/* 사주 카드 */
+.saju-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.saju-card.empty {
+  text-align: center;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 12px 0;
+}
+
+.saju-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.pillar.unknown {
+  opacity: 0.5;
+}
+
+.pillar-label {
+  font-size: 10px;
+  color: #71717a;
+  margin-bottom: 4px;
+}
+
+.pillar-stem {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pillar-branch {
+  font-size: 16px;
+  color: #a1a1aa;
+}
+
+.saju-summary {
+  font-size: 13px;
+  color: #a1a1aa;
+  line-height: 1.6;
+}
+
+.saju-summary p {
+  margin: 4px 0;
+}
+
+.saju-summary strong {
+  color: #fff;
+}
+
+.empty-text {
+  color: #71717a;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+/* 대결 리스트 */
+.recent-battles {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.battle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.battle-list.full {
+  gap: 12px;
+}
+
+.battle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #71717a;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.battle-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.battle-item.win { border-left-color: #22c55e; }
+.battle-item.lose { border-left-color: #ef4444; }
+.battle-item.draw { border-left-color: #eab308; }
+.battle-item.pending { border-left-color: #3b82f6; }
+
+.battle-players {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player {
+  font-size: 13px;
+  color: #fff;
+}
+
+.vs {
+  font-size: 11px;
+  color: #71717a;
+  font-weight: 600;
+}
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.status-badge.win {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.status-badge.lose {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.status-badge.draw {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.status-badge.pending {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+/* 대결 탭 상세 */
+.battle-main {
+  width: 100%;
+}
+
+.battle-main .battle-players {
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.player-element {
+  font-size: 11px;
+}
+
+.battle-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.battle-date {
+  font-size: 12px;
+  color: #71717a;
+}
+
+/* 쌀 탭 */
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid #71717a;
+}
+
+.transaction-item.plus {
+  border-left-color: #22c55e;
+}
+
+.transaction-item.minus {
+  border-left-color: #ef4444;
+}
+
+.tx-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tx-desc {
+  font-size: 14px;
+  color: #fff;
+}
+
+.tx-date {
+  font-size: 11px;
+  color: #71717a;
+}
+
+.tx-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.tx-amount span.plus {
+  color: #22c55e;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.tx-amount span.minus {
+  color: #ef4444;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.tx-balance {
+  font-size: 11px;
+  color: #71717a;
+}
+
+/* 빈 상태 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #71717a;
+}
+
+.empty-state span {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  margin-bottom: 16px;
+}
+
+/* 버튼 */
+.primary-btn {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.primary-btn:hover {
+  transform: scale(1.02);
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.danger-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* 하단 버튼 */
+.mypage-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mypage-footer button {
+  flex: 1;
+}

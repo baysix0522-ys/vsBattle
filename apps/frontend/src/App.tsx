@@ -13,6 +13,7 @@ import BattleInput from './pages/BattleInput'
 import BattleReport from './pages/BattleReport'
 import BattleJoin from './pages/BattleJoin'
 import BattleResult from './pages/BattleResult'
+import MyPage from './pages/MyPage'
 
 export default function App() {
   return (
@@ -33,6 +34,8 @@ export default function App() {
           <Route path="/battle/report" element={<BattleReport />} />
           <Route path="/battle/join/:shareCode" element={<BattleJoin />} />
           <Route path="/battle/result/:battleId" element={<BattleResult />} />
+          {/* MyPage */}
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

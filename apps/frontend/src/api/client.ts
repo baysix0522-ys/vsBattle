@@ -387,6 +387,15 @@ export type MyPageBattle = {
   } | null
 }
 
+export type RecentActivity = {
+  id: string
+  serviceType: 'fortune' | 'battle' | 'saju' | 'tarot'
+  serviceName: string
+  serviceIcon: string
+  detail: string
+  createdAt: string
+}
+
 export type MyPageData = {
   user: {
     id: string
@@ -400,6 +409,7 @@ export type MyPageData = {
   saju: MyPageSaju | null
   battleStats: MyPageBattleStats
   recentBattles: MyPageBattle[]
+  recentActivities: RecentActivity[]
 }
 
 export type RiceTransaction = {
@@ -428,6 +438,24 @@ export type BattleHistoryResponse = {
   battles: MyPageBattle[]
 }
 
+// Daily Bonus Types
+export type DailyBonusStatus = {
+  loginBonus: {
+    claimed: boolean
+    amount: number
+  }
+  fortuneBonus: {
+    claimed: boolean
+    amount: number
+  }
+}
+
+export type ClaimBonusResponse = {
+  success: boolean
+  amount: number
+  balance: number
+}
+
 // User API
 export const userApi = {
   // 마이페이지 데이터 조회
@@ -452,4 +480,206 @@ export const userApi = {
       `/user/battles?page=${page}&limit=${limit}${status ? `&status=${status}` : ''}`,
       { token }
     ),
+
+  // 일일 보너스 상태 확인
+  getDailyBonus: (token: string) =>
+    apiRequest<DailyBonusStatus>('/user/daily-bonus', { token }),
+
+  // 일일 로그인 보너스 수령
+  claimLoginBonus: (token: string) =>
+    apiRequest<ClaimBonusResponse>('/user/daily-bonus/login', {
+      method: 'POST',
+      token,
+    }),
+}
+
+// ========================================
+// Name Analysis API Types (이름 풀이)
+// ========================================
+
+export type HanjaSuggestion = {
+  hanja: string
+  reading: string
+  meaning: string
+  strokeCount: number
+  fiveElement: '목' | '화' | '토' | '금' | '수'
+  popularity: number
+}
+
+export type HanjaCandidates = {
+  korean: string
+  candidates: HanjaSuggestion[]
+}
+
+export type SelectedHanja = {
+  korean: string
+  hanja: string
+}
+
+export type HanjaCharacter = {
+  korean: string              // 한글 (영)
+  hanja: string               // 한자 (泳)
+  meaning: string             // 훈 (헤엄치다, 물에서 나아가다)
+  interpretation: string      // 해석 (2-3문장)
+  symbolism: string           // 상징 + 추가 설명
+  fiveElement: '목' | '화' | '토' | '금' | '수'
+  elementReason: string       // 오행 판단 근거
+  strokeCount: number
+}
+
+export type LifeInterpretation = {
+  love: string
+  career: string
+  relationships: string
+}
+
+export type FiveElementCard = {
+  element: '목' | '화' | '토' | '금' | '수'
+  count: number
+  percentage: number
+  personality: string
+  icon: string
+}
+
+export type FiveElementBalance = {
+  distribution: FiveElementCard[]
+  harmony: {
+    type: '상생' | '상극' | '균형' | '편중'
+    description: string
+    advice: string
+  }
+  dominant: string
+  lacking: string | null
+}
+
+export type OgyeokScore = {
+  strokes: number
+  fiveElement: '목' | '화' | '토' | '금' | '수'
+  formula: string  // 계산식 (예: "6 + 8 = 14")
+  score: number
+  label: string
+}
+
+export type SamjaeAnalysis = {
+  flow: string  // "토 → 화 → 수"
+  elements: ['목' | '화' | '토' | '금' | '수', '목' | '화' | '토' | '금' | '수', '목' | '화' | '토' | '금' | '수']
+  type: '상생' | '상극' | '혼합'
+  description: string
+}
+
+export type StrokeBreakdown = {
+  char: string
+  hanja: string
+  strokes: number
+}
+
+export type OgyeokScores = {
+  breakdown: StrokeBreakdown[]  // 글자별 획수
+  천격: OgyeokScore
+  인격: OgyeokScore
+  지격: OgyeokScore
+  외격: OgyeokScore
+  총격: OgyeokScore
+  samjae: SamjaeAnalysis  // 삼재 분석
+}
+
+export type ShareableKeywords = {
+  nickname: string
+  keywords: string[]
+  hashtags: string[]
+  oneLineQuote: string
+}
+
+// 25개 고정 닉네임 타입
+export type NicknameType = '리더' | '전략가' | '장인' | '조율자' | '탐구자'
+export type FiveElement = '목' | '화' | '토' | '금' | '수'
+
+export type NicknameInfo = {
+  element: FiveElement
+  type: NicknameType
+  name: string
+  desc: string
+  icon: string
+  quote: string
+}
+
+export type NameAnalysisResult = {
+  characters: HanjaCharacter[]
+  combinedMeaning: string
+  lifeInterpretation: LifeInterpretation
+  fiveElements: FiveElementBalance
+  ogyeokScores: OgyeokScores
+  shareable: ShareableKeywords
+  nickname: NicknameInfo  // 25개 고정 닉네임 중 선정
+  overallScore: number
+  overallGrade: '대길' | '길' | '중길' | '소길' | '평'
+  summary: string
+  advice: string
+}
+
+export type NameHistoryItem = {
+  id: string
+  fullName: string
+  koreanName: string
+  surname: string
+  surnameHanja: string
+  selectedHanja: string
+  overallScore: number
+  overallGrade: string
+  createdAt: string
+}
+
+// Name Analysis API
+export const nameApi = {
+  // 한자 후보 제안
+  suggestHanja: (koreanName: string, token?: string | null) =>
+    apiRequest<{ success: boolean; suggestions: HanjaCandidates[] }>('/name/suggest-hanja', {
+      method: 'POST',
+      token: token ?? null,
+      body: { koreanName },
+    }),
+
+  // 이름 분석
+  analyze: (
+    surname: string,
+    surnameHanja: string,
+    koreanName: string,
+    selectedHanja: SelectedHanja[],
+    token?: string | null
+  ) =>
+    apiRequest<{
+      success: boolean
+      recordId: string
+      isExisting: boolean
+      result: NameAnalysisResult
+    }>('/name/analyze', {
+      method: 'POST',
+      token: token ?? null,
+      body: { surname, surnameHanja, koreanName, selectedHanja },
+    }),
+
+  // 분석 기록 조회
+  getRecord: (id: string, token?: string | null) =>
+    apiRequest<{
+      id: string
+      koreanName: string
+      surname: string
+      surnameHanja: string
+      selectedHanja: string
+      result: NameAnalysisResult
+      overallScore: number
+      overallGrade: string
+      createdAt: string
+    }>(`/name/record/${id}`, {
+      token: token ?? null,
+    }),
+
+  // 분석 히스토리
+  getHistory: (token: string, page = 1, limit = 20) =>
+    apiRequest<{
+      total: number
+      page: number
+      limit: number
+      records: NameHistoryItem[]
+    }>(`/name/history?page=${page}&limit=${limit}`, { token }),
 }

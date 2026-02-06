@@ -14,6 +14,8 @@ import BattleReport from './pages/BattleReport'
 import BattleJoin from './pages/BattleJoin'
 import BattleResult from './pages/BattleResult'
 import MyPage from './pages/MyPage'
+import NameInput from './pages/NameInput'
+import NameResult from './pages/NameResult'
 
 export default function App() {
   return (
@@ -36,6 +38,9 @@ export default function App() {
           <Route path="/battle/result/:battleId" element={<BattleResult />} />
           {/* MyPage */}
           <Route path="/mypage" element={<MyPage />} />
+          {/* Name Analysis (이름 풀이) */}
+          <Route path="/name" element={<NameInput />} />
+          <Route path="/name/result" element={<NameResult />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

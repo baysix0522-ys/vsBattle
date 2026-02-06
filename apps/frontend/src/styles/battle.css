@@ -1,6 +1,8 @@
 /* ===== 사주 대결 페이지 ===== */
 .battle-page {
   min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
   background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
   padding-bottom: 40px;
 }

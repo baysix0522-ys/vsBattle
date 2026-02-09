@@ -116,24 +116,33 @@ export default function Home() {
   }
 
   const handleMenuClick = async (menuId: string) => {
+    // 비로그인 시 로그인 페이지로 유도
+    if (!user) {
+      const targetPath = menuId === 'today' ? '/fortune/input'
+        : menuId === 'battle' ? '/battle'
+        : menuId === 'tarot' ? '/tarot'
+        : menuId === 'tennis-tarot' ? '/tennis-tarot'
+        : menuId === 'name' ? '/name'
+        : '/'
+      navigate(`/login?redirect=${encodeURIComponent(targetPath)}`)
+      return
+    }
+
     switch (menuId) {
       case 'today':
         // 오늘 기록이 있으면 운세 페이지, 없으면 입력 페이지로
-        if (token && user && !user.isGuest) {
+        if (token && !user.isGuest) {
           try {
             const todayRecord = await fortuneApi.getTodayRecord(token)
             if (todayRecord.record) {
-              // 오늘 기록이 있으면 운세 페이지로
               navigate('/fortune/today')
             } else {
-              // 오늘 기록이 없으면 입력 페이지로
               navigate('/fortune/input')
             }
           } catch {
             navigate('/fortune/input')
           }
         } else {
-          // 게스트는 항상 입력 페이지로
           navigate('/fortune/input')
         }
         break
@@ -164,11 +173,6 @@ export default function Home() {
     )
   }
 
-  // 로그인 안 되어 있으면 로그인 페이지로
-  if (!user) {
-    navigate('/login')
-    return null
-  }
 
   return (
     <div className="home-page">
@@ -178,33 +182,41 @@ export default function Home() {
           <h1 className="header-logo">☯ 사주대결</h1>
         </div>
         <div className="header-right">
-          <div className="rice-balance">
-            <span className="rice-icon">🍚</span>
-            <span className="rice-amount">{user.rice}</span>
-          </div>
-          <div className="user-menu-wrapper">
-            <button
-              className="icon-btn profile"
-              onClick={() => setShowUserMenu(!showUserMenu)}
-            >
-              <span>{user.isGuest ? '👤' : '😊'}</span>
-            </button>
-            {showUserMenu && (
-              <div className="user-dropdown">
-                <div className="user-info">
-                  <span className="user-nickname">{user.nickname}</span>
-                  <span className="user-email">{user.isGuest ? '게스트' : user.email}</span>
-                </div>
-                <hr />
-                <button onClick={() => { setShowUserMenu(false); navigate('/mypage') }} className="mypage-btn">
-                  마이페이지
-                </button>
-                <button onClick={handleLogout} className="logout-btn">
-                  로그아웃
-                </button>
+          {user ? (
+            <>
+              <div className="rice-balance">
+                <span className="rice-icon">🍚</span>
+                <span className="rice-amount">{user.rice}</span>
               </div>
-            )}
-          </div>
+              <div className="user-menu-wrapper">
+                <button
+                  className="icon-btn profile"
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                >
+                  <span>{user.isGuest ? '👤' : '😊'}</span>
+                </button>
+                {showUserMenu && (
+                  <div className="user-dropdown">
+                    <div className="user-info">
+                      <span className="user-nickname">{user.nickname}</span>
+                      <span className="user-email">{user.isGuest ? '게스트' : user.email}</span>
+                    </div>
+                    <hr />
+                    <button onClick={() => { setShowUserMenu(false); navigate('/mypage') }} className="mypage-btn">
+                      마이페이지
+                    </button>
+                    <button onClick={handleLogout} className="logout-btn">
+                      로그아웃
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <button className="login-header-btn" onClick={() => navigate('/login')}>
+              로그인
+            </button>
+          )}
         </div>
       </header>
 

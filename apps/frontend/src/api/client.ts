@@ -669,7 +669,7 @@ export const nameApi = {
       method: 'POST',
       token: token ?? null,
       body: { surname, surnameHanja, koreanName, selectedHanja },
-      signal,
+      ...(signal ? { signal } : {}),
     }),
 
   // 분석 기록 조회

@@ -7,7 +7,7 @@ import './NameAnalysis.css'
 
 export default function NameInput() {
   const navigate = useNavigate()
-  const { token } = useAuth()
+  const { token, user } = useAuth()
 
   // 입력 상태
   const [koreanName, setKoreanName] = useState('')
@@ -65,6 +65,16 @@ export default function NameInput() {
     // 글자 수 일치 확인
     if (koreanName.trim().length !== hanjaName.trim().length) {
       setError('한글과 한자 글자 수가 일치해야 합니다')
+      return
+    }
+
+    // 클라이언트 사이드 쌀 체크
+    if (!user) {
+      setError('로그인이 필요합니다.')
+      return
+    }
+    if (user.rice < 50) {
+      setError('쌀이 부족합니다. 이름 풀이에는 50쌀이 필요합니다.')
       return
     }
 

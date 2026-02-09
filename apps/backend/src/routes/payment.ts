@@ -25,7 +25,8 @@ const KAKAOPAY_API_BASE = 'https://open-api.kakaopay.com/online/v1/payment'
 const getFrontendUrl = () => {
   const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173'
   // CORS_ORIGIN이 여러 개인 경우 첫 번째 사용
-  return corsOrigin.split(',')[0].trim().replace(/\/+$/, '')
+  const firstOrigin = corsOrigin.split(',')[0]
+  return firstOrigin ? firstOrigin.trim().replace(/\/+$/, '') : 'http://localhost:5173'
 }
 
 // ========================================
@@ -81,7 +82,7 @@ router.post('/ready', requireAuth, async (req: Request, res: Response) => {
       return res.status(500).json({ error: '결제 준비 중 오류가 발생했습니다' })
     }
 
-    const readyData = await readyResponse.json()
+    const readyData = await readyResponse.json() as { tid: string; next_redirect_pc_url: string }
     const tid = readyData.tid
     const redirectUrl = readyData.next_redirect_pc_url
 
@@ -92,7 +93,8 @@ router.post('/ready', requireAuth, async (req: Request, res: Response) => {
       productName: product.name,
       rice: product.rice,
       bonus: product.bonus,
-      readyResponse: readyData,
+      tid,
+      redirectUrl,
     }
     await sql`
       INSERT INTO payments (user_id, amount, rice_amount, pg_provider, pg_tid, status, pg_response)

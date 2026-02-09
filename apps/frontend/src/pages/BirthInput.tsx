@@ -100,7 +100,7 @@ export default function BirthInput() {
           <div className="birth-input-container">
             <div className="page-header">
               <button className="back-btn" onClick={() => navigate('/')}>
-                ← 뒤로
+                ←
               </button>
               <h1>오늘의 운세</h1>
             </div>

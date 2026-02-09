@@ -30,12 +30,10 @@ export default function MyPage() {
   const [showAllActivities, setShowAllActivities] = useState(false)
   const [dailyBonus, setDailyBonus] = useState<DailyBonusStatus | null>(null)
   const [claimingBonus, setClaimingBonus] = useState(false)
+  const [withdrawing, setWithdrawing] = useState(false)
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login')
-      return
-    }
+    if (!token) return
 
     const fetchData = async () => {
       try {
@@ -53,7 +51,7 @@ export default function MyPage() {
     }
 
     fetchData()
-  }, [token, navigate])
+  }, [token])
 
   const loadRiceTransactions = async () => {
     if (!token || riceTransactions.length > 0) return
@@ -94,15 +92,42 @@ export default function MyPage() {
     }
   }
 
+  const handleWithdraw = async () => {
+    if (!token || withdrawing) return
+
+    const confirmed = window.confirm(
+      '정말 탈퇴하시겠습니까?\n\n' +
+      '탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.\n' +
+      '- 사주 분석 기록\n' +
+      '- 대결 기록\n' +
+      '- 운세 기록\n' +
+      '- 보유 쌀'
+    )
+
+    if (!confirmed) return
+
+    const doubleConfirm = window.confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')
+    if (!doubleConfirm) return
+
+    setWithdrawing(true)
+    try {
+      await userApi.withdraw(token)
+      alert('회원 탈퇴가 완료되었습니다. 그동안 이용해 주셔서 감사합니다.')
+      logout()
+      navigate('/')
+    } catch (error) {
+      console.error('회원 탈퇴 실패:', error)
+      alert('회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setWithdrawing(false)
+    }
+  }
+
   useEffect(() => {
     if (activeTab === 'rice') {
       loadRiceTransactions()
     }
   }, [activeTab])
-
-  if (!user || !token) {
-    return null
-  }
 
   if (loading) {
     return (
@@ -184,7 +209,7 @@ export default function MyPage() {
             <span className="rice-amount">{data.user.rice.toLocaleString()}</span>
           </div>
         </div>
-        <button className="charge-btn" onClick={() => alert('결제 기능 준비 중입니다')}>
+        <button className="charge-btn" onClick={() => navigate('/shop')}>
           충전하기
         </button>
       </div>
@@ -499,6 +524,26 @@ export default function MyPage() {
             )}
           </div>
         )}
+      </div>
+
+      {/* 회원 탈퇴 */}
+      <div className="withdraw-section">
+        <button
+          className="withdraw-btn"
+          onClick={handleWithdraw}
+          disabled={withdrawing}
+        >
+          {withdrawing ? '처리 중...' : '회원 탈퇴'}
+        </button>
+      </div>
+
+      {/* 법적 정보 링크 */}
+      <div className="legal-links">
+        <a href="/terms" onClick={(e) => { e.preventDefault(); navigate('/terms') }}>이용약관</a>
+        <span className="divider">|</span>
+        <a href="/privacy" onClick={(e) => { e.preventDefault(); navigate('/privacy') }}>개인정보처리방침</a>
+        <span className="divider">|</span>
+        <a href="/about" onClick={(e) => { e.preventDefault(); navigate('/about') }}>회사소개</a>
       </div>
 
     </div>

@@ -78,15 +78,12 @@ export default function FortuneHistory() {
   }, [])
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login')
-      return
-    }
-
     if (user?.isGuest) {
       setLoading(false)
       return
     }
+
+    if (!token) return
 
     if (activeTab === 'today') {
       setLoading(true)
@@ -105,7 +102,7 @@ export default function FortuneHistory() {
       setBattles([])
       setLoading(false)
     }
-  }, [token, user, navigate, activeTab])
+  }, [token, user, activeTab])
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr)

@@ -54,7 +54,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           isAuthenticated: true,
         })
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Auth restore failed:', error)
         localStorage.removeItem(TOKEN_KEY)
         setState({
           user: null,

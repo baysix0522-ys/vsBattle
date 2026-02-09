@@ -127,6 +127,7 @@ router.post('/record', authenticate, async (req: any, res) => {
       WHERE user_id = ${user.id} AND fortune_date = ${today}
     `
     const isFirstViewToday = existingRecord.length === 0
+    console.log(`운세 저장: userId=${user.id}, today=${today}, isFirstViewToday=${isFirstViewToday}`)
 
     // UPSERT: 같은 날짜에 이미 기록이 있으면 업데이트
     // postgres 라이브러리가 JSONB 직렬화를 자동 처리함
@@ -141,14 +142,31 @@ router.post('/record', authenticate, async (req: any, res) => {
       RETURNING id, fortune_date
     `
 
-    // 오늘 첫 운세 확인이면 쌀 10개 지급
+    // 오늘 첫 운세 확인이면 쌀 30개 지급
     let riceReward = 0
     if (isFirstViewToday) {
-      riceReward = 10
-      await sql`
-        UPDATE users SET rice = rice + ${riceReward}, updated_at = NOW()
-        WHERE id = ${user.id}
-      `
+      riceReward = 30
+
+      try {
+        // 현재 잔액 조회
+        const [currentUser] = await sql`SELECT rice FROM users WHERE id = ${user.id}`
+        const newBalance = (currentUser?.rice || 0) + riceReward
+
+        await sql`
+          UPDATE users SET rice = ${newBalance}, updated_at = NOW()
+          WHERE id = ${user.id}
+        `
+
+        // 거래 내역 기록
+        await sql`
+          INSERT INTO rice_transactions (user_id, type, amount, balance_after, description, reference_type)
+          VALUES (${user.id}, 'bonus', ${riceReward}, ${newBalance}, '오늘의 운세 일일 보너스', 'daily_fortune')
+        `
+        console.log(`운세 보너스 지급: userId=${user.id}, amount=${riceReward}, newBalance=${newBalance}`)
+      } catch (riceError) {
+        console.error('운세 보너스 지급 실패:', riceError)
+        riceReward = 0 // 실패시 0으로
+      }
     }
 
     // 업데이트된 쌀 정보 조회

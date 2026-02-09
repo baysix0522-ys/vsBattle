@@ -73,6 +73,55 @@ router.get('/mypage', requireAuth, async (req: Request, res: Response) => {
       LIMIT 5
     `
 
+    // 5. 최근 이용 서비스 내역 (운세, 대결 등 통합)
+    const recentActivities = await sql`
+      SELECT * FROM (
+        -- 오늘의 운세
+        SELECT
+          id,
+          'fortune' as service_type,
+          '오늘의 운세' as service_name,
+          '🌅' as service_icon,
+          fortune_date::text as detail,
+          created_at
+        FROM fortune_records
+        WHERE user_id = ${userId}
+
+        UNION ALL
+
+        -- 사주 대결
+        SELECT
+          b.id,
+          'battle' as service_type,
+          '사주 대결' as service_name,
+          '⚔️' as service_icon,
+          CASE
+            WHEN b.status = 'pending' THEN '대기중'
+            WHEN b.winner_id = ${userId} THEN '승리'
+            WHEN b.winner_id IS NULL THEN '무승부'
+            ELSE '패배'
+          END as detail,
+          b.created_at
+        FROM battles b
+        WHERE b.challenger_id = ${userId} OR b.opponent_id = ${userId}
+
+        UNION ALL
+
+        -- 사주 분석 (리포트 생성)
+        SELECT
+          id,
+          'saju' as service_type,
+          '사주 분석' as service_name,
+          '📜' as service_icon,
+          day_master || '일간' as detail,
+          created_at
+        FROM saju_reports
+        WHERE user_id = ${userId}
+      ) activities
+      ORDER BY created_at DESC
+      LIMIT 10
+    `
+
     res.json({
       user: {
         id: user.id,
@@ -121,10 +170,120 @@ router.get('/mypage', requireAuth, async (req: Request, res: Response) => {
           element: b.opponent_element,
         } : null,
       })),
+      recentActivities: recentActivities.map(a => ({
+        id: a.id,
+        serviceType: a.service_type,
+        serviceName: a.service_name,
+        serviceIcon: a.service_icon,
+        detail: a.detail,
+        createdAt: a.created_at,
+      })),
     })
   } catch (error) {
     console.error('마이페이지 조회 실패:', error)
     res.status(500).json({ error: '마이페이지 데이터를 불러올 수 없습니다' })
+  }
+})
+
+// ========================================
+// 일일 보너스 상태 확인
+// ========================================
+router.get('/daily-bonus', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
+  // 한국 시간 기준 오늘 시작/끝
+  const now = new Date()
+  const koreaOffset = 9 * 60 * 60 * 1000
+  const koreaTime = new Date(now.getTime() + koreaOffset)
+  const todayStart = new Date(koreaTime.getFullYear(), koreaTime.getMonth(), koreaTime.getDate())
+  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000)
+  // UTC로 변환
+  const todayStartUTC = new Date(todayStart.getTime() - koreaOffset)
+  const todayEndUTC = new Date(todayEnd.getTime() - koreaOffset)
+
+  try {
+    // 오늘 로그인 보너스 받았는지 확인
+    const [loginBonus] = await sql`
+      SELECT id FROM rice_transactions
+      WHERE user_id = ${userId}
+        AND reference_type = 'daily_login'
+        AND created_at >= ${todayStartUTC.toISOString()}
+        AND created_at < ${todayEndUTC.toISOString()}
+    `
+
+    // 오늘 운세 보너스 받았는지 확인
+    const [fortuneBonus] = await sql`
+      SELECT id FROM rice_transactions
+      WHERE user_id = ${userId}
+        AND reference_type = 'daily_fortune'
+        AND created_at >= ${todayStartUTC.toISOString()}
+        AND created_at < ${todayEndUTC.toISOString()}
+    `
+
+    res.json({
+      loginBonus: {
+        claimed: !!loginBonus,
+        amount: 20,
+      },
+      fortuneBonus: {
+        claimed: !!fortuneBonus,
+        amount: 30,
+      },
+    })
+  } catch (error) {
+    console.error('일일 보너스 확인 실패:', error)
+    res.status(500).json({ error: '보너스 상태를 확인할 수 없습니다' })
+  }
+})
+
+// ========================================
+// 일일 로그인 보너스 수령
+// ========================================
+router.post('/daily-bonus/login', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
+  const BONUS_AMOUNT = 20
+
+  // 한국 시간 기준 오늘 시작/끝
+  const now = new Date()
+  const koreaOffset = 9 * 60 * 60 * 1000
+  const koreaTime = new Date(now.getTime() + koreaOffset)
+  const todayStart = new Date(koreaTime.getFullYear(), koreaTime.getMonth(), koreaTime.getDate())
+  const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000)
+  const todayStartUTC = new Date(todayStart.getTime() - koreaOffset)
+  const todayEndUTC = new Date(todayEnd.getTime() - koreaOffset)
+
+  try {
+    // 이미 받았는지 확인
+    const [existing] = await sql`
+      SELECT id FROM rice_transactions
+      WHERE user_id = ${userId}
+        AND reference_type = 'daily_login'
+        AND created_at >= ${todayStartUTC.toISOString()}
+        AND created_at < ${todayEndUTC.toISOString()}
+    `
+
+    if (existing) {
+      return res.status(400).json({ error: '오늘 로그인 보너스를 이미 받았습니다' })
+    }
+
+    // 쌀 충전
+    const [user] = await sql`SELECT rice FROM users WHERE id = ${userId} FOR UPDATE`
+    const newBalance = (user?.rice || 0) + BONUS_AMOUNT
+
+    await sql`UPDATE users SET rice = ${newBalance}, updated_at = NOW() WHERE id = ${userId}`
+
+    await sql`
+      INSERT INTO rice_transactions (user_id, type, amount, balance_after, description, reference_type)
+      VALUES (${userId}, 'bonus', ${BONUS_AMOUNT}, ${newBalance}, '일일 로그인 보너스', 'daily_login')
+    `
+
+    res.json({
+      success: true,
+      amount: BONUS_AMOUNT,
+      balance: newBalance,
+    })
+  } catch (error) {
+    console.error('로그인 보너스 지급 실패:', error)
+    res.status(500).json({ error: '보너스 지급에 실패했습니다' })
   }
 })
 
@@ -251,6 +410,42 @@ export async function chargeRice(
     return { success: false, error: '쌀 충전 처리 중 오류가 발생했습니다' }
   }
 }
+
+// ========================================
+// 회원 탈퇴
+// ========================================
+router.delete('/withdraw', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
+
+  try {
+    // 1. 사용자 관련 데이터 삭제 (순서 중요 - FK 제약)
+    // 쌀 거래 내역
+    await sql`DELETE FROM rice_transactions WHERE user_id = ${userId}`
+
+    // 결제 내역
+    await sql`DELETE FROM payments WHERE user_id = ${userId}`
+
+    // 이름 분석 기록
+    await sql`DELETE FROM name_analyses WHERE user_id = ${userId}`
+
+    // 운세 기록
+    await sql`DELETE FROM fortune_records WHERE user_id = ${userId}`
+
+    // 대결 기록 (참가한 대결)
+    await sql`DELETE FROM battles WHERE challenger_id = ${userId} OR opponent_id = ${userId}`
+
+    // 사주 리포트
+    await sql`DELETE FROM saju_reports WHERE user_id = ${userId}`
+
+    // 2. 사용자 삭제
+    await sql`DELETE FROM users WHERE id = ${userId}`
+
+    res.json({ success: true, message: '회원 탈퇴가 완료되었습니다' })
+  } catch (error) {
+    console.error('회원 탈퇴 실패:', error)
+    res.status(500).json({ error: '회원 탈퇴 처리 중 오류가 발생했습니다' })
+  }
+})
 
 // ========================================
 // 닉네임 변경

@@ -1,0 +1,240 @@
+.shop-screen {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  padding: 16px;
+  padding-bottom: 100px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  color: #a1a1aa;
+}
+
+/* 헤더 */
+.shop-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #a1a1aa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.shop-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+/* 잔액 카드 */
+.balance-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(234, 179, 8, 0.05) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.balance-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.balance-icon {
+  font-size: 40px;
+}
+
+.balance-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.balance-label {
+  font-size: 14px;
+  color: #a1a1aa;
+}
+
+.balance-amount {
+  font-size: 32px;
+  font-weight: 700;
+  color: #eab308;
+}
+
+/* 안내 문구 */
+.shop-notice {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 12px;
+}
+
+.shop-notice p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 14px;
+}
+
+.shop-notice .notice-sub {
+  font-size: 12px;
+  color: #71717a;
+  margin-top: 4px;
+}
+
+/* 상품 목록 */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.product-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all 0.2s;
+}
+
+.product-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-rice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rice-emoji {
+  font-size: 28px;
+}
+
+.rice-count {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.bonus-badge {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.product-total {
+  font-size: 13px;
+  color: #a1a1aa;
+  margin-left: 44px;
+}
+
+.product-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #eab308;
+}
+
+.purchase-btn {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  color: #000;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.purchase-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.purchase-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 결제 안내 */
+.payment-info {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.payment-info h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 12px 0;
+}
+
+.payment-info ul {
+  margin: 0;
+  padding: 0 0 0 16px;
+}
+
+.payment-info li {
+  font-size: 13px;
+  color: #71717a;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.payment-info li:last-child {
+  margin-bottom: 0;
+}

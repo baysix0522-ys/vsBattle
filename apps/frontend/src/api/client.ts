@@ -491,6 +491,13 @@ export const userApi = {
       method: 'POST',
       token,
     }),
+
+  // 회원 탈퇴
+  withdraw: (token: string) =>
+    apiRequest<{ success: boolean; message: string }>('/user/withdraw', {
+      method: 'DELETE',
+      token,
+    }),
 }
 
 // ========================================
@@ -682,4 +689,75 @@ export const nameApi = {
       limit: number
       records: NameHistoryItem[]
     }>(`/name/history?page=${page}&limit=${limit}`, { token }),
+}
+
+// ========================================
+// Payment API Types (결제)
+// ========================================
+
+export type PaymentProduct = {
+  id: string
+  name: string
+  rice: number
+  bonus: number
+  price: number
+}
+
+export type PaymentReadyResponse = {
+  tid: string
+  orderId: string
+  redirectUrl: string
+  product: PaymentProduct
+}
+
+export type PaymentApproveResponse = {
+  success: boolean
+  riceAmount: number
+  newBalance: number
+  paymentId: string
+}
+
+export type PaymentHistoryItem = {
+  id: string
+  amount: number
+  riceAmount: number
+  provider: string
+  productName: string
+  status: string
+  createdAt: string
+  completedAt: string
+}
+
+export type PaymentHistoryResponse = {
+  total: number
+  page: number
+  limit: number
+  payments: PaymentHistoryItem[]
+}
+
+// Payment API
+export const paymentApi = {
+  // 상품 목록 조회
+  getProducts: () =>
+    apiRequest<{ products: PaymentProduct[] }>('/payment/products'),
+
+  // 결제 준비
+  ready: (token: string, productId: string) =>
+    apiRequest<PaymentReadyResponse>('/payment/ready', {
+      method: 'POST',
+      token,
+      body: { productId },
+    }),
+
+  // 결제 승인
+  approve: (token: string, pgToken: string, orderId: string) =>
+    apiRequest<PaymentApproveResponse>('/payment/approve', {
+      method: 'POST',
+      token,
+      body: { pgToken, orderId },
+    }),
+
+  // 결제 내역 조회
+  getHistory: (token: string, page = 1, limit = 20) =>
+    apiRequest<PaymentHistoryResponse>(`/payment/history?page=${page}&limit=${limit}`, { token }),
 }

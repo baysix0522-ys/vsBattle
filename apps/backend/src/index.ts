@@ -7,6 +7,7 @@ import fortuneRouter from './routes/fortune.js'
 import battleRouter from './routes/battle.js'
 import userRouter from './routes/user.js'
 import nameRouter from './routes/name.js'
+import paymentRouter from './routes/payment.js'
 
 const app = express()
 app.disable('x-powered-by')
@@ -45,6 +46,9 @@ app.use('/api/user', userRouter)
 
 // Name routes (이름 풀이)
 app.use('/api/name', nameRouter)
+
+// Payment routes (결제)
+app.use('/api/payment', paymentRouter)
 
 const port = Number(process.env.PORT ?? 4000)
 

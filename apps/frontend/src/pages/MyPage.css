@@ -806,3 +806,60 @@
 .mypage-footer button {
   flex: 1;
 }
+
+/* 법적 정보 링크 */
+.legal-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legal-links a {
+  color: #71717a;
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.legal-links a:hover {
+  color: #a1a1aa;
+}
+
+.legal-links .divider {
+  color: #3f3f46;
+  font-size: 12px;
+}
+
+/* 회원 탈퇴 */
+.withdraw-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.withdraw-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #52525b;
+  border-radius: 8px;
+  color: #71717a;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.withdraw-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.withdraw-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

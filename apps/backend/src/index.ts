@@ -1,7 +1,7 @@
 import cors from 'cors'
 import 'dotenv/config'
 import express from 'express'
-import { ensureRiceTransactionsTable, ensureNameAnalysisTable } from './db/index.js'
+import { ensureRiceTransactionsTable, ensureNameAnalysisTable, ensureAccessLogsTable } from './db/index.js'
 import authRouter from './routes/auth.js'
 import fortuneRouter from './routes/fortune.js'
 import battleRouter from './routes/battle.js'
@@ -61,6 +61,7 @@ Promise.all([
   ensureRiceTransactionsTable(),
   ensureNameAnalysisTable(),
   ensureStatsTable(),
+  ensureAccessLogsTable(),
 ]).then(() => {
   app.listen(port, () => {
     console.log(`API listening on http://localhost:${port}`)

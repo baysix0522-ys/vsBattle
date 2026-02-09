@@ -74,3 +74,34 @@ export async function ensureNameAnalysisTable() {
     console.error('Failed to create name_analysis_records table:', error)
   }
 }
+
+// access_logs 테이블 생성 (접속 로그)
+export async function ensureAccessLogsTable() {
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS access_logs (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        session_id VARCHAR(100),
+        access_type VARCHAR(20) NOT NULL CHECK (access_type IN ('login', 'guest', 'visit', 'logout')),
+        provider VARCHAR(20),
+        ip_address VARCHAR(45),
+        user_agent TEXT,
+        device_type VARCHAR(20),
+        browser VARCHAR(50),
+        os VARCHAR(50),
+        country VARCHAR(50),
+        city VARCHAR(100),
+        referer TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `
+    await sql`CREATE INDEX IF NOT EXISTS idx_access_logs_user_id ON access_logs(user_id)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_access_logs_created_at ON access_logs(created_at DESC)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_access_logs_type ON access_logs(access_type)`
+    await sql`CREATE INDEX IF NOT EXISTS idx_access_logs_session ON access_logs(session_id)`
+    console.log('access_logs table ready')
+  } catch (error) {
+    console.error('Failed to create access_logs table:', error)
+  }
+}

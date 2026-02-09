@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { userStore } from '../store/userStore.js'
 import type { AuthPayload } from '../types/user.js'
 import { toPublicUser } from '../types/user.js'
+import { logAccess } from '../utils/accessLog.js'
 
 const router = Router()
 
@@ -45,6 +46,14 @@ router.post('/register', async (req, res) => {
 
     const token = generateToken({ userId: user.id, isGuest: false })
 
+    // 접속 로그 기록
+    logAccess({
+      userId: user.id,
+      accessType: 'login',
+      provider: 'local',
+      req,
+    })
+
     res.status(201).json({
       message: '회원가입 성공! 100쌀이 지급되었습니다.',
       token,
@@ -80,6 +89,14 @@ router.post('/login', async (req, res) => {
 
     const token = generateToken({ userId: user.id, isGuest: false })
 
+    // 접속 로그 기록
+    logAccess({
+      userId: user.id,
+      accessType: 'login',
+      provider: 'local',
+      req,
+    })
+
     res.json({
       message: '로그인 성공!',
       token,
@@ -92,7 +109,7 @@ router.post('/login', async (req, res) => {
 })
 
 // 게스트 로그인
-router.post('/guest', async (_req, res) => {
+router.post('/guest', async (req, res) => {
   try {
     const guestNumber = Math.floor(Math.random() * 10000)
 
@@ -108,6 +125,14 @@ router.post('/guest', async (_req, res) => {
     })
 
     const token = generateToken({ userId: user.id, isGuest: true })
+
+    // 접속 로그 기록
+    logAccess({
+      userId: user.id,
+      accessType: 'guest',
+      provider: 'local',
+      req,
+    })
 
     res.json({
       message: '게스트로 접속했습니다. 10쌀이 지급되었습니다.',
@@ -228,6 +253,14 @@ router.post('/kakao/callback', async (req, res) => {
 
     // 4. JWT 토큰 발급
     const token = generateToken({ userId: user.id, isGuest: false })
+
+    // 접속 로그 기록
+    logAccess({
+      userId: user.id,
+      accessType: 'login',
+      provider: 'kakao',
+      req,
+    })
 
     res.json({
       message: '카카오 로그인 성공!',

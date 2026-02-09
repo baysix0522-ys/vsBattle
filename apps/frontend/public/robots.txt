@@ -1,0 +1,6 @@
+# robots.txt for 사주배틀
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://yspace.kr/sitemap.xml

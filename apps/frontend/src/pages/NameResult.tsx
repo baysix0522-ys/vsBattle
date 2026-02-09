@@ -23,11 +23,10 @@ export default function NameResult() {
   if (!state?.result) {
     return (
       <div className="name-page">
-        <header className="name-header">
+        <div className="name-header">
           <button className="back-btn" onClick={() => navigate('/')}>←</button>
           <h1>이름 풀이</h1>
-          <div style={{ width: 40 }} />
-        </header>
+        </div>
         <div className="name-content">
           <div className="error-state">
             <p>분석 결과를 찾을 수 없습니다</p>
@@ -50,11 +49,10 @@ export default function NameResult() {
 
   return (
     <div className="name-page name-result-page">
-      <header className="name-header">
+      <div className="name-header">
         <button className="back-btn" onClick={() => navigate('/')}>←</button>
         <h1>이름 풀이 결과</h1>
-        <div style={{ width: 40 }} />
-      </header>
+      </div>
 
       <div className="name-content">
         {/* 상단 히어로 카드 */}

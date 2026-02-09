@@ -109,11 +109,10 @@ export default function NameInput() {
       }}
     >
       <div className="name-page">
-        <header className="name-header">
+        <div className="name-header">
           <button className="back-btn" onClick={handleBack}>←</button>
           <h1>이름 풀이</h1>
-          <div style={{ width: 40 }} />
-        </header>
+        </div>
 
         <div className="name-content">
           <div className="input-section">

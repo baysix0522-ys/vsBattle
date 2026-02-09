@@ -3,41 +3,44 @@
 .name-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
-  padding-bottom: var(--bottom-nav-height);
+  padding: 16px;
+  padding-bottom: calc(16px + var(--bottom-nav-height));
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .name-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .name-header h1 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
   margin: 0;
 }
 
 .name-header .back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-size: 20px;
+  border: none;
+  color: #a1a1aa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.name-header .back-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .name-content {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 16px;
+  /* 부모 .name-page가 max-width 담당 */
 }
 
 /* ===== 스텝 인디케이터 ===== */

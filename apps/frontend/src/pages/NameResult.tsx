@@ -1,7 +1,9 @@
-import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { Button } from 'antd'
+import { nameApi } from '../api/client'
 import type { NameAnalysisResult, SelectedHanja } from '../api/client'
+import { useAuth } from '../contexts/AuthContext'
 import './NameAnalysis.css'
 
 type LocationState = {
@@ -16,11 +18,75 @@ type LocationState = {
 export default function NameResult() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { id } = useParams<{ id: string }>()
+  const { token } = useAuth()
   const state = location.state as LocationState
 
   const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [loadedData, setLoadedData] = useState<{
+    result: NameAnalysisResult
+    surname: string
+    surnameHanja: string
+    givenName: string
+    selectedHanja: SelectedHanja[]
+  } | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState(false)
 
-  if (!state?.result) {
+  // URL 파라미터(id)로 접근했고 state가 없으면 API에서 로드
+  useEffect(() => {
+    if (state?.result || !id) return
+
+    setLoading(true)
+    nameApi.getRecord(id, token)
+      .then((res) => {
+        // result가 문자열이면 JSON 파싱
+        const parsedResult: NameAnalysisResult = typeof res.result === 'string'
+          ? JSON.parse(res.result)
+          : res.result
+
+        // selectedHanja를 파싱 (DB에는 "慧彬" 같은 문자열로 저장)
+        // characters에서 korean 매핑
+        const hanjaChars = res.selectedHanja || ''
+        const koreanChars = res.koreanName.split('')
+        const parsedHanja: SelectedHanja[] = hanjaChars.split('').map((h, i) => ({
+          korean: koreanChars[i] || '',
+          hanja: h,
+        }))
+
+        setLoadedData({
+          result: parsedResult,
+          surname: res.surname,
+          surnameHanja: res.surnameHanja,
+          givenName: res.koreanName,
+          selectedHanja: parsedHanja,
+        })
+      })
+      .catch(() => setLoadError(true))
+      .finally(() => setLoading(false))
+  }, [id, state, token])
+
+  // 데이터 소스: state 우선, 없으면 API 로드 결과
+  const data = state || loadedData
+
+  if (loading) {
+    return (
+      <div className="name-page">
+        <div className="name-header">
+          <button className="back-btn" onClick={() => navigate(-1 as any)}>←</button>
+          <h1>이름 풀이</h1>
+        </div>
+        <div className="name-content">
+          <div className="loading-state" style={{ textAlign: 'center', padding: '60px 0' }}>
+            <div className="loading-spinner" style={{ fontSize: 40, marginBottom: 16 }}>☯</div>
+            <p>분석 결과를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!data?.result || loadError) {
     return (
       <div className="name-page">
         <div className="name-header">
@@ -39,7 +105,7 @@ export default function NameResult() {
     )
   }
 
-  const { result, surname, surnameHanja, givenName, selectedHanja } = state
+  const { result, surname, surnameHanja, givenName, selectedHanja } = data
   const fullName = surname + givenName
   const fullHanja = surnameHanja + selectedHanja.map(s => s.hanja).join('')
 
@@ -210,11 +276,11 @@ export default function NameResult() {
                 <div className="element-char-item">
                   <div className="ec-header">
                     <span className="ec-hanja">{surnameHanja}({surname})</span>
-                    <span className={`ec-element el-${result.fiveElements.dominant || '목'}`}>
-                      {result.fiveElements.dominant || '목'}
+                    <span className={`ec-element el-${result.fiveElements.surnameElement || '토'}`}>
+                      {result.fiveElements.surnameElement || '토'}
                     </span>
                   </div>
-                  <p className="ec-reason">보통 木(나무) 부수 계열로 목(木) 성향으로 봅니다.</p>
+                  <p className="ec-reason">{result.fiveElements.surnameElementReason || `${surnameHanja}의 부수 계열로 ${result.fiveElements.surnameElement || '토'} 성향으로 봅니다.`}</p>
                 </div>
                 {/* 이름 글자들 */}
                 {result.characters?.map((char, idx) => (
@@ -241,7 +307,7 @@ export default function NameResult() {
                   </div>
                   <div className="ef-summary">
                     <span className="ef-formula">
-                      성({surnameHanja})={result.fiveElements.dominant || '목'},
+                      성({surnameHanja})={result.fiveElements.surnameElement || '토'},
                       이름({selectedHanja.map(h => h.hanja).join('')})=
                       {result.characters?.map(c => c.fiveElement).join(' + ') || '-'}
                     </span>
@@ -288,78 +354,103 @@ export default function NameResult() {
                 <div className="ogyeok-detail-list">
                   {/* 천격 */}
                   <div className="ogyeok-detail-item">
-                    <div className="od-left">
-                      <span className="od-name">천격</span>
-                      <span className="od-desc">(성)</span>
+                    <div className="od-row">
+                      <div className="od-left">
+                        <span className="od-name">천격</span>
+                        <span className="od-desc">(성)</span>
+                      </div>
+                      <div className="od-calc">= {result.ogyeokScores.천격?.formula || result.ogyeokScores.천격?.strokes || '-'}</div>
+                      <div className="od-right">
+                        <span className="od-last">끝 {(result.ogyeokScores.천격?.strokes ?? 0) % 10}</span>
+                        <span className="od-arrow">→</span>
+                        <span className={`od-element el-${result.ogyeokScores.천격?.fiveElement || '토'}`}>
+                          {result.ogyeokScores.천격?.fiveElement || '-'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="od-calc">= {result.ogyeokScores.천격?.formula || result.ogyeokScores.천격?.strokes || '-'}</div>
-                    <div className="od-right">
-                      <span className="od-last">끝 {(result.ogyeokScores.천격?.strokes ?? 0) % 10}</span>
-                      <span className="od-arrow">→</span>
-                      <span className={`od-element el-${result.ogyeokScores.천격?.fiveElement || '토'}`}>
-                        {result.ogyeokScores.천격?.fiveElement || '-'}
-                      </span>
-                    </div>
+                    {result.ogyeokScores.천격?.interpretation && (
+                      <p className="od-interpretation">{result.ogyeokScores.천격.interpretation}</p>
+                    )}
                   </div>
                   {/* 인격 */}
                   <div className="ogyeok-detail-item">
-                    <div className="od-left">
-                      <span className="od-name">인격</span>
-                      <span className="od-desc">(성+이름 첫글자)</span>
+                    <div className="od-row">
+                      <div className="od-left">
+                        <span className="od-name">인격</span>
+                        <span className="od-desc">(성+이름 첫글자)</span>
+                      </div>
+                      <div className="od-calc">= {result.ogyeokScores.인격?.formula || result.ogyeokScores.인격?.strokes || '-'}</div>
+                      <div className="od-right">
+                        <span className="od-last">끝 {(result.ogyeokScores.인격?.strokes ?? 0) % 10}</span>
+                        <span className="od-arrow">→</span>
+                        <span className={`od-element el-${result.ogyeokScores.인격?.fiveElement || '토'}`}>
+                          {result.ogyeokScores.인격?.fiveElement || '-'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="od-calc">= {result.ogyeokScores.인격?.formula || result.ogyeokScores.인격?.strokes || '-'}</div>
-                    <div className="od-right">
-                      <span className="od-last">끝 {(result.ogyeokScores.인격?.strokes ?? 0) % 10}</span>
-                      <span className="od-arrow">→</span>
-                      <span className={`od-element el-${result.ogyeokScores.인격?.fiveElement || '토'}`}>
-                        {result.ogyeokScores.인격?.fiveElement || '-'}
-                      </span>
-                    </div>
+                    {result.ogyeokScores.인격?.interpretation && (
+                      <p className="od-interpretation">{result.ogyeokScores.인격.interpretation}</p>
+                    )}
                   </div>
                   {/* 지격 */}
                   <div className="ogyeok-detail-item">
-                    <div className="od-left">
-                      <span className="od-name">지격</span>
-                      <span className="od-desc">(이름 글자들)</span>
+                    <div className="od-row">
+                      <div className="od-left">
+                        <span className="od-name">지격</span>
+                        <span className="od-desc">(이름 글자들)</span>
+                      </div>
+                      <div className="od-calc">= {result.ogyeokScores.지격?.formula || result.ogyeokScores.지격?.strokes || '-'}</div>
+                      <div className="od-right">
+                        <span className="od-last">끝 {(result.ogyeokScores.지격?.strokes ?? 0) % 10}</span>
+                        <span className="od-arrow">→</span>
+                        <span className={`od-element el-${result.ogyeokScores.지격?.fiveElement || '토'}`}>
+                          {result.ogyeokScores.지격?.fiveElement || '-'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="od-calc">= {result.ogyeokScores.지격?.formula || result.ogyeokScores.지격?.strokes || '-'}</div>
-                    <div className="od-right">
-                      <span className="od-last">끝 {(result.ogyeokScores.지격?.strokes ?? 0) % 10}</span>
-                      <span className="od-arrow">→</span>
-                      <span className={`od-element el-${result.ogyeokScores.지격?.fiveElement || '토'}`}>
-                        {result.ogyeokScores.지격?.fiveElement || '-'}
-                      </span>
-                    </div>
+                    {result.ogyeokScores.지격?.interpretation && (
+                      <p className="od-interpretation">{result.ogyeokScores.지격.interpretation}</p>
+                    )}
                   </div>
                   {/* 외격 */}
                   <div className="ogyeok-detail-item">
-                    <div className="od-left">
-                      <span className="od-name">외격</span>
-                      <span className="od-desc">(성+이름 끝글자)</span>
+                    <div className="od-row">
+                      <div className="od-left">
+                        <span className="od-name">외격</span>
+                        <span className="od-desc">(성+이름 끝글자)</span>
+                      </div>
+                      <div className="od-calc">= {result.ogyeokScores.외격?.formula || result.ogyeokScores.외격?.strokes || '-'}</div>
+                      <div className="od-right">
+                        <span className="od-last">끝 {(result.ogyeokScores.외격?.strokes ?? 0) % 10}</span>
+                        <span className="od-arrow">→</span>
+                        <span className={`od-element el-${result.ogyeokScores.외격?.fiveElement || '토'}`}>
+                          {result.ogyeokScores.외격?.fiveElement || '-'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="od-calc">= {result.ogyeokScores.외격?.formula || result.ogyeokScores.외격?.strokes || '-'}</div>
-                    <div className="od-right">
-                      <span className="od-last">끝 {(result.ogyeokScores.외격?.strokes ?? 0) % 10}</span>
-                      <span className="od-arrow">→</span>
-                      <span className={`od-element el-${result.ogyeokScores.외격?.fiveElement || '토'}`}>
-                        {result.ogyeokScores.외격?.fiveElement || '-'}
-                      </span>
-                    </div>
+                    {result.ogyeokScores.외격?.interpretation && (
+                      <p className="od-interpretation">{result.ogyeokScores.외격.interpretation}</p>
+                    )}
                   </div>
                   {/* 총격 */}
                   <div className="ogyeok-detail-item">
-                    <div className="od-left">
-                      <span className="od-name">총격</span>
-                      <span className="od-desc">(성+이름 전체)</span>
+                    <div className="od-row">
+                      <div className="od-left">
+                        <span className="od-name">총격</span>
+                        <span className="od-desc">(성+이름 전체)</span>
+                      </div>
+                      <div className="od-calc">= {result.ogyeokScores.총격?.formula || result.ogyeokScores.총격?.strokes || '-'}</div>
+                      <div className="od-right">
+                        <span className="od-last">끝 {(result.ogyeokScores.총격?.strokes ?? 0) % 10}</span>
+                        <span className="od-arrow">→</span>
+                        <span className={`od-element el-${result.ogyeokScores.총격?.fiveElement || '토'}`}>
+                          {result.ogyeokScores.총격?.fiveElement || '-'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="od-calc">= {result.ogyeokScores.총격?.formula || result.ogyeokScores.총격?.strokes || '-'}</div>
-                    <div className="od-right">
-                      <span className="od-last">끝 {(result.ogyeokScores.총격?.strokes ?? 0) % 10}</span>
-                      <span className="od-arrow">→</span>
-                      <span className={`od-element el-${result.ogyeokScores.총격?.fiveElement || '토'}`}>
-                        {result.ogyeokScores.총격?.fiveElement || '-'}
-                      </span>
-                    </div>
+                    {result.ogyeokScores.총격?.interpretation && (
+                      <p className="od-interpretation">{result.ogyeokScores.총격.interpretation}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -432,38 +523,6 @@ export default function NameResult() {
           </div>
         </div>
 
-        {/* 공유 카드 */}
-        {result.shareable && (
-          <div className="share-card">
-            <div className="share-header">
-              <span className="share-icon">📤</span>
-              <span>공유하기</span>
-            </div>
-            <div className="share-content">
-              <div className="share-nickname">{result.shareable.nickname}</div>
-              <div className="share-keywords">
-                {result.shareable.keywords?.map((kw, i) => (
-                  <span key={i} className="keyword-tag">{kw}</span>
-                ))}
-              </div>
-              <div className="share-hashtags">
-                {result.shareable.hashtags?.map((tag, i) => (
-                  <span key={i} className="hashtag">{tag}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 버튼들 */}
-        <div className="action-buttons">
-          <Button size="large" onClick={() => navigate('/name')}>
-            다른 이름 분석
-          </Button>
-          <Button type="primary" size="large" onClick={() => navigate('/')}>
-            홈으로
-          </Button>
-        </div>
       </div>
     </div>
   )

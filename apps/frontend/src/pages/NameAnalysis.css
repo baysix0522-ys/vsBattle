@@ -555,6 +555,18 @@
   padding: 40px 0;
 }
 
+.analyzing-state .analyze-sub {
+  font-size: 13px;
+  color: #999;
+  margin-top: -8px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ===== 결과 페이지 ===== */
 
 .name-result-page .name-content {
@@ -1673,10 +1685,24 @@
 
 .ogyeok-detail-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   padding: 12px 14px;
   background: rgba(255, 255, 255, 0.03);
   border-radius: 10px;
+  gap: 6px;
+}
+
+.ogyeok-detail-item .od-row {
+  display: flex;
+  align-items: center;
+}
+
+.od-interpretation {
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.5;
+  margin: 0;
+  padding-left: 2px;
 }
 
 .od-left {

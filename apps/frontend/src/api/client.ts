@@ -4,6 +4,7 @@ type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
   body?: unknown
   token?: string | null
+  signal?: AbortSignal
 }
 
 export class ApiError extends Error {
@@ -17,7 +18,7 @@ export class ApiError extends Error {
 }
 
 export async function apiRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, token } = options
+  const { method = 'GET', body, token, signal } = options
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -31,6 +32,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     method,
     headers,
     ...(body ? { body: JSON.stringify(body) } : {}),
+    ...(signal ? { signal } : {}),
   })
 
   const data = await response.json()
@@ -557,6 +559,8 @@ export type FiveElementBalance = {
   }
   dominant: string
   lacking: string | null
+  surnameElement?: string
+  surnameElementReason?: string
 }
 
 export type OgyeokScore = {
@@ -565,6 +569,7 @@ export type OgyeokScore = {
   formula: string  // 계산식 (예: "6 + 8 = 14")
   score: number
   label: string
+  interpretation?: string  // GPT가 생성한 해석
 }
 
 export type SamjaeAnalysis = {
@@ -652,7 +657,8 @@ export const nameApi = {
     surnameHanja: string,
     koreanName: string,
     selectedHanja: SelectedHanja[],
-    token?: string | null
+    token?: string | null,
+    signal?: AbortSignal
   ) =>
     apiRequest<{
       success: boolean
@@ -663,6 +669,7 @@ export const nameApi = {
       method: 'POST',
       token: token ?? null,
       body: { surname, surnameHanja, koreanName, selectedHanja },
+      signal,
     }),
 
   // 분석 기록 조회
@@ -673,7 +680,7 @@ export const nameApi = {
       surname: string
       surnameHanja: string
       selectedHanja: string
-      result: NameAnalysisResult
+      result: NameAnalysisResult | string
       overallScore: number
       overallGrade: string
       createdAt: string

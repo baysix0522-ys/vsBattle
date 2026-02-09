@@ -48,6 +48,7 @@ export default function App() {
           {/* Name Analysis (이름 풀이) */}
           <Route path="/name" element={<NameInput />} />
           <Route path="/name/result" element={<NameResult />} />
+          <Route path="/name/result/:id" element={<NameResult />} />
           {/* Shop & Payment (결제) */}
           <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
           <Route path="/payment/callback" element={<ProtectedRoute><PaymentCallback /></ProtectedRoute>} />

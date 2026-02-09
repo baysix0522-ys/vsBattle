@@ -1,14 +1,15 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { fortuneApi, battleApi, type FortuneRecord, type BattleListItem } from '../api/client'
+import { fortuneApi, battleApi, nameApi, type FortuneRecord, type BattleListItem, type NameHistoryItem } from '../api/client'
 import type { FortuneResult } from '../utils/fortune'
 
-type ServiceType = 'today' | 'battle' | 'compatibility' | 'saju' | 'tarot' | 'yearly'
+type ServiceType = 'today' | 'battle' | 'name' | 'compatibility' | 'saju' | 'tarot' | 'yearly'
 
 const SERVICE_TABS: { id: ServiceType; label: string; icon: string }[] = [
   { id: 'today', label: '오늘의 운세', icon: '🌅' },
   { id: 'battle', label: '사주 대결', icon: '⚔️' },
+  { id: 'name', label: '이름 풀이', icon: '✍️' },
   { id: 'compatibility', label: '궁합', icon: '💕' },
   { id: 'saju', label: '사주 분석', icon: '📜' },
   { id: 'tarot', label: '타로', icon: '🃏' },
@@ -42,6 +43,7 @@ export default function FortuneHistory() {
   const [activeTab, setActiveTab] = useState<ServiceType>('today')
   const [records, setRecords] = useState<FortuneRecord[]>([])
   const [battles, setBattles] = useState<BattleListItem[]>([])
+  const [nameRecords, setNameRecords] = useState<NameHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const tabsContainerRef = useRef<HTMLDivElement>(null)
@@ -97,9 +99,16 @@ export default function FortuneHistory() {
         .then((res) => setBattles(res.battles))
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false))
+    } else if (activeTab === 'name') {
+      setLoading(true)
+      nameApi.getHistory(token)
+        .then((res) => setNameRecords(res.records))
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false))
     } else {
       setRecords([])
       setBattles([])
+      setNameRecords([])
       setLoading(false)
     }
   }, [token, user, activeTab])
@@ -129,7 +138,7 @@ export default function FortuneHistory() {
   }
 
   const isServiceAvailable = (service: ServiceType) => {
-    return service === 'today' || service === 'battle'
+    return service === 'today' || service === 'battle' || service === 'name'
   }
 
   // 게스트 사용자
@@ -313,6 +322,50 @@ export default function FortuneHistory() {
                   </div>
                 )
               })}
+            </div>
+          )
+        ) : activeTab === 'name' ? (
+          nameRecords.length === 0 ? (
+            <div className="empty-state-v2">
+              <span className="empty-icon">✍️</span>
+              <h3>아직 이름 풀이 기록이 없어요</h3>
+              <p>이름을 분석하면<br />자동으로 기록됩니다!</p>
+              <button onClick={() => navigate('/name')} className="action-btn primary">
+                이름 풀이하기
+              </button>
+            </div>
+          ) : (
+            <div className="record-list-v2">
+              {nameRecords.map((record) => (
+                <div
+                  key={record.id}
+                  className="record-card-v2"
+                  onClick={() => navigate(`/name/result/${record.id}`)}
+                >
+                  <div className="record-header-v2">
+                    <span className="record-date-v2">{formatDate(record.createdAt)}</span>
+                    <span className="record-arrow">→</span>
+                  </div>
+
+                  <div className="record-main-v2">
+                    <div className={`record-score-circle ${getScoreClass(record.overallScore)}`}>
+                      <span className="score-num">{record.overallScore}</span>
+                      <span className="score-unit">점</span>
+                    </div>
+
+                    <div className="record-info-v2">
+                      <div className="record-grade-v2">
+                        <span className="grade-emoji">{getGradeEmoji(record.overallGrade)}</span>
+                        <span className="grade-text">{record.overallGrade}</span>
+                      </div>
+                      <div className="record-name-v2">
+                        <span className="name-hanja">{record.surnameHanja}{record.selectedHanja}</span>
+                        <span className="name-korean">({record.fullName})</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )
         ) : records.length === 0 ? (

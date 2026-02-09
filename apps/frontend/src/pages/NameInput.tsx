@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Input, ConfigProvider, theme, Spin } from 'antd'
 import { useAuth } from '../contexts/AuthContext'
@@ -15,7 +15,26 @@ export default function NameInput() {
 
   // 로딩/에러
   const [analyzing, setAnalyzing] = useState(false)
+  const [analyzeStep, setAnalyzeStep] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+
+  // 컴포넌트 언마운트 시 진행중인 API 요청 취소
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
+
+  // 분석 중 단계별 메시지
+  useEffect(() => {
+    if (!analyzing) {
+      setAnalyzeStep(0)
+      return
+    }
+    const timer = setTimeout(() => setAnalyzeStep(1), 2000)
+    return () => clearTimeout(timer)
+  }, [analyzing])
 
   // 분석 실행
   const handleAnalyze = async () => {
@@ -51,6 +70,11 @@ export default function NameInput() {
 
     setAnalyzing(true)
 
+    // 이전 요청 취소 후 새 AbortController 생성
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
     // 한글-한자 매핑 생성
     const chars = koreanName.trim().split('')
     const hanjaChars = hanjaName.trim().split('')
@@ -71,7 +95,8 @@ export default function NameInput() {
         surnameHanja,
         givenName,
         givenHanjaArray,
-        token
+        token,
+        controller.signal
       )
 
       navigate('/name/result', {
@@ -84,7 +109,8 @@ export default function NameInput() {
           selectedHanja: givenHanjaArray,
         },
       })
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return
       console.error('이름 분석 실패:', err)
       setError('이름 분석에 실패했습니다. 다시 시도해주세요.')
     } finally {
@@ -163,6 +189,9 @@ export default function NameInput() {
               <div className="analyzing-state">
                 <Spin size="large" />
                 <p>이름을 분석하고 있습니다...</p>
+                {analyzeStep >= 1 && (
+                  <p className="analyze-sub">AI 분석중입니다. 다소 시간이 소요됩니다.</p>
+                )}
               </div>
             ) : (
               <Button

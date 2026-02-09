@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express'
 import { sql } from '../db/index.js'
+import { logAccess } from '../utils/accessLog.js'
 
 const router = Router()
 
@@ -18,7 +19,7 @@ export async function ensureStatsTable() {
 // ========================================
 // 방문 기록 (중복 방지는 프론트에서 세션스토리지로)
 // ========================================
-router.post('/visit', async (_req: Request, res: Response) => {
+router.post('/visit', async (req: Request, res: Response) => {
   try {
     // 오늘 날짜의 방문 수 증가 (없으면 생성)
     await sql`
@@ -27,6 +28,13 @@ router.post('/visit', async (_req: Request, res: Response) => {
       ON CONFLICT (visit_date)
       DO UPDATE SET visit_count = daily_visits.visit_count + 1
     `
+
+    // access_logs에도 방문 기록 (IP, User-Agent 등 상세 정보 저장)
+    logAccess({
+      accessType: 'visit',
+      req,
+    })
+
     res.json({ success: true })
   } catch (error) {
     console.error('방문 기록 실패:', error)

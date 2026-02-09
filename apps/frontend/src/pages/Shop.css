@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
   padding: 16px;
-  padding-bottom: 100px;
+  padding-bottom: calc(16px + var(--bottom-nav-height));
   max-width: 480px;
   margin: 0 auto;
 }

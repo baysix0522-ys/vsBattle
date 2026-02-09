@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { fortuneApi } from '../api/client'
+import { fortuneApi, statsApi } from '../api/client'
 
 type FortuneMenu = {
   id: string
@@ -10,6 +10,8 @@ type FortuneMenu = {
   description: string
   isNew?: boolean
   isHot?: boolean
+  isDisplay?: boolean
+  isAd?: boolean
 }
 
 const fortuneMenus: FortuneMenu[] = [
@@ -61,12 +63,52 @@ const fortuneMenus: FortuneMenu[] = [
     description: '올해의 총운 확인',
     isHot: true,
   },
+  {
+    id: 'visitors',
+    icon: '👥',
+    title: '오늘의 참여자',
+    description: '',
+    isDisplay: true,
+  },
+  {
+    id: 'ad',
+    icon: '',
+    title: '',
+    description: '',
+    isAd: true,
+  },
 ]
 
 export default function Home() {
   const navigate = useNavigate()
   const { user, token, logout, isLoading } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [visitorCount, setVisitorCount] = useState<number>(0)
+
+  // 방문자 수 조회 및 방문 기록
+  useEffect(() => {
+    const recordVisitAndFetch = async () => {
+      // 세션당 한 번만 방문 기록 (새로고침 시 중복 방지)
+      const visitedKey = 'saju_visited_today'
+      const today = new Date().toDateString()
+      const lastVisit = sessionStorage.getItem(visitedKey)
+
+      if (lastVisit !== today) {
+        await statsApi.recordVisit().catch(() => {})
+        sessionStorage.setItem(visitedKey, today)
+      }
+
+      // 방문자 수 조회
+      try {
+        const result = await statsApi.getTodayVisitors()
+        setVisitorCount(result.count)
+      } catch {
+        setVisitorCount(0)
+      }
+    }
+
+    recordVisitAndFetch()
+  }, [])
 
   const handleLogout = () => {
     logout()
@@ -191,19 +233,43 @@ export default function Home() {
       <section className="menu-section">
         <h2 className="section-title">운세 서비스</h2>
         <div className="menu-grid">
-          {fortuneMenus.map((menu) => (
-            <button
-              key={menu.id}
-              className="menu-card"
-              onClick={() => handleMenuClick(menu.id)}
-            >
-              {menu.isNew && <span className="menu-badge new">NEW</span>}
-              {menu.isHot && <span className="menu-badge hot">HOT</span>}
-              <span className="menu-icon">{menu.icon}</span>
-              <span className="menu-title">{menu.title}</span>
-              <span className="menu-desc">{menu.description}</span>
-            </button>
-          ))}
+          {fortuneMenus.map((menu) => {
+            // 오늘의 참여자 (실시간 카운터 스타일)
+            if (menu.isDisplay) {
+              return (
+                <div key={menu.id} className="menu-card display-card">
+                  <div className="live-indicator">
+                    <span className="live-dot" />
+                    <span>LIVE</span>
+                  </div>
+                  <span className="visitor-count">{visitorCount.toLocaleString()}</span>
+                  <span className="visitor-label">오늘의 참여자</span>
+                </div>
+              )
+            }
+            // 광고 배너
+            if (menu.isAd) {
+              return (
+                <div key={menu.id} className="menu-card ad-card">
+                  <img src="/banners/banner02.png" alt="광고" className="ad-thumbnail" />
+                </div>
+              )
+            }
+            // 일반 메뉴
+            return (
+              <button
+                key={menu.id}
+                className="menu-card"
+                onClick={() => handleMenuClick(menu.id)}
+              >
+                {menu.isNew && <span className="menu-badge new">NEW</span>}
+                {menu.isHot && <span className="menu-badge hot">HOT</span>}
+                <span className="menu-icon">{menu.icon}</span>
+                <span className="menu-title">{menu.title}</span>
+                <span className="menu-desc">{menu.description}</span>
+              </button>
+            )
+          })}
         </div>
       </section>
 

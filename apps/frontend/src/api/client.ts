@@ -761,3 +761,16 @@ export const paymentApi = {
   getHistory: (token: string, page = 1, limit = 20) =>
     apiRequest<PaymentHistoryResponse>(`/payment/history?page=${page}&limit=${limit}`, { token }),
 }
+
+// ========================================
+// Stats API (통계)
+// ========================================
+export const statsApi = {
+  // 방문 기록
+  recordVisit: () =>
+    apiRequest<{ success: boolean }>('/stats/visit', { method: 'POST' }),
+
+  // 오늘의 방문자 수 조회
+  getTodayVisitors: () =>
+    apiRequest<{ count: number }>('/stats/today'),
+}

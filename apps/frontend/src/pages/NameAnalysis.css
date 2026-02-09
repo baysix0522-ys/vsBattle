@@ -3,7 +3,7 @@
 .name-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
-  padding-bottom: 40px;
+  padding-bottom: var(--bottom-nav-height);
 }
 
 .name-header {
@@ -555,7 +555,7 @@
 /* ===== 결과 페이지 ===== */
 
 .name-result-page .name-content {
-  padding-bottom: 100px;
+  padding-bottom: var(--bottom-nav-height);
 }
 
 /* 요약 카드 */

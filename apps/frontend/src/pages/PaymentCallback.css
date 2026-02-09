@@ -5,6 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  padding-bottom: var(--bottom-nav-height);
 }
 
 .callback-content {

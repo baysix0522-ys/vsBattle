@@ -4,7 +4,7 @@
   max-width: 480px;
   margin: 0 auto;
   background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
-  padding-bottom: 40px;
+  padding-bottom: var(--bottom-nav-height);
 }
 
 .battle-header {

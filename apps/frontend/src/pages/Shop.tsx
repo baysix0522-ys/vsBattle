@@ -70,7 +70,7 @@ export default function Shop() {
           <span className="balance-icon">🍚</span>
           <div className="balance-details">
             <span className="balance-label">내 쌀</span>
-            <span className="balance-amount">{user.rice.toLocaleString()}</span>
+            <span className="balance-amount">{user?.rice.toLocaleString() ?? 0}</span>
           </div>
         </div>
       </div>

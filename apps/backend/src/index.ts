@@ -8,6 +8,7 @@ import battleRouter from './routes/battle.js'
 import userRouter from './routes/user.js'
 import nameRouter from './routes/name.js'
 import paymentRouter from './routes/payment.js'
+import statsRouter, { ensureStatsTable } from './routes/stats.js'
 
 const app = express()
 app.disable('x-powered-by')
@@ -50,12 +51,16 @@ app.use('/api/name', nameRouter)
 // Payment routes (결제)
 app.use('/api/payment', paymentRouter)
 
+// Stats routes (통계)
+app.use('/api/stats', statsRouter)
+
 const port = Number(process.env.PORT ?? 4000)
 
 // 테이블 생성 확인 후 서버 시작
 Promise.all([
   ensureRiceTransactionsTable(),
   ensureNameAnalysisTable(),
+  ensureStatsTable(),
 ]).then(() => {
   app.listen(port, () => {
     console.log(`API listening on http://localhost:${port}`)

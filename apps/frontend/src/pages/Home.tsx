@@ -28,10 +28,11 @@ const fortuneMenus: FortuneMenu[] = [
     isNew: true,
   },
   {
-    id: 'compatibility',
-    icon: '💕',
-    title: '궁합 보기',
-    description: '우리의 궁합 점수는?',
+    id: 'name',
+    icon: '✍️',
+    title: '이름 풀이',
+    description: '내 이름의 숨겨진 의미',
+    isNew: true,
   },
   {
     id: 'saju',
@@ -102,6 +103,9 @@ export default function Home() {
         break
       case 'tennis-tarot':
         navigate('/tennis-tarot')
+        break
+      case 'name':
+        navigate('/name')
         break
       default:
         alert('준비 중인 서비스입니다.')
@@ -203,25 +207,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 하단 네비게이션 */}
-      <nav className="bottom-nav">
-        <button className="nav-item active">
-          <span className="nav-icon">🏠</span>
-          <span className="nav-label">홈</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/battle')}>
-          <span className="nav-icon">⚔️</span>
-          <span className="nav-label">대결</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/fortune/history')}>
-          <span className="nav-icon">📊</span>
-          <span className="nav-label">기록</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/mypage')}>
-          <span className="nav-icon">👤</span>
-          <span className="nav-label">MY</span>
-        </button>
-      </nav>
     </div>
   )
 }

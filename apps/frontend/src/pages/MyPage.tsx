@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Spin } from 'antd'
 import { useAuth } from '../contexts/AuthContext'
-import { userApi, type MyPageData, type RiceTransaction } from '../api/client'
+import { userApi, type MyPageData, type RiceTransaction, type DailyBonusStatus } from '../api/client'
 import './MyPage.css'
 
 // 오행 색상
@@ -27,6 +27,9 @@ export default function MyPage() {
   const [activeTab, setActiveTab] = useState<TabType>('overview')
   const [riceTransactions, setRiceTransactions] = useState<RiceTransaction[]>([])
   const [riceLoading, setRiceLoading] = useState(false)
+  const [showAllActivities, setShowAllActivities] = useState(false)
+  const [dailyBonus, setDailyBonus] = useState<DailyBonusStatus | null>(null)
+  const [claimingBonus, setClaimingBonus] = useState(false)
 
   useEffect(() => {
     if (!token) {
@@ -36,8 +39,12 @@ export default function MyPage() {
 
     const fetchData = async () => {
       try {
-        const myPageData = await userApi.getMyPage(token)
+        const [myPageData, bonusStatus] = await Promise.all([
+          userApi.getMyPage(token),
+          userApi.getDailyBonus(token),
+        ])
         setData(myPageData)
+        setDailyBonus(bonusStatus)
       } catch (error) {
         console.error('마이페이지 로드 실패:', error)
       } finally {
@@ -58,6 +65,32 @@ export default function MyPage() {
       console.error('쌀 내역 로드 실패:', error)
     } finally {
       setRiceLoading(false)
+    }
+  }
+
+  const claimLoginBonus = async () => {
+    if (!token || claimingBonus || dailyBonus?.loginBonus.claimed) return
+    setClaimingBonus(true)
+    try {
+      const result = await userApi.claimLoginBonus(token)
+      if (result.success) {
+        // 보너스 상태 업데이트
+        setDailyBonus(prev => prev ? {
+          ...prev,
+          loginBonus: { ...prev.loginBonus, claimed: true }
+        } : null)
+        // 쌀 잔액 업데이트
+        setData(prev => prev ? {
+          ...prev,
+          user: { ...prev.user, rice: result.balance }
+        } : null)
+        alert(`🍚 ${result.amount}쌀을 받았습니다!`)
+      }
+    } catch (error) {
+      console.error('로그인 보너스 수령 실패:', error)
+      alert('보너스 수령에 실패했습니다')
+    } finally {
+      setClaimingBonus(false)
     }
   }
 
@@ -109,6 +142,9 @@ export default function MyPage() {
     <div className="mypage-screen">
       {/* 프로필 헤더 */}
       <div className="mypage-header">
+        <button className="logout-mini-btn" onClick={() => { logout(); navigate('/'); }}>
+          로그아웃
+        </button>
         <div className="profile-avatar" style={{ borderColor: elementColor }}>
           {data.user.profileImage ? (
             <img src={data.user.profileImage} alt="프로필" />
@@ -152,6 +188,54 @@ export default function MyPage() {
           충전하기
         </button>
       </div>
+
+      {/* 일일 보너스 카드 */}
+      {dailyBonus && (
+        <div className="daily-bonus-card">
+          <h3 className="bonus-title">🎁 일일 무료 쌀</h3>
+          <div className="bonus-list">
+            <div className={`bonus-item ${dailyBonus.loginBonus.claimed ? 'claimed' : ''}`}>
+              <div className="bonus-info">
+                <span className="bonus-icon">📅</span>
+                <div className="bonus-text">
+                  <span className="bonus-name">로그인 보너스</span>
+                  <span className="bonus-amount">+{dailyBonus.loginBonus.amount}쌀</span>
+                </div>
+              </div>
+              {dailyBonus.loginBonus.claimed ? (
+                <span className="bonus-claimed">✓ 수령완료</span>
+              ) : (
+                <button
+                  className="bonus-claim-btn"
+                  onClick={claimLoginBonus}
+                  disabled={claimingBonus}
+                >
+                  {claimingBonus ? '...' : '받기'}
+                </button>
+              )}
+            </div>
+            <div className={`bonus-item ${dailyBonus.fortuneBonus.claimed ? 'claimed' : ''}`}>
+              <div className="bonus-info">
+                <span className="bonus-icon">🌅</span>
+                <div className="bonus-text">
+                  <span className="bonus-name">오늘의 운세</span>
+                  <span className="bonus-amount">+{dailyBonus.fortuneBonus.amount}쌀</span>
+                </div>
+              </div>
+              {dailyBonus.fortuneBonus.claimed ? (
+                <span className="bonus-claimed">✓ 수령완료</span>
+              ) : (
+                <button
+                  className="bonus-claim-btn fortune"
+                  onClick={() => navigate('/fortune/input')}
+                >
+                  운세보기
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 대결 통계 */}
       <div className="stats-card">
@@ -215,85 +299,104 @@ export default function MyPage() {
             {data.saju ? (
               <div className="saju-card">
                 <h3 className="card-title">📜 내 사주</h3>
-                <div className="saju-pillars">
-                  {['year', 'month', 'day', 'hour'].map((key) => {
-                    const pillar = data.saju?.pillars[key as keyof typeof data.saju.pillars]
-                    if (!pillar) return (
-                      <div key={key} className="pillar unknown">
-                        <span className="pillar-label">{key === 'year' ? '년' : key === 'month' ? '월' : key === 'day' ? '일' : '시'}</span>
-                        <span className="pillar-stem">?</span>
-                        <span className="pillar-branch">?</span>
-                      </div>
-                    )
-                    return (
-                      <div key={key} className="pillar">
-                        <span className="pillar-label">{key === 'year' ? '년' : key === 'month' ? '월' : key === 'day' ? '일' : '시'}</span>
-                        <span className="pillar-stem">{pillar.heavenlyStem}</span>
-                        <span className="pillar-branch">{pillar.earthlyBranch}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-                <div className="saju-summary">
-                  <p>
-                    <strong>일주:</strong> {data.saju.pillars.day.heavenlyStem}{data.saju.pillars.day.earthlyBranch}
-                  </p>
-                  <p>
-                    <strong>격국:</strong> {data.saju.basicAnalysis.geukGuk}
-                  </p>
-                  <p>
-                    <strong>신강/신약:</strong> {data.saju.basicAnalysis.balance === 'strong' ? '신강' : data.saju.basicAnalysis.balance === 'weak' ? '신약' : '중화'}
-                  </p>
-                </div>
+                {data.saju.pillars ? (
+                  <div className="saju-pillars">
+                    {['year', 'month', 'day', 'hour'].map((key) => {
+                      const pillars = data.saju?.pillars
+                      const pillar = pillars ? pillars[key as keyof typeof pillars] : null
+                      if (!pillar) return (
+                        <div key={key} className="pillar unknown">
+                          <span className="pillar-label">{key === 'year' ? '년' : key === 'month' ? '월' : key === 'day' ? '일' : '시'}</span>
+                          <span className="pillar-stem">?</span>
+                          <span className="pillar-branch">?</span>
+                        </div>
+                      )
+                      return (
+                        <div key={key} className="pillar">
+                          <span className="pillar-label">{key === 'year' ? '년' : key === 'month' ? '월' : key === 'day' ? '일' : '시'}</span>
+                          <span className="pillar-stem">{pillar.heavenlyStem}</span>
+                          <span className="pillar-branch">{pillar.earthlyBranch}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <p className="empty-text">사주 정보를 불러올 수 없습니다</p>
+                )}
+                {data.saju.pillars?.day && data.saju.basicAnalysis && (
+                  <div className="saju-summary">
+                    <p>
+                      <strong>일주:</strong> {data.saju.pillars.day.heavenlyStem}{data.saju.pillars.day.earthlyBranch}
+                    </p>
+                    {data.saju.basicAnalysis.geukGuk && (
+                      <p>
+                        <strong>격국:</strong> {data.saju.basicAnalysis.geukGuk}
+                      </p>
+                    )}
+                    {data.saju.basicAnalysis.balance && (
+                      <p>
+                        <strong>신강/신약:</strong> {data.saju.basicAnalysis.balance === 'strong' ? '신강' : data.saju.basicAnalysis.balance === 'weak' ? '신약' : '중화'}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="saju-card empty">
                 <h3 className="card-title">📜 내 사주</h3>
                 <p className="empty-text">아직 사주 분석을 하지 않았습니다</p>
-                <button className="primary-btn" onClick={() => navigate('/battle/input')}>
+                <button className="primary-btn" onClick={() => navigate('/battle')}>
                   사주 분석하기
                 </button>
               </div>
             )}
 
-            {/* 최근 대결 */}
-            <div className="recent-battles">
-              <h3 className="card-title">🏆 최근 대결</h3>
-              {data.recentBattles.length > 0 ? (
-                <div className="battle-list">
-                  {data.recentBattles.map((battle) => {
-                    const isWin = battle.winnerId === data.user.id
-                    const isLose = battle.winnerId && battle.winnerId !== data.user.id
-                    const statusClass = battle.status === 'pending' ? 'pending' : isWin ? 'win' : isLose ? 'lose' : 'draw'
+            {/* 최근 이용 서비스 */}
+            <div className="recent-activities">
+              <h3 className="card-title">📋 최근 이용 서비스</h3>
+              {data.recentActivities && data.recentActivities.length > 0 ? (
+                <>
+                  <div className="activity-list">
+                    {(showAllActivities ? data.recentActivities : data.recentActivities.slice(0, 4)).map((activity) => {
+                      const handleClick = () => {
+                        if (activity.serviceType === 'battle') {
+                          navigate(`/battle/result/${activity.id}`)
+                        } else if (activity.serviceType === 'fortune') {
+                          navigate(`/fortune/record/${activity.id}`)
+                        } else if (activity.serviceType === 'saju') {
+                          navigate('/battle/report')
+                        }
+                      }
 
-                    return (
-                      <div
-                        key={battle.id}
-                        className={`battle-item ${statusClass}`}
-                        onClick={() => battle.status === 'completed' && navigate(`/battle/result/${battle.id}`)}
-                      >
-                        <div className="battle-players">
-                          <span className="player">{battle.challenger.nickname}</span>
-                          <span className="vs">vs</span>
-                          <span className="player">{battle.opponent?.nickname || '대기중'}</span>
+                      return (
+                        <div
+                          key={`${activity.serviceType}-${activity.id}`}
+                          className="activity-item"
+                          onClick={handleClick}
+                        >
+                          <span className="activity-icon">{activity.serviceIcon}</span>
+                          <div className="activity-info">
+                            <span className="activity-name">{activity.serviceName}</span>
+                            <span className="activity-detail">{activity.detail}</span>
+                          </div>
+                          <span className="activity-date">
+                            {new Date(activity.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                          </span>
                         </div>
-                        <div className="battle-result">
-                          {battle.status === 'pending' ? (
-                            <span className="status-badge pending">대기중</span>
-                          ) : isWin ? (
-                            <span className="status-badge win">승리</span>
-                          ) : isLose ? (
-                            <span className="status-badge lose">패배</span>
-                          ) : (
-                            <span className="status-badge draw">무승부</span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                      )
+                    })}
+                  </div>
+                  {data.recentActivities.length > 4 && (
+                    <button
+                      className="show-more-btn"
+                      onClick={() => setShowAllActivities(!showAllActivities)}
+                    >
+                      {showAllActivities ? '접기 ▲' : `더보기 (${data.recentActivities.length - 4}개) ▼`}
+                    </button>
+                  )}
+                </>
               ) : (
-                <p className="empty-text">아직 대결 기록이 없습니다</p>
+                <p className="empty-text">아직 이용한 서비스가 없습니다</p>
               )}
             </div>
           </div>
@@ -354,7 +457,7 @@ export default function MyPage() {
                 <div className="empty-state">
                   <span>⚔️</span>
                   <p>아직 대결 기록이 없습니다</p>
-                  <button className="primary-btn" onClick={() => navigate('/battle/input')}>
+                  <button className="primary-btn" onClick={() => navigate('/battle')}>
                     첫 대결 시작하기
                   </button>
                 </div>
@@ -398,15 +501,6 @@ export default function MyPage() {
         )}
       </div>
 
-      {/* 하단 버튼 */}
-      <div className="mypage-footer">
-        <button className="secondary-btn" onClick={() => navigate('/')}>
-          🏠 홈으로
-        </button>
-        <button className="danger-btn" onClick={() => { logout(); navigate('/'); }}>
-          로그아웃
-        </button>
-      </div>
     </div>
   )
 }

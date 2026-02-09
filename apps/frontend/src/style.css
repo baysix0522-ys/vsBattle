@@ -44,6 +44,25 @@ body {
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
+/* 하단 네비바 높이 (safe-area 포함) */
+:root {
+  --bottom-nav-height: calc(70px + env(safe-area-inset-bottom));
+}
+
+/* 모든 페이지에 하단 네비바 공간 확보 */
+.home-page,
+.name-page,
+.name-result-page,
+.mypage-screen,
+.tarot-page,
+.tennis-tarot-page,
+.battle-page,
+.battle-page-wrapper,
+.fortune-page-v2,
+.birth-input-page {
+  padding-bottom: var(--bottom-nav-height);
+}
+
 button {
   cursor: pointer;
   font-family: inherit;
@@ -410,7 +429,7 @@ a {
 }
 
 .summary-text {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   margin-bottom: 12px;
 }
@@ -510,7 +529,6 @@ a {
 .section-title {
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 16px;
 }
 
 .menu-grid {
@@ -748,13 +766,25 @@ a {
   top: 100%;
   right: 0;
   margin-top: 8px;
-  min-width: 180px;
+  min-width: 200px;
   background: var(--bg-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-md);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   z-index: 200;
   overflow: hidden;
+  animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .user-dropdown .user-info {
@@ -777,6 +807,22 @@ a {
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin: 0;
+}
+
+.user-dropdown .mypage-btn {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text);
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.user-dropdown .mypage-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .user-dropdown .logout-btn {
@@ -3430,7 +3476,6 @@ a {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 16px;
 }
 
 /* ===== 메인 점수 섹션 ===== */

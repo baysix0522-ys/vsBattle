@@ -16,6 +16,7 @@ import BattleResult from './pages/BattleResult'
 import MyPage from './pages/MyPage'
 import NameInput from './pages/NameInput'
 import NameResult from './pages/NameResult'
+import BottomNav from './components/BottomNav'
 
 export default function App() {
   return (
@@ -42,6 +43,8 @@ export default function App() {
           <Route path="/name" element={<NameInput />} />
           <Route path="/name/result" element={<NameResult />} />
         </Routes>
+        {/* 하단 고정 네비게이션 (앱 느낌) */}
+        <BottomNav />
       </BrowserRouter>
     </AuthProvider>
   )

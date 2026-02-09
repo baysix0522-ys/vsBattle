@@ -112,7 +112,13 @@ export default function NameInput() {
     } catch (err: any) {
       if (err?.name === 'AbortError') return
       console.error('이름 분석 실패:', err)
-      setError('이름 분석에 실패했습니다. 다시 시도해주세요.')
+      if (err?.status === 402) {
+        setError('쌀이 부족합니다. 이름 풀이에는 50쌀이 필요합니다.')
+      } else if (err?.status === 401) {
+        setError('로그인이 필요합니다.')
+      } else {
+        setError('이름 분석에 실패했습니다. 다시 시도해주세요.')
+      }
     } finally {
       setAnalyzing(false)
     }

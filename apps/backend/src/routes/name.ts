@@ -1,7 +1,10 @@
 import { Router, type Request, type Response } from 'express'
 import { sql } from '../db/index.js'
 import { optionalAuth, requireAuth } from '../middleware/auth.js'
+import { userStore } from '../store/userStore.js'
 import { suggestHanja, analyzeName, type SelectedHanja, type NameAnalysisResult } from '../services/nameAnalysis.js'
+
+const NAME_ANALYSIS_COST = 50
 
 const router = Router()
 
@@ -37,8 +40,8 @@ router.post('/suggest-hanja', optionalAuth, async (req: Request, res: Response) 
 // ========================================
 // 이름 분석
 // ========================================
-router.post('/analyze', optionalAuth, async (req: Request, res: Response) => {
-  const userId = req.user?.id || null
+router.post('/analyze', requireAuth, async (req: Request, res: Response) => {
+  const userId = req.user!.id
   const { surname, surnameHanja, koreanName, selectedHanja } = req.body as {
     surname: string
     surnameHanja: string
@@ -90,8 +93,28 @@ router.post('/analyze', optionalAuth, async (req: Request, res: Response) => {
       console.log('[NAME] 캐시 무효 (새 필드 없음), 재분석:', surname + koreanName, hanjaString)
     }
 
+    // 쌀 체크
+    const user = await userStore.findById(userId)
+    if (!user || user.rice < NAME_ANALYSIS_COST) {
+      return res.status(402).json({
+        error: '쌀이 부족합니다.',
+        required: NAME_ANALYSIS_COST,
+        current: user?.rice || 0,
+      })
+    }
+
     // 새로 분석
     const result = await analyzeName(surname, surnameHanja, koreanName, selectedHanja)
+
+    // 쌀 차감
+    const newBalance = user.rice - NAME_ANALYSIS_COST
+    await userStore.update(userId, { rice: newBalance })
+
+    // 쌀 거래 기록
+    await sql`
+      INSERT INTO rice_transactions (user_id, type, amount, balance_after, description, reference_type)
+      VALUES (${userId}, 'use', ${-NAME_ANALYSIS_COST}, ${newBalance}, '이름 풀이', 'name_analysis')
+    `
 
     // DB에 저장
     const [record] = await sql`
@@ -110,6 +133,8 @@ router.post('/analyze', optionalAuth, async (req: Request, res: Response) => {
       recordId: record?.id ?? '',
       isExisting: false,
       result,
+      riceUsed: NAME_ANALYSIS_COST,
+      riceRemaining: newBalance,
     })
   } catch (error) {
     console.error('이름 분석 실패:', error)

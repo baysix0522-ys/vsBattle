@@ -41,18 +41,18 @@ export default function About() {
         <section>
           <h2>사업자 정보</h2>
           <div className="business-info">
-            <p><strong>상호명:</strong> 사주배틀</p>
-            <p><strong>대표자:</strong> 홍길동</p>
-            <p><strong>사업자등록번호:</strong> 123-45-67890</p>
-            <p><strong>통신판매업신고:</strong> 제2025-서울강남-0000호</p>
-            <p><strong>주소:</strong> 서울특별시 강남구 테헤란로 123</p>
-            <p><strong>이메일:</strong> contact@sajubattle.com</p>
-            <p><strong>고객센터:</strong> 02-1234-5678</p>
+            <p><strong>상호명:</strong> 오행사주배틀</p>
+            <p><strong>대표자:</strong> 박영식</p>
+            {/* <p><strong>사업자등록번호:</strong> 123-45-67890</p> */}
+            {/* <p><strong>통신판매업신고:</strong> 제2025-서울강남-0000호</p> */}
+            {/* <p><strong>주소:</strong> 서울특별시 강남구 테헤란로 123</p> */}
+            <p><strong>이메일:</strong> iiiizxc123@naver.com</p>
+            {/* <p><strong>고객센터:</strong> 02-1234-5678</p> */}
           </div>
         </section>
 
         <div className="legal-footer">
-          <p>Copyright 2025. 사주배틀 All rights reserved.</p>
+          <p>Copyright 2026. 오행사주배틀 All rights reserved.</p>
         </div>
       </div>
     </div>

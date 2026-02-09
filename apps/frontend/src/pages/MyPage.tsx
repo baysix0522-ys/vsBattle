@@ -209,9 +209,9 @@ export default function MyPage() {
             <span className="rice-amount">{data.user.rice.toLocaleString()}</span>
           </div>
         </div>
-        <button className="charge-btn" onClick={() => navigate('/shop')}>
+        {/* <button className="charge-btn" onClick={() => navigate('/shop')}>
           충전하기
-        </button>
+        </button> */}
       </div>
 
       {/* 일일 보너스 카드 */}

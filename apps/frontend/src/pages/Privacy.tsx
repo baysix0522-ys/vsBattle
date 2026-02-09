@@ -79,13 +79,13 @@ export default function Privacy() {
         <section>
           <h2>7. 개인정보 보호책임자</h2>
           <p>
-            성명: 홍길동<br />
-            이메일: privacy@sajubattle.com
+            성명: 박영식<br />
+            이메일: iiiizxc123@naver.com
           </p>
         </section>
 
         <div className="legal-footer">
-          <p>시행일: 2025년 1월 1일</p>
+          <p>시행일: 2026년 2월 09일</p>
         </div>
       </div>
     </div>

@@ -643,14 +643,6 @@ export type NameHistoryItem = {
 
 // Name Analysis API
 export const nameApi = {
-  // 한자 후보 제안
-  suggestHanja: (koreanName: string, token?: string | null) =>
-    apiRequest<{ success: boolean; suggestions: HanjaCandidates[] }>('/name/suggest-hanja', {
-      method: 'POST',
-      token: token ?? null,
-      body: { koreanName },
-    }),
-
   // 이름 분석
   analyze: (
     surname: string,

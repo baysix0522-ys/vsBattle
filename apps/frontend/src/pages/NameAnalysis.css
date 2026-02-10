@@ -179,6 +179,38 @@
   margin: 2px 0;
 }
 
+/* ===== 한자 입력 모드 토글 ===== */
+
+.hanja-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 10px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ccc;
+}
+
+.mode-btn.active {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: #8b5cf6;
+  color: #fff;
+  font-weight: 600;
+}
+
 /* ===== 인라인 한자 선택 ===== */
 
 .surname-input-row {
@@ -249,6 +281,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .inline-hanja-btn {
@@ -302,6 +337,56 @@
   padding: 2px 6px;
   border-radius: 4px;
   font-weight: 500;
+}
+
+/* 한자 리스트 선택 */
+.hanja-list-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.hanja-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  width: 100%;
+}
+
+.hanja-list-item:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.hanja-list-item.selected {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: #8b5cf6;
+}
+
+.hanja-list-char {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  min-width: 32px;
+  text-align: center;
+}
+
+.hanja-list-meaning {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.hanja-list-item.selected .hanja-list-meaning {
+  color: #c4b5fd;
 }
 
 .inline-hanja-loading {

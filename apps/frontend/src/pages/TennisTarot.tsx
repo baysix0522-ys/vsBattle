@@ -10,6 +10,7 @@ import {
   type Category,
   type Reading,
 } from '../lib/tennisTarot'
+import SEO from '../components/SEO'
 
 type GamePhase = 'intro' | 'selecting' | 'revealing' | 'result'
 
@@ -105,6 +106,7 @@ export default function TennisTarot() {
 
   return (
     <div className="tennis-tarot-page">
+      <SEO title="테니스 타로" description="테니스와 타로의 만남! 오늘의 테니스 운세를 카드로 확인해보세요." path="/tennis-tarot" />
       <header className="tarot-header tennis">
         <button className="back-btn" onClick={() => navigate('/')}>
           ← 홈으로

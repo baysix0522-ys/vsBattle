@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Input, ConfigProvider, theme, Spin } from 'antd'
 import { useAuth } from '../contexts/AuthContext'
 import { nameApi, type SelectedHanja } from '../api/client'
+import SEO from '../components/SEO'
 import './NameAnalysis.css'
 
 export default function NameInput() {
@@ -151,6 +152,7 @@ export default function NameInput() {
       }}
     >
       <div className="name-page">
+        <SEO title="이름 풀이" description="내 이름에 숨겨진 의미를 알아보세요. 한자 분석과 AI 기반 이름 해석으로 이름의 뜻을 풀어드립니다." path="/name" />
         <div className="name-header">
           <button className="back-btn" onClick={handleBack}>←</button>
           <h1>이름 풀이</h1>

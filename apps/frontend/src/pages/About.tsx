@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import SEO from '../components/SEO'
 import './Legal.css'
 
 export default function About() {
@@ -6,6 +7,7 @@ export default function About() {
 
   return (
     <div className="legal-screen">
+      <SEO title="회사소개" description="사주대결 서비스를 운영하는 팀을 소개합니다." path="/about" />
       <header className="legal-header">
         <button className="back-btn" onClick={() => navigate(-1)}>←</button>
         <h1>회사소개</h1>

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
@@ -26,6 +27,7 @@ import BottomNav from './components/BottomNav'
 
 export default function App() {
   return (
+    <HelmetProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -61,5 +63,6 @@ export default function App() {
         <BottomNav />
       </BrowserRouter>
     </AuthProvider>
+    </HelmetProvider>
   )
 }

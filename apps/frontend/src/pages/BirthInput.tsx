@@ -8,6 +8,7 @@ import koKR from 'antd/locale/ko_KR'
 import { useAuth } from '../contexts/AuthContext'
 import { fortuneApi } from '../api/client'
 import { calculateTodayFortune } from '../utils/fortune'
+import SEO from '../components/SEO'
 
 dayjs.locale('ko')
 
@@ -97,6 +98,7 @@ export default function BirthInput() {
     >
       <App>
         <div className="birth-input-page">
+          <SEO title="오늘의 운세" description="생년월일과 태어난 시간으로 오늘의 운세를 확인해보세요. 사주팔자 기반 정확한 운세 분석." path="/fortune/input" />
           <div className="birth-input-container">
             <div className="page-header">
               <button className="back-btn" onClick={() => navigate('/')}>

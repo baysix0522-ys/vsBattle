@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ApiError, authApi } from '../api/client'
 import { useAuth } from '../contexts/AuthContext'
+import SEO from '../components/SEO'
 
 type FormMode = 'login' | 'register'
 
@@ -86,6 +87,7 @@ export default function Login() {
 
   return (
     <div className="login-page">
+      <SEO title="로그인" description="사주대결에 로그인하고 다양한 운세 서비스를 이용해보세요." path="/login" />
       <div className="login-container">
         {/* 로고 영역 */}
         <div className="login-hero">

@@ -3,25 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>사주 배틀</title>
+    <title>사주대결 - 운세, 타로, 이름 풀이, 사주 분석</title>
 
     <!-- SEO -->
-    <meta name="description" content="사주로 겨루는 운명의 대결! 친구와 사주 스탯을 비교해보세요." />
+    <meta name="description" content="사주로 겨루는 운명의 대결! 오늘의 운세, 타로 카드, 이름 풀이, 사주 대결까지 다양한 운세 서비스를 무료로 즐겨보세요." />
+    <meta name="keywords" content="사주, 운세, 타로, 이름풀이, 사주대결, 오늘의운세, 신년운세, 사주팔자, 무료운세" />
+    <link rel="canonical" href="https://yspace.kr/" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="사주 배틀 ⚔️" />
-    <meta property="og:description" content="사주로 겨루는 운명의 대결! 친구와 사주 스탯을 비교해보세요." />
+    <meta property="og:title" content="사주대결 - 운세, 타로, 이름 풀이" />
+    <meta property="og:description" content="사주로 겨루는 운명의 대결! 오늘의 운세, 타로, 이름 풀이까지 다양한 운세 서비스를 무료로 즐겨보세요." />
     <meta property="og:image" content="https://yspace.kr/banners/banner02.png" />
     <meta property="og:url" content="https://yspace.kr" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="사주대결" />
+    <meta property="og:locale" content="ko_KR" />
     <meta property="og:image:width" content="1248" />
     <meta property="og:image:height" content="832" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="사주 배틀 ⚔️" />
-    <meta name="twitter:description" content="사주로 겨루는 운명의 대결!" />
+    <meta name="twitter:title" content="사주대결 - 운세, 타로, 이름 풀이" />
+    <meta name="twitter:description" content="사주로 겨루는 운명의 대결! 다양한 운세 서비스를 무료로 즐겨보세요." />
     <meta name="twitter:image" content="https://yspace.kr/banners/banner02.png" />
+
+    <!-- JSON-LD 구조화 데이터 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "사주대결",
+      "url": "https://yspace.kr",
+      "description": "사주로 겨루는 운명의 대결! 오늘의 운세, 타로 카드, 이름 풀이, 사주 대결까지 다양한 운세 서비스를 무료로 즐겨보세요.",
+      "applicationCategory": "EntertainmentApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+      },
+      "inLanguage": "ko"
+    }
+    </script>
 
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8614924686318891"
@@ -29,6 +52,22 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- 크롤러용 noscript 콘텐츠 -->
+    <noscript>
+      <div style="max-width:600px;margin:0 auto;padding:20px;font-family:sans-serif">
+        <h1>사주대결 - 운세 서비스</h1>
+        <p>사주로 겨루는 운명의 대결! 다양한 운세 서비스를 무료로 즐겨보세요.</p>
+        <h2>서비스 안내</h2>
+        <ul>
+          <li><a href="/fortune/input">오늘의 운세</a> - 생년월일로 오늘 하루의 운세를 확인하세요</li>
+          <li><a href="/battle">사주 대결</a> - 친구와 운세를 비교하고 대결해보세요</li>
+          <li><a href="/name">이름 풀이</a> - 내 이름에 숨겨진 의미를 알아보세요</li>
+          <li><a href="/tarot">타로 카드</a> - 과거, 현재, 미래의 메시지를 확인하세요</li>
+          <li><a href="/tennis-tarot">테니스 타로</a> - 오늘의 테니스 운세를 확인하세요</li>
+        </ul>
+        <p><a href="/about">회사소개</a> | <a href="/terms">이용약관</a> | <a href="/privacy">개인정보처리방침</a></p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

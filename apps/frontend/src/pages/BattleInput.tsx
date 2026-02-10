@@ -7,6 +7,7 @@ import 'dayjs/locale/ko'
 import koKR from 'antd/locale/ko_KR'
 import { useAuth } from '../contexts/AuthContext'
 import { battleApi, type BattleBirthInfo } from '../api/client'
+import SEO from '../components/SEO'
 
 dayjs.locale('ko')
 
@@ -118,6 +119,7 @@ export default function BattleInput() {
     >
       <App>
         <div className="battle-page">
+          <SEO title="사주 대결" description="친구와 사주 운세를 비교하고 대결해보세요! 링크를 공유하고 누가 더 운이 좋은지 겨뤄보세요." path="/battle" />
           <header className="battle-header">
             <button className="back-btn" onClick={() => navigate('/')}>←</button>
             <h1>⚔️ 사주 대결</h1>

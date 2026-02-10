@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { fortuneApi, statsApi } from '../api/client'
+import SEO from '../components/SEO'
 
 type FortuneMenu = {
   id: string
@@ -176,6 +177,11 @@ export default function Home() {
 
   return (
     <div className="home-page">
+      <SEO
+        title="홈"
+        description="사주로 겨루는 운명의 대결! 오늘의 운세, 타로, 이름 풀이, 사주 대결까지 다양한 운세 서비스를 무료로 즐겨보세요."
+        path="/"
+      />
       {/* 헤더 */}
       <header className="home-header">
         <div className="header-left">

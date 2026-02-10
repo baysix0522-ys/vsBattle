@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { allTarotMeanings, TarotMeaning } from '../utils/tarotMeanings'
+import SEO from '../components/SEO'
 
 type GamePhase = 'intro' | 'selecting' | 'revealing' | 'result'
 
@@ -99,6 +100,7 @@ export default function Tarot() {
 
   return (
     <div className="tarot-page">
+      <SEO title="타로 카드" description="타로 카드가 전하는 과거, 현재, 미래의 메시지. 3장의 카드를 뽑아 운명을 확인해보세요." path="/tarot" />
       <header className="tarot-header">
         <button className="back-btn" onClick={() => navigate('/')}>
           ← 홈으로

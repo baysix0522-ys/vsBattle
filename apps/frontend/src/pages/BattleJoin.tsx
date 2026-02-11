@@ -1,16 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
-import { DatePicker, Select, Radio, Button, ConfigProvider, theme, App, Spin } from 'antd'
-import type { Dayjs } from 'dayjs'
-import dayjs from 'dayjs'
-import 'dayjs/locale/ko'
-import koKR from 'antd/locale/ko_KR'
+import { Button, ConfigProvider, theme, App, Spin } from 'antd'
 import { useAuth } from '../contexts/AuthContext'
-import { battleApi, type BattleBirthInfo } from '../api/client'
-
-dayjs.locale('ko')
-
-type Gender = 'male' | 'female'
+import { battleApi, sajuApi, type SajuProfile } from '../api/client'
+import SEO from '../components/SEO'
 
 // 일간 심볼
 const DAY_MASTER_SYMBOLS: Record<string, string> = {
@@ -18,21 +11,18 @@ const DAY_MASTER_SYMBOLS: Record<string, string> = {
   기: '🌾', 경: '⚔️', 신: '💎', 임: '🌊', 계: '💧',
 }
 
-const hourOptions = [
-  { value: 'unknown', label: '모름' },
-  { value: '00:00', label: '자시 (23:30~01:29)' },
-  { value: '02:00', label: '축시 (01:30~03:29)' },
-  { value: '04:00', label: '인시 (03:30~05:29)' },
-  { value: '06:00', label: '묘시 (05:30~07:29)' },
-  { value: '08:00', label: '진시 (07:30~09:29)' },
-  { value: '10:00', label: '사시 (09:30~11:29)' },
-  { value: '12:00', label: '오시 (11:30~13:29)' },
-  { value: '14:00', label: '미시 (13:30~15:29)' },
-  { value: '16:00', label: '신시 (15:30~17:29)' },
-  { value: '18:00', label: '유시 (17:30~19:29)' },
-  { value: '20:00', label: '술시 (19:30~21:29)' },
-  { value: '22:00', label: '해시 (21:30~23:29)' },
-]
+const ELEMENT_COLORS: Record<string, string> = {
+  목: '#22c55e', 화: '#ef4444', 토: '#a16207', 금: '#eab308', 수: '#3b82f6',
+}
+
+const STAT_LABELS: Record<string, { icon: string; name: string }> = {
+  money: { icon: '💰', name: '금전운' },
+  love: { icon: '💕', name: '연애운' },
+  children: { icon: '👶', name: '자식운' },
+  career: { icon: '💼', name: '직장운' },
+  study: { icon: '📚', name: '학업운' },
+  health: { icon: '💪', name: '건강운' },
+}
 
 export default function BattleJoin() {
   const navigate = useNavigate()
@@ -49,34 +39,43 @@ export default function BattleJoin() {
     ilju: string
   } | null>(null)
 
-  const [birthDate, setBirthDate] = useState<Dayjs | null>(null)
-  const [hour, setHour] = useState<string>('unknown')
-  const [gender, setGender] = useState<Gender | null>(null)
-  const [formError, setFormError] = useState<string | null>(null)
+  const [myProfile, setMyProfile] = useState<SajuProfile | null>(null)
+  const [hasProfile, setHasProfile] = useState<boolean | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [joinError, setJoinError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!shareCode || !token) return
+    if (!shareCode || !token) {
+      setLoading(false)
+      return
+    }
 
-    const fetchBattle = async () => {
+    const fetchData = async () => {
       try {
-        const res = await battleApi.getBattleByCode(token, shareCode)
-        setChallenger(res.challenger)
+        // 병렬: 대결 정보 + 내 프로필
+        const [battleRes, profileRes] = await Promise.all([
+          battleApi.getBattleByCode(token, shareCode),
+          sajuApi.getProfile(token),
+        ])
+        setChallenger(battleRes.challenger)
+        setHasProfile(profileRes.hasProfile)
+        setMyProfile(profileRes.profile)
       } catch (err) {
-        console.error('대결 조회 실패:', err)
+        console.error('데이터 조회 실패:', err)
         setError(err instanceof Error ? err.message : '대결을 찾을 수 없습니다')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchBattle()
+    fetchData()
   }, [shareCode, token])
 
   // 비로그인 상태
   if (!user || !token) {
     return (
       <div className="battle-page">
+        <SEO title="대결 참가" description="사주 대결에 참가하세요" />
         <header className="battle-header">
           <button className="back-btn" onClick={() => navigate('/')}>←</button>
           <h1>대결 참가</h1>
@@ -100,6 +99,7 @@ export default function BattleJoin() {
   if (user.isGuest) {
     return (
       <div className="battle-page">
+        <SEO title="대결 참가" description="사주 대결에 참가하세요" />
         <header className="battle-header">
           <button className="back-btn" onClick={() => navigate('/')}>←</button>
           <h1>대결 참가</h1>
@@ -108,7 +108,7 @@ export default function BattleJoin() {
         <div className="battle-content">
           <div className="guest-block">
             <span className="block-icon">🔒</span>
-            <h3>유료 서비스입니다</h3>
+            <h3>회원 전용 서비스입니다</h3>
             <p>회원 가입 후 대결에 참가할 수 있습니다</p>
             <Button type="primary" size="large" onClick={() => navigate('/login')}>
               회원가입하기
@@ -119,44 +119,17 @@ export default function BattleJoin() {
     )
   }
 
-  const handleSubmit = async () => {
-    setFormError(null)
-
-    if (!birthDate) {
-      setFormError('생년월일을 선택해주세요.')
-      return
-    }
-
-    if (!gender) {
-      setFormError('성별을 선택해주세요.')
-      return
-    }
-
-    if (!shareCode) {
-      setFormError('대결 코드가 없습니다.')
-      return
-    }
-
-    const birthInfo: BattleBirthInfo = {
-      birthDate: birthDate.format('YYYY-MM-DD'),
-      isTimeUnknown: hour === 'unknown',
-      gender,
-      ...(hour !== 'unknown' ? { birthTime: hour } : {}),
-    }
-
+  const handleJoin = async () => {
+    if (!shareCode || !token) return
+    setJoinError(null)
     setIsSubmitting(true)
+
     try {
-      // 먼저 내 사주 분석
-      const analyzeRes = await battleApi.analyze(token, birthInfo)
-
-      // 대결 참가
-      const joinRes = await battleApi.joinBattle(token, shareCode, analyzeRes.reportId)
-
-      // 대결 결과 페이지로 이동
+      const joinRes = await battleApi.joinBattle(token, shareCode)
       navigate(`/battle/result/${joinRes.battleId}`)
     } catch (err) {
       console.error('대결 참가 실패:', err)
-      setFormError(err instanceof Error ? err.message : '대결 참가에 실패했습니다')
+      setJoinError(err instanceof Error ? err.message : '대결 참가에 실패했습니다')
     } finally {
       setIsSubmitting(false)
     }
@@ -164,7 +137,6 @@ export default function BattleJoin() {
 
   return (
     <ConfigProvider
-      locale={koKR}
       theme={{
         algorithm: theme.darkAlgorithm,
         token: {
@@ -175,6 +147,7 @@ export default function BattleJoin() {
     >
       <App>
         <div className="battle-page">
+          <SEO title="대결 참가" description="사주 대결에 참가하세요" />
           <header className="battle-header">
             <button className="back-btn" onClick={() => navigate('/')}>←</button>
             <h1>⚔️ 대결 참가</h1>
@@ -208,80 +181,104 @@ export default function BattleJoin() {
                     </span>
                   </div>
                   <div className="vs-badge">VS</div>
-                  <div className="opponent-placeholder">
-                    <span className="placeholder-icon">❓</span>
-                    <span className="placeholder-text">당신의 사주는?</span>
-                  </div>
+
+                  {/* 내 프로필 또는 프로필 없음 */}
+                  {hasProfile && myProfile ? (
+                    <div className="opponent-placeholder" style={{ opacity: 1 }}>
+                      <span className="placeholder-icon">
+                        {DAY_MASTER_SYMBOLS[myProfile.dayMaster] || '☯'}
+                      </span>
+                      <span className="placeholder-text" style={{ color: ELEMENT_COLORS[myProfile.dayMasterElement] || '#fff' }}>
+                        {myProfile.pillars.day.heavenlyStem}{myProfile.pillars.day.earthlyBranch} · {myProfile.dayMaster}일간
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="opponent-placeholder">
+                      <span className="placeholder-icon">❓</span>
+                      <span className="placeholder-text">사주 분석 필요</span>
+                    </div>
+                  )}
                 </div>
 
-                {formError && <div className="error-message">{formError}</div>}
-
-                <div className="battle-form">
-                  <h3 className="form-title">내 정보 입력</h3>
-
-                  <div className="form-section">
-                    <label className="section-label">생년월일 (양력)</label>
-                    <DatePicker
-                      value={birthDate}
-                      onChange={setBirthDate}
-                      placeholder="생년월일 선택"
+                {/* 프로필 없으면 분석 안내 */}
+                {hasProfile === false && (
+                  <div style={{
+                    background: 'rgba(249, 115, 22, 0.1)',
+                    border: '1px solid rgba(249, 115, 22, 0.3)',
+                    borderRadius: 12,
+                    padding: 20,
+                    textAlign: 'center',
+                    margin: '16px 0',
+                  }}>
+                    <p style={{ fontSize: 16, marginBottom: 12, color: '#f97316' }}>
+                      대결에 참가하려면 먼저 사주 분석이 필요합니다
+                    </p>
+                    <Button
+                      type="primary"
                       size="large"
-                      style={{ width: '100%' }}
-                      disabledDate={(current) => current && current > dayjs().endOf('day')}
-                      showToday={false}
-                      defaultPickerValue={dayjs().subtract(25, 'year')}
-                    />
-                  </div>
-
-                  <div className="form-section">
-                    <label className="section-label">태어난 시간</label>
-                    <Select
-                      value={hour}
-                      onChange={setHour}
-                      options={hourOptions}
-                      size="large"
-                      style={{ width: '100%' }}
-                      popupMatchSelectWidth={false}
-                    />
-                  </div>
-
-                  <div className="form-section">
-                    <label className="section-label">성별</label>
-                    <Radio.Group
-                      value={gender}
-                      onChange={(e) => setGender(e.target.value)}
-                      size="large"
-                      style={{ width: '100%' }}
-                      optionType="button"
-                      buttonStyle="solid"
+                      onClick={() => navigate(`/saju?returnTo=${encodeURIComponent(location.pathname)}`)}
+                      style={{
+                        background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                      }}
                     >
-                      <Radio.Button value="male" style={{ width: '50%', textAlign: 'center' }}>
-                        👨 남성
-                      </Radio.Button>
-                      <Radio.Button value="female" style={{ width: '50%', textAlign: 'center' }}>
-                        👩 여성
-                      </Radio.Button>
-                    </Radio.Group>
+                      사주 분석하러 가기
+                    </Button>
                   </div>
+                )}
 
-                  <Button
-                    type="primary"
-                    size="large"
-                    block
-                    onClick={handleSubmit}
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    style={{
-                      height: 56,
-                      fontSize: 18,
-                      fontWeight: 700,
-                      marginTop: 16,
-                      background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                    }}
-                  >
-                    {isSubmitting ? '대결 진행 중...' : '⚔️ 대결 시작!'}
-                  </Button>
-                </div>
+                {/* 프로필 있으면 내 스탯 미리보기 + 참가 버튼 */}
+                {hasProfile && myProfile && (
+                  <>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      borderRadius: 12,
+                      padding: 16,
+                      margin: '16px 0',
+                    }}>
+                      <h3 style={{ fontSize: 14, color: '#999', marginBottom: 12 }}>내 배틀 스탯</h3>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: 8,
+                      }}>
+                        {Object.entries(STAT_LABELS).map(([key, { icon, name }]) => {
+                          const stat = myProfile.battleStats[key as keyof typeof myProfile.battleStats]
+                          return (
+                            <div key={key} style={{
+                              background: 'rgba(255,255,255,0.05)',
+                              borderRadius: 8,
+                              padding: '8px 4px',
+                              textAlign: 'center',
+                            }}>
+                              <div style={{ fontSize: 12, color: '#999' }}>{icon} {name}</div>
+                              <div style={{ fontSize: 18, fontWeight: 700, color: '#f97316' }}>{stat.score}</div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {joinError && <div className="error-message">{joinError}</div>}
+
+                    <Button
+                      type="primary"
+                      size="large"
+                      block
+                      onClick={handleJoin}
+                      loading={isSubmitting}
+                      disabled={isSubmitting}
+                      style={{
+                        height: 56,
+                        fontSize: 18,
+                        fontWeight: 700,
+                        marginTop: 8,
+                        background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                      }}
+                    >
+                      {isSubmitting ? '대결 진행 중...' : '⚔️ 대결 시작!'}
+                    </Button>
+                  </>
+                )}
               </>
             ) : null}
           </div>

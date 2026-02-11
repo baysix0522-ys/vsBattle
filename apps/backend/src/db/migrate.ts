@@ -83,16 +83,36 @@ async function migrate() {
         detailed_report JSONB NOT NULL,
         advice JSONB NOT NULL,
 
+        -- 활성 프로필 (1인 1프로필)
+        is_active BOOLEAN DEFAULT true,
+
         -- 메타
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-
-        UNIQUE(user_id, birth_date, birth_time, gender)
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `
     console.log('Saju reports table created/verified')
 
     await sql`CREATE INDEX IF NOT EXISTS idx_saju_reports_user_id ON saju_reports(user_id)`
+
+    // 기존 테이블에 is_active 컬럼 추가 (없으면)
+    await sql`ALTER TABLE saju_reports ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true`
+
+    // 프리미엄 분석 결과 저장 컬럼
+    await sql`ALTER TABLE saju_reports ADD COLUMN IF NOT EXISTS premium_analysis JSONB`
+
+    // 기존 데이터 정리: 유저별 최신 1개만 active, 나머지 비활성화
+    await sql`
+      UPDATE saju_reports SET is_active = false
+      WHERE id NOT IN (
+        SELECT DISTINCT ON (user_id) id
+        FROM saju_reports
+        ORDER BY user_id, created_at DESC
+      )
+    `
+
+    // 활성 프로필 유니크 인덱스 (유저당 1개만 active)
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS idx_saju_reports_user_active ON saju_reports (user_id) WHERE is_active = true`
     console.log('Saju reports indexes created/verified')
 
     // Battles table (사주 대결)
@@ -115,11 +135,17 @@ async function migrate() {
         -- 케미스트리 (천간합/충 분석)
         chemistry JSONB,
 
+        -- GPT 비교 분석 결과
+        comparison_analysis JSONB,
+
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         completed_at TIMESTAMP WITH TIME ZONE
       )
     `
     console.log('Battles table created/verified')
+
+    // 기존 테이블에 comparison_analysis 컬럼 추가 (없으면)
+    await sql`ALTER TABLE battles ADD COLUMN IF NOT EXISTS comparison_analysis JSONB`
 
     await sql`CREATE INDEX IF NOT EXISTS idx_battles_challenger_id ON battles(challenger_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_battles_opponent_id ON battles(opponent_id)`
@@ -188,6 +214,19 @@ async function migrate() {
     await sql`CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status)`
     console.log('Payments indexes created/verified')
+
+    // ============================================
+    // 기존 테이블 마이그레이션 (제약 조건 정리)
+    // ============================================
+
+    // 기존 unique 제약 제거 (존재하면)
+    await sql`
+      DO $$ BEGIN
+        ALTER TABLE saju_reports DROP CONSTRAINT IF EXISTS saju_reports_user_id_birth_date_birth_time_gender_key;
+      EXCEPTION WHEN undefined_object THEN NULL;
+      END $$;
+    `
+    console.log('Schema migration completed')
 
     console.log('Migrations completed successfully!')
   } catch (error) {

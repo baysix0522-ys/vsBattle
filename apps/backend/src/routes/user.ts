@@ -4,6 +4,15 @@ import { requireAuth } from '../middleware/auth.js'
 
 const router = Router()
 
+// JSON 문자열을 객체로 안전 파싱
+function parseJson<T>(value: T | string | null | undefined): T | null {
+  if (value === null || value === undefined) return null
+  if (typeof value === 'string') {
+    try { return JSON.parse(value) as T } catch { return null }
+  }
+  return value as T
+}
+
 // ========================================
 // 마이페이지 데이터 조회
 // ========================================
@@ -22,14 +31,12 @@ router.get('/mypage', requireAuth, async (req: Request, res: Response) => {
       return res.status(404).json({ error: '사용자를 찾을 수 없습니다' })
     }
 
-    // 2. 내 사주 리포트 (가장 최근 것)
+    // 2. 내 사주 프로필 (활성 프로필)
     const [latestReport] = await sql`
       SELECT id, birth_date, birth_time, gender, day_master, day_master_element,
              pillars, basic_analysis, battle_stats, created_at
       FROM saju_reports
-      WHERE user_id = ${userId}
-      ORDER BY created_at DESC
-      LIMIT 1
+      WHERE user_id = ${userId} AND is_active = true
     `
 
     // 3. 대결 통계
@@ -139,9 +146,9 @@ router.get('/mypage', requireAuth, async (req: Request, res: Response) => {
         gender: latestReport.gender,
         dayMaster: latestReport.day_master,
         dayMasterElement: latestReport.day_master_element,
-        pillars: latestReport.pillars,
-        basicAnalysis: latestReport.basic_analysis,
-        battleStats: latestReport.battle_stats,
+        pillars: parseJson(latestReport.pillars),
+        basicAnalysis: parseJson(latestReport.basic_analysis),
+        battleStats: parseJson(latestReport.battle_stats),
         createdAt: latestReport.created_at,
       } : null,
       battleStats: {

@@ -9,6 +9,7 @@ import {
   type BattleStats,
   type SajuBasicAnalysis,
   type SajuDetailedReport,
+  type ComparisonAnalysis,
 } from '../api/client'
 import BattleOverlay from '../components/platformer/BattleOverlay'
 import './BattleResult.css'
@@ -59,6 +60,8 @@ export default function BattleResult() {
   const [challengerData, setChallengerData] = useState<Participant | null>(null)
   const [opponentData, setOpponentData] = useState<Participant | null>(null)
   const [scoresRevealed, setScoresRevealed] = useState(false)
+  const [comparison, setComparison] = useState<ComparisonAnalysis | null>(null)
+  const [comparisonLoading, setComparisonLoading] = useState(false)
 
   useEffect(() => {
     if (!battleId || !token) return
@@ -70,6 +73,18 @@ export default function BattleResult() {
         setChemistry(res.chemistry)
         setChallengerData(res.challenger)
         setOpponentData(res.opponent)
+
+        // 이미 비교분석이 있으면 바로 세팅
+        if (res.comparison) {
+          setComparison(res.comparison)
+        } else {
+          // 없으면 비교분석 생성 요청 (백그라운드)
+          setComparisonLoading(true)
+          battleApi.getComparison(token, battleId)
+            .then((compRes) => setComparison(compRes.comparison))
+            .catch((err) => console.error('비교분석 요청 실패:', err))
+            .finally(() => setComparisonLoading(false))
+        }
       } catch (err) {
         console.error('결과 조회 실패:', err)
         setError(err instanceof Error ? err.message : '결과를 불러올 수 없습니다')
@@ -315,6 +330,107 @@ export default function BattleResult() {
             {opponentData.report.personality}
           </div>
         </div>
+
+        {/* AI 대결 해설 */}
+        {scoresRevealed && (
+          <div className="summary-section">
+            <div className="summary-title">🤖 AI 대결 해설</div>
+            {comparisonLoading ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <Spin size="small" />
+                <p style={{ fontSize: 13, color: '#999', marginTop: 8 }}>AI가 대결을 분석하고 있습니다...</p>
+              </div>
+            ) : comparison ? (
+              <>
+                {/* 라운드별 해설 */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {comparison.rounds.map((round, idx) => (
+                    <div key={idx} style={{
+                      background: 'rgba(255,255,255,0.03)',
+                      borderRadius: 8,
+                      padding: '10px 12px',
+                      borderLeft: `3px solid ${
+                        round.advantage === 'challenger' ? '#3b82f6'
+                          : round.advantage === 'opponent' ? '#ef4444'
+                          : '#666'
+                      }`,
+                    }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>
+                        {round.category}
+                        <span style={{
+                          fontSize: 11,
+                          marginLeft: 8,
+                          color: round.advantage === 'challenger' ? '#3b82f6'
+                            : round.advantage === 'opponent' ? '#ef4444'
+                            : '#666',
+                        }}>
+                          {round.advantage === 'challenger' ? `${challengerData.nickname} 우세`
+                            : round.advantage === 'opponent' ? `${opponentData.nickname} 우세`
+                            : '호각'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 13, color: '#aaa', lineHeight: 1.5 }}>
+                        {round.narrative}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 전체 해설 */}
+                <div style={{
+                  marginTop: 16,
+                  padding: '12px 14px',
+                  background: 'rgba(249, 115, 22, 0.08)',
+                  borderRadius: 8,
+                  border: '1px solid rgba(249, 115, 22, 0.2)',
+                }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#f97316', marginBottom: 6 }}>
+                    📢 총평
+                  </div>
+                  <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.6 }}>
+                    {comparison.overallNarrative}
+                  </div>
+                </div>
+
+                {/* 궁합 해설 */}
+                <div style={{
+                  marginTop: 12,
+                  padding: '12px 14px',
+                  background: 'rgba(139, 92, 246, 0.08)',
+                  borderRadius: 8,
+                  border: '1px solid rgba(139, 92, 246, 0.2)',
+                }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa', marginBottom: 6 }}>
+                    💫 두 사주의 궁합
+                  </div>
+                  <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.6 }}>
+                    {comparison.chemistryNarrative}
+                  </div>
+                </div>
+
+                {/* 승자 코멘트 */}
+                <div style={{
+                  marginTop: 12,
+                  padding: '12px 14px',
+                  background: 'rgba(234, 179, 8, 0.08)',
+                  borderRadius: 8,
+                  border: '1px solid rgba(234, 179, 8, 0.2)',
+                }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#eab308', marginBottom: 6 }}>
+                    🏆 승자 코멘트
+                  </div>
+                  <div style={{ fontSize: 13, color: '#ccc', lineHeight: 1.6 }}>
+                    {comparison.winnerCommentary}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: 13, color: '#666', textAlign: 'center', padding: 12 }}>
+                AI 해설을 불러올 수 없습니다
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 홈 버튼 */}
         <div className="result-bottom-actions">

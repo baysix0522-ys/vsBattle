@@ -5,6 +5,7 @@ import { ensureRiceTransactionsTable, ensureNameAnalysisTable, ensureAccessLogsT
 import authRouter from './routes/auth.js'
 import fortuneRouter from './routes/fortune.js'
 import battleRouter from './routes/battle.js'
+import sajuRouter from './routes/saju.js'
 import userRouter from './routes/user.js'
 import nameRouter from './routes/name.js'
 import paymentRouter from './routes/payment.js'
@@ -38,6 +39,9 @@ app.use('/api/auth', authRouter)
 
 // Fortune routes
 app.use('/api/fortune', fortuneRouter)
+
+// Saju routes (사주 분석 프로필)
+app.use('/api/saju', sajuRouter)
 
 // Battle routes (사주 대결)
 app.use('/api/battle', battleRouter)

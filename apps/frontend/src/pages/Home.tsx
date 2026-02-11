@@ -121,6 +121,7 @@ export default function Home() {
     if (!user) {
       const targetPath = menuId === 'today' ? '/fortune/input'
         : menuId === 'battle' ? '/battle'
+        : menuId === 'saju' ? '/saju'
         : menuId === 'tarot' ? '/tarot'
         : menuId === 'tennis-tarot' ? '/tennis-tarot'
         : menuId === 'name' ? '/name'
@@ -149,6 +150,9 @@ export default function Home() {
         break
       case 'battle':
         navigate('/battle')
+        break
+      case 'saju':
+        navigate('/saju')
         break
       case 'tarot':
         navigate('/tarot')

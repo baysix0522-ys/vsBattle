@@ -145,6 +145,7 @@ export type BattleBirthInfo = {
 export type BattleStat = {
   score: number
   grade: string
+  reason?: string
 }
 
 export type BattleStats = {
@@ -244,42 +245,160 @@ export type BattleListItem = {
   completed_at: string | null
 }
 
-// Battle API
-export const battleApi = {
-  // 사주 분석 요청
+// Comparison Analysis Types
+export type ComparisonRound = {
+  category: string
+  narrative: string
+  advantage: 'challenger' | 'opponent' | 'even'
+}
+
+export type ComparisonAnalysis = {
+  rounds: ComparisonRound[]
+  overallNarrative: string
+  chemistryNarrative: string
+  winnerCommentary: string
+}
+
+// 십이운성
+export type TwelveStages = {
+  year: string
+  month: string
+  day: string
+  hour: string | null
+}
+
+// 신살
+export type SpecialStars = {
+  year: string[]
+  month: string[]
+  day: string[]
+  hour: string[] | null
+}
+
+// 귀인
+export type NoblePeople = {
+  year: string[]
+  month: string[]
+  day: string[]
+  hour: string[] | null
+}
+
+// 대운 항목
+export type DaewoonEntry = {
+  stem: string
+  branch: string
+  startAge: number
+  endAge: number
+  element: string
+  brief: string
+}
+
+// 프리미엄 분석
+export type PremiumAnalysis = {
+  destinyPartner: {
+    personality: string
+    occupation: string
+    appearance: string
+    traits: string[]
+    compatibility: string
+  }
+  wealthByPeriod: {
+    youth: { period: string; level: number; description: string }
+    earlyAdult: { period: string; level: number; description: string }
+    midLife: { period: string; level: number; description: string }
+    lateLife: { period: string; level: number; description: string }
+  }
+  lifeCrises: Array<{
+    title: string
+    description: string
+    period: string
+  }>
+}
+
+// Saju Profile API (사주 프로필)
+export type SajuProfile = {
+  reportId: string
+  birthDate: string
+  birthTime: string | null
+  isTimeUnknown: boolean
+  gender: string
+  pillars: SajuPillars
+  basic: SajuBasicAnalysis
+  battleStats: BattleStats
+  report: SajuDetailedReport
+  advice: SajuAdvice
+  dayMaster: string
+  dayMasterElement: string
+  yinYang: string
+  createdAt: string
+  twelveStages: TwelveStages | null
+  specialStars: SpecialStars | null
+  noblePeople: NoblePeople | null
+  daewoonTable: DaewoonEntry[] | null
+  balanceScore: number | null
+  premiumAnalysis: PremiumAnalysis | null
+}
+
+export const sajuApi = {
+  // 내 사주 프로필 조회
+  getProfile: (token: string) =>
+    apiRequest<{
+      hasProfile: boolean
+      profile: SajuProfile | null
+    }>('/saju/profile', { token }),
+
+  // 사주 분석 (생성/재분석)
   analyze: (token: string, birthInfo: BattleBirthInfo) =>
     apiRequest<{
       reportId: string
-      isExisting: boolean
+      isReanalysis: boolean
       result: {
         birthInfo: BattleBirthInfo
         pillars: SajuPillars
+        sipsin: unknown | null
         basic: SajuBasicAnalysis
+        currentFortune: unknown | null
         battleStats: BattleStats
         report: SajuDetailedReport
         advice: SajuAdvice
+        twelveStages: TwelveStages | null
+        specialStars: SpecialStars | null
+        noblePeople: NoblePeople | null
+        daewoonTable: DaewoonEntry[] | null
+        balanceScore: number | null
       }
-    }>('/battle/analyze', {
+      riceBalance: number
+    }>('/saju/analyze', {
       method: 'POST',
       token,
       body: birthInfo,
     }),
 
-  // 내 사주 리포트 목록
-  getMyReports: (token: string) =>
-    apiRequest<{ reports: unknown[] }>('/battle/my-reports', { token }),
+  // 프리미엄 분석 (운명의짝, 시기별재산, 찾아올위기)
+  getPremium: (token: string) =>
+    apiRequest<{
+      premiumAnalysis: PremiumAnalysis
+      cached: boolean
+      riceBalance?: number
+    }>('/saju/premium', {
+      method: 'POST',
+      token,
+    }),
+}
 
-  // 대결 생성
-  createBattle: (token: string, reportId: string) =>
+// Battle API
+export const battleApi = {
+  // 대결 생성 (활성 프로필 자동 사용)
+  createBattle: (token: string) =>
     apiRequest<{
       battleId: string
       shareCode: string
       shareUrl: string
       createdAt: string
+      riceBalance: number
     }>('/battle/create', {
       method: 'POST',
       token,
-      body: { reportId },
     }),
 
   // 대결 정보 조회 (공유 코드로)
@@ -296,8 +415,8 @@ export const battleApi = {
       createdAt: string
     }>(`/battle/join/${shareCode}`, { token }),
 
-  // 대결 참가
-  joinBattle: (token: string, shareCode: string, reportId: string) =>
+  // 대결 참가 (활성 프로필 자동 사용)
+  joinBattle: (token: string, shareCode: string) =>
     apiRequest<{
       battleId: string
       status: string
@@ -305,7 +424,6 @@ export const battleApi = {
     }>(`/battle/join/${shareCode}`, {
       method: 'POST',
       token,
-      body: { reportId },
     }),
 
   // 대결 결과 조회
@@ -315,6 +433,7 @@ export const battleApi = {
       status: string
       result: BattleResultData
       chemistry: Chemistry
+      comparison: ComparisonAnalysis | null
       winnerId: string | null
       challenger: {
         id: string
@@ -339,6 +458,15 @@ export const battleApi = {
       completedAt: string
     }>(`/battle/${battleId}/result`, { token }),
 
+  // GPT 비교 분석 요청/조회
+  getComparison: (token: string, battleId: string) =>
+    apiRequest<{
+      comparison: ComparisonAnalysis
+    }>(`/battle/${battleId}/comparison`, {
+      method: 'POST',
+      token,
+    }),
+
   // 내 대결 목록
   getMyBattles: (token: string) =>
     apiRequest<{ battles: BattleListItem[] }>('/battle/my-battles', { token }),
@@ -354,9 +482,9 @@ export type MyPageSaju = {
   gender: string
   dayMaster: string
   dayMasterElement: string
-  pillars: SajuPillars
-  basicAnalysis: SajuBasicAnalysis
-  battleStats: BattleStats
+  pillars: SajuPillars | null
+  basicAnalysis: SajuBasicAnalysis | null
+  battleStats: BattleStats | null
   createdAt: string
 }
 

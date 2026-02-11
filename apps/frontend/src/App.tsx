@@ -11,8 +11,8 @@ import FortuneRecordDetail from './pages/FortuneRecordDetail'
 import KakaoCallback from './pages/KakaoCallback'
 import Tarot from './pages/Tarot'
 import TennisTarot from './pages/TennisTarot'
-import BattleInput from './pages/BattleInput'
-import BattleReport from './pages/BattleReport'
+import SajuProfile from './pages/SajuProfile'
+import BattleLobby from './pages/BattleLobby'
 import BattleJoin from './pages/BattleJoin'
 import BattleResult from './pages/BattleResult'
 import MyPage from './pages/MyPage'
@@ -40,9 +40,10 @@ export default function App() {
           <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
           <Route path="/tarot" element={<Tarot />} />
           <Route path="/tennis-tarot" element={<TennisTarot />} />
+          {/* Saju profile */}
+          <Route path="/saju" element={<SajuProfile />} />
           {/* Battle routes */}
-          <Route path="/battle" element={<BattleInput />} />
-          <Route path="/battle/report" element={<BattleReport />} />
+          <Route path="/battle" element={<BattleLobby />} />
           <Route path="/battle/join/:shareCode" element={<BattleJoin />} />
           <Route path="/battle/result/:battleId" element={<BattleResult />} />
           {/* MyPage */}

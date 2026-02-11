@@ -395,7 +395,7 @@
   min-height: 200px;
 }
 
-/* 사주 카드 */
+/* 사주 카드 (기존) */
 .saju-card {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
@@ -405,6 +405,7 @@
 
 .saju-card.empty {
   text-align: center;
+  cursor: pointer;
 }
 
 .card-title {
@@ -414,6 +415,147 @@
   margin: 0 0 12px 0;
 }
 
+/* 사주 카드 V2 (개선) */
+.saju-card-v2 {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saju-card-v2:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.saju-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.saju-detail-link {
+  font-size: 12px;
+  color: #71717a;
+  transition: color 0.2s;
+}
+
+.saju-card-v2:hover .saju-detail-link {
+  color: #f97316;
+}
+
+/* 미니 원국표 */
+.saju-mini-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.mini-pillar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.mini-pillar.unknown {
+  opacity: 0.4;
+}
+
+.mini-pillar.highlight .mp-stem,
+.mini-pillar.highlight .mp-branch {
+  box-shadow: 0 0 0 1.5px rgba(249, 115, 22, 0.4);
+}
+
+.mp-label {
+  font-size: 11px;
+  color: #71717a;
+  font-weight: 500;
+}
+
+.mp-stem,
+.mp-branch {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.mp-hanja {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mp-hangul {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* 사주 태그 */
+.saju-mini-info {
+  margin-bottom: 12px;
+}
+
+.saju-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.saju-tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: #a1a1aa;
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.saju-tag.yongshin {
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+/* 미니 배틀 스탯 */
+.saju-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mini-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.mini-stat-icon {
+  font-size: 14px;
+}
+
+.mini-stat-score {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mini-stat-label {
+  font-size: 9px;
+  color: #52525b;
+}
+
+/* 기존 필러 스타일 (레거시) */
 .saju-pillars {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

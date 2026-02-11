@@ -16,6 +16,46 @@ const ELEMENT_NAMES: Record<string, string> = {
   wood: '목', fire: '화', earth: '토', metal: '금', water: '수',
 }
 
+// 천간 한자
+const STEM_HANJA: Record<string, string> = {
+  갑: '甲', 을: '乙', 병: '丙', 정: '丁', 무: '戊',
+  기: '己', 경: '庚', 신: '辛', 임: '壬', 계: '癸',
+}
+
+// 지지 한자
+const BRANCH_HANJA: Record<string, string> = {
+  자: '子', 축: '丑', 인: '寅', 묘: '卯', 진: '辰', 사: '巳',
+  오: '午', 미: '未', 신: '申', 유: '酉', 술: '戌', 해: '亥',
+}
+
+// 천간→오행
+const STEM_ELEMENT: Record<string, string> = {
+  갑: '목', 을: '목', 병: '화', 정: '화', 무: '토',
+  기: '토', 경: '금', 신: '금', 임: '수', 계: '수',
+}
+
+// 지지→오행
+const BRANCH_ELEMENT: Record<string, string> = {
+  자: '수', 축: '토', 인: '목', 묘: '목', 진: '토', 사: '화',
+  오: '화', 미: '토', 신: '금', 유: '금', 술: '토', 해: '수',
+}
+
+// 오행 한자
+const ELEMENT_HANJA: Record<string, string> = {
+  목: '木', 화: '火', 토: '土', 금: '金', 수: '水',
+}
+
+// 배틀스탯 아이콘
+const STAT_ICONS: Record<string, string> = {
+  money: '💰', love: '💕', children: '👶',
+  career: '💼', study: '📚', health: '💪',
+}
+
+const STAT_NAMES_SHORT: Record<string, string> = {
+  money: '재물', love: '연애', children: '자식',
+  career: '직장', study: '학업', health: '건강',
+}
+
 type TabType = 'overview' | 'battles' | 'rice'
 
 export default function MyPage() {
@@ -321,56 +361,104 @@ export default function MyPage() {
         {activeTab === 'overview' && (
           <div className="overview-tab">
             {/* 내 사주 정보 */}
-            {data.saju ? (
-              <div className="saju-card">
-                <h3 className="card-title">📜 내 사주</h3>
-                {data.saju.pillars ? (
-                  <div className="saju-pillars">
-                    {['year', 'month', 'day', 'hour'].map((key) => {
-                      const pillars = data.saju?.pillars
-                      const pillar = pillars ? pillars[key as keyof typeof pillars] : null
-                      if (!pillar) return (
-                        <div key={key} className="pillar unknown">
-                          <span className="pillar-label">{key === 'year' ? '년' : key === 'month' ? '월' : key === 'day' ? '일' : '시'}</span>
-                          <span className="pillar-stem">?</span>
-                          <span className="pillar-branch">?</span>
-                        </div>
-                      )
-                      return (
-                        <div key={key} className="pillar">
-                          <span className="pillar-label">{key === 'year' ? '년' : key === 'month' ? '월' : key === 'day' ? '일' : '시'}</span>
-                          <span className="pillar-stem">{pillar.heavenlyStem}</span>
-                          <span className="pillar-branch">{pillar.earthlyBranch}</span>
-                        </div>
-                      )
-                    })}
+            {data.saju ? (() => {
+              const saju = data.saju
+              // 방어적 파싱: JSONB가 문자열로 올 수 있음
+              const safeParse = <T,>(v: T | string | null | undefined): T | null => {
+                if (v == null) return null
+                if (typeof v === 'string') { try { return JSON.parse(v) } catch { return null } }
+                return v as T
+              }
+              const pillars = safeParse(saju.pillars)
+              const ba = safeParse(saju.basicAnalysis)
+              const bs = safeParse(saju.battleStats)
+              const pillarKeys = ['year', 'month', 'day', 'hour'] as const
+              const pillarLabels: Record<string, string> = { year: '年', month: '月', day: '日', hour: '時' }
+
+              return (
+                <div className="saju-card-v2" onClick={() => navigate('/saju')}>
+                  <div className="saju-card-header">
+                    <h3 className="card-title">📜 내 사주</h3>
+                    <span className="saju-detail-link">자세히 보기 &gt;</span>
                   </div>
-                ) : (
-                  <p className="empty-text">사주 정보를 불러올 수 없습니다</p>
-                )}
-                {data.saju.pillars?.day && data.saju.basicAnalysis && (
-                  <div className="saju-summary">
-                    <p>
-                      <strong>일주:</strong> {data.saju.pillars.day.heavenlyStem}{data.saju.pillars.day.earthlyBranch}
-                    </p>
-                    {data.saju.basicAnalysis.geukGuk && (
-                      <p>
-                        <strong>격국:</strong> {data.saju.basicAnalysis.geukGuk}
-                      </p>
-                    )}
-                    {data.saju.basicAnalysis.balance && (
-                      <p>
-                        <strong>신강/신약:</strong> {data.saju.basicAnalysis.balance === 'strong' ? '신강' : data.saju.basicAnalysis.balance === 'weak' ? '신약' : '중화'}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="saju-card empty">
+
+                  {/* 사주 원국 미니표 */}
+                  {pillars && (
+                    <div className="saju-mini-pillars">
+                      {pillarKeys.map(k => {
+                        const p = pillars[k]
+                        if (!p) return (
+                          <div key={k} className="mini-pillar unknown">
+                            <span className="mp-label">{pillarLabels[k]}</span>
+                            <span className="mp-stem">?</span>
+                            <span className="mp-branch">?</span>
+                          </div>
+                        )
+                        const stemEl = STEM_ELEMENT[p.heavenlyStem] || '토'
+                        const branchEl = BRANCH_ELEMENT[p.earthlyBranch] || '토'
+                        const isDay = k === 'day'
+                        return (
+                          <div key={k} className={`mini-pillar ${isDay ? 'highlight' : ''}`}>
+                            <span className="mp-label" style={isDay ? { color: elementColor } : undefined}>{pillarLabels[k]}</span>
+                            <div className="mp-stem" style={{ color: ELEMENT_COLORS[stemEl], background: ELEMENT_COLORS[stemEl] + '18' }}>
+                              <span className="mp-hanja">{STEM_HANJA[p.heavenlyStem] || p.heavenlyStem}</span>
+                              <span className="mp-hangul">{p.heavenlyStem}</span>
+                            </div>
+                            <div className="mp-branch" style={{ color: ELEMENT_COLORS[branchEl], background: ELEMENT_COLORS[branchEl] + '18' }}>
+                              <span className="mp-hanja">{BRANCH_HANJA[p.earthlyBranch] || p.earthlyBranch}</span>
+                              <span className="mp-hangul">{p.earthlyBranch}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  {/* 요약 정보 */}
+                  {ba && (
+                    <div className="saju-mini-info">
+                      <div className="saju-tags">
+                        <span className="saju-tag" style={{ color: elementColor, borderColor: elementColor + '44' }}>
+                          {ba.dayMaster}일간 · {elementLabel}{ELEMENT_HANJA[elementLabel || ''] ? `(${ELEMENT_HANJA[elementLabel || '']})` : ''}
+                        </span>
+                        {ba.geukGuk && <span className="saju-tag">{ba.geukGuk}</span>}
+                        {ba.balance && (
+                          <span className="saju-tag">
+                            {ba.balance === 'strong' ? '신강' : ba.balance === 'weak' ? '신약' : '중화'}
+                          </span>
+                        )}
+                        {ba.yongShin && (
+                          <span className="saju-tag yongshin">
+                            용신: {ba.yongShin}{ELEMENT_HANJA[ba.yongShin] ? `(${ELEMENT_HANJA[ba.yongShin]})` : ''}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 배틀 스탯 미니 */}
+                  {bs && (
+                    <div className="saju-mini-stats">
+                      {(Object.keys(bs) as (keyof typeof bs)[]).map(key => {
+                        const stat = bs[key]
+                        const scoreColor = stat.score >= 70 ? '#22c55e' : stat.score >= 50 ? '#eab308' : '#ef4444'
+                        return (
+                          <div key={key} className="mini-stat">
+                            <span className="mini-stat-icon">{STAT_ICONS[key]}</span>
+                            <span className="mini-stat-score" style={{ color: scoreColor }}>{stat.score}</span>
+                            <span className="mini-stat-label">{STAT_NAMES_SHORT[key]}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })() : (
+              <div className="saju-card empty" onClick={() => navigate('/saju')}>
                 <h3 className="card-title">📜 내 사주</h3>
                 <p className="empty-text">아직 사주 분석을 하지 않았습니다</p>
-                <button className="primary-btn" onClick={() => navigate('/battle')}>
+                <button className="primary-btn" onClick={(e) => { e.stopPropagation(); navigate('/saju') }}>
                   사주 분석하기
                 </button>
               </div>
@@ -389,7 +477,7 @@ export default function MyPage() {
                         } else if (activity.serviceType === 'fortune') {
                           navigate(`/fortune/record/${activity.id}`)
                         } else if (activity.serviceType === 'saju') {
-                          navigate('/battle/report')
+                          navigate('/saju')
                         }
                       }
 

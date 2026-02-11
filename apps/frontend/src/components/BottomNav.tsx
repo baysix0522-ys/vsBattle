@@ -14,16 +14,16 @@ const navItems: NavItem[] = [
     label: '홈'
   },
   {
+    path: '/saju',
+    icon: '📜',
+    label: '사주',
+    matchPaths: ['/saju']
+  },
+  {
     path: '/battle',
     icon: '⚔️',
     label: '대결',
-    matchPaths: ['/battle', '/battle/report', '/battle/join', '/battle/result']
-  },
-  {
-    path: '/fortune/history',
-    icon: '📊',
-    label: '기록',
-    matchPaths: ['/fortune/history', '/fortune/record']
+    matchPaths: ['/battle', '/battle/join', '/battle/result']
   },
   {
     path: '/mypage',

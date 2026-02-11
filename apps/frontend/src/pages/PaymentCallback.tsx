@@ -66,8 +66,15 @@ export default function PaymentCallback() {
     }
   }, [searchParams, token, isLoading, updateRice])
 
+  // 사주 분석 플로우에서 쌀 충전한 경우 (sessionStorage에 returnTo 있음)
+  const hasSajuReturn = !!sessionStorage.getItem('saju_returnTo')
+
   const handleGoToMyPage = () => {
     navigate('/mypage')
+  }
+
+  const handleGoToSaju = () => {
+    navigate('/saju')
   }
 
   const handleRetry = () => {
@@ -99,9 +106,15 @@ export default function PaymentCallback() {
               <span className="result-value balance">{newBalance.toLocaleString()} 쌀</span>
             </div>
           </div>
-          <button className="primary-btn" onClick={handleGoToMyPage}>
-            마이페이지로 이동
-          </button>
+          {hasSajuReturn ? (
+            <button className="primary-btn" onClick={handleGoToSaju}>
+              사주 분석으로 돌아가기
+            </button>
+          ) : (
+            <button className="primary-btn" onClick={handleGoToMyPage}>
+              마이페이지로 이동
+            </button>
+          )}
         </div>
       )}
 
@@ -111,8 +124,8 @@ export default function PaymentCallback() {
           <h2>결제가 취소되었습니다</h2>
           <p>다음에 다시 이용해주세요.</p>
           <div className="button-group">
-            <button className="secondary-btn" onClick={handleGoToMyPage}>
-              마이페이지
+            <button className="secondary-btn" onClick={hasSajuReturn ? handleGoToSaju : handleGoToMyPage}>
+              {hasSajuReturn ? '사주 분석으로' : '마이페이지'}
             </button>
             <button className="primary-btn" onClick={handleRetry}>
               다시 시도
@@ -127,8 +140,8 @@ export default function PaymentCallback() {
           <h2>결제 실패</h2>
           <p className="error-message">{error}</p>
           <div className="button-group">
-            <button className="secondary-btn" onClick={handleGoToMyPage}>
-              마이페이지
+            <button className="secondary-btn" onClick={hasSajuReturn ? handleGoToSaju : handleGoToMyPage}>
+              {hasSajuReturn ? '사주 분석으로' : '마이페이지'}
             </button>
             <button className="primary-btn" onClick={handleRetry}>
               다시 시도

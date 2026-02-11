@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import { calculateSajuFromBirthInfo, type PreCalculatedSaju } from '../utils/manseryeok.js'
 
 // API 키가 유효한지 체크 (플레이스홀더가 아닌지)
 function isValidApiKey(key: string | undefined): boolean {
@@ -58,10 +59,13 @@ export type BasicAnalysis = {
   dayMasterElement: string    // 일간 오행 (목화토금수)
   yinYang: 'yang' | 'yin'     // 음양
   balance: 'strong' | 'weak' | 'balanced'  // 신강/신약/중화
+  balanceReason?: string       // 신강/신약 판단 근거
   yongShin: string            // 용신 (필요한 오행)
+  yongShinReason?: string     // 용신 선정 근거
   heeShin: string             // 희신 (보조 오행)
   giShin: string              // 기신 (피해야 할 오행)
   geukGuk: string             // 격국 (ex: 정관격, 편재격 등)
+  geukGukReason?: string      // 격국 판단 근거
   elementDistribution: {
     wood: number   // 목
     fire: number   // 화
@@ -146,6 +150,7 @@ export type PremiumAnalysis = {
     appearance: string
     traits: string[]
     compatibility: string
+    meetingPeriod?: string
   }
   wealthByPeriod: {
     youth: { period: string; level: number; description: string }
@@ -218,13 +223,33 @@ export type ComparisonAnalysis = {
 // OpenAI 프롬프트
 // ============================================
 
-function buildSajuPrompt(birthInfo: BirthInfo, nickname: string): string {
+function buildSajuPrompt(birthInfo: BirthInfo, nickname: string, preCalc: PreCalculatedSaju): string {
   const timeInfo = birthInfo.isTimeUnknown
     ? '태어난 시간: 모름 (시주 제외하고 분석)'
     : `태어난 시간: ${birthInfo.birthTime}`
 
+  // 사주 원국 정보 (서버에서 만세력으로 정확히 계산된 값)
+  const pillarInfo = [
+    `- 년주: ${preCalc.hanjaStrings.year}`,
+    `- 월주: ${preCalc.hanjaStrings.month}`,
+    `- 일주: ${preCalc.hanjaStrings.day}`,
+    preCalc.hanjaStrings.hour ? `- 시주: ${preCalc.hanjaStrings.hour}` : '- 시주: 모름 (시간 미상)',
+  ].join('\n')
+
+  // 십신 정보
+  const sipsinInfo = [
+    `- 년주 십신: 천간=${preCalc.sipsin.year.stem}, 지지=${preCalc.sipsin.year.branch}`,
+    `- 월주 십신: 천간=${preCalc.sipsin.month.stem}, 지지=${preCalc.sipsin.month.branch}`,
+    `- 일주 십신: 천간=비견(본인), 지지=${preCalc.sipsin.day.branch}`,
+    preCalc.sipsin.hour ? `- 시주 십신: 천간=${preCalc.sipsin.hour.stem}, 지지=${preCalc.sipsin.hour.branch}` : '',
+  ].filter(Boolean).join('\n')
+
+  // 오행 분포
+  const elemDist = preCalc.elementDistribution
+  const elemInfo = `목${elemDist.wood} 화${elemDist.fire} 토${elemDist.earth} 금${elemDist.metal} 수${elemDist.water}`
+
   return `당신은 50년 경력의 명리학(사주팔자) 대가입니다.
-정확한 만세력 계산을 기반으로 다음 생년월일시의 사주를 분석하세요.
+아래에 만세력으로 정확히 계산된 사주 원국이 주어집니다. 이 원국을 바탕으로 분석하세요.
 
 ## 입력 정보
 - 이름(닉네임): ${nickname}
@@ -232,46 +257,50 @@ function buildSajuPrompt(birthInfo: BirthInfo, nickname: string): string {
 - ${timeInfo}
 - 성별: ${birthInfo.gender === 'male' ? '남성' : '여성'}
 
+## 사주 원국 (만세력 계산 완료 — 아래 값을 그대로 사용하세요)
+${pillarInfo}
+- 일간: ${preCalc.dayMaster} (${preCalc.dayMasterElement})
+- 음양: ${preCalc.yinYang === 'yang' ? '양(陽)' : '음(陰)'}
+- 오행분포: ${elemInfo}
+
+## 십신 배치 (계산 완료)
+${sipsinInfo}
+
+★★★ 중요: 위 사주 원국과 십신은 만세력 라이브러리로 정확히 계산된 값입니다.
+응답의 pillars, sipsin, basic.dayMaster, basic.dayMasterElement, basic.yinYang, basic.elementDistribution 필드에는
+반드시 위에 제공된 값을 그대로 사용하세요. 임의로 변경하지 마세요.
+
 ## 분석 요구사항
 
-### 1단계: 사주 원국 세우기
-- 만세력에 기반하여 년주, 월주, 일주${birthInfo.isTimeUnknown ? '' : ', 시주'}를 정확히 산출
-- 각 기둥의 천간/지지 표기
-
-### 2단계: 십신(十神) 배치
-- 일간을 기준으로 모든 천간/지지의 십신 관계를 분석
-- 십신: 비견, 겁재, 식신, 상관, 편재, 정재, 편관, 정관, 편인, 정인
-
-### 3단계: 오행 분석
-- 원국의 오행 분포(목화토금수)를 개수로 정확히 산출
-- 신강/신약/중화 판단 근거
+### 1단계: 오행 분석
+- 위 오행 분포를 바탕으로 신강/신약/중화 판단
 - 용신(用神), 희신(喜神), 기신(忌神) 도출 근거
 
-### 4단계: 격국(格局)
+### 2단계: 격국(格局)
 - 월지 기준 격국 판단
 
-### 5단계: 대운(大運) / 세운(歲運)
+### 3단계: 대운(大運) / 세운(歲運)
 - 현재 대운 (10년 단위)
 - 2026년 세운 분석
 
-### 6단계: 배틀 스탯 (대결용 수치화)
+### 4단계: 배틀 스탯 (대결용 수치화)
 - 6개 영역 점수(0-100)와 등급
 - 점수는 원국 + 현재 대운/세운을 종합 반영
 - 각 점수에 대한 근거를 1문장으로 작성
 
-### 7단계: 십이운성 (十二運星)
-- 일간 기준 각 지지(년지/월지/일지/시지)의 12운성 산출
+### 5단계: 십이운성 (十二運星)
+- 일간 기준 각 지지(년지/월지/일지${birthInfo.isTimeUnknown ? '' : '/시지'})의 12운성 산출
 - 장생/목욕/관대/건록/제왕/쇠/병/사/묘/절/태/양 중 하나
 
-### 8단계: 신살 (神殺)
+### 6단계: 신살 (神殺)
 - 주요 신살 판별: 역마살, 화개살, 도화살, 망신살, 백호살, 겁살, 재살 등
-- 각 기둥(년/월/일/시)별로 해당 신살 배열
+- 각 기둥(년/월/일${birthInfo.isTimeUnknown ? '' : '/시'})별로 해당 신살 배열
 
-### 9단계: 귀인 (貴人)
+### 7단계: 귀인 (貴人)
 - 주요 귀인 판별: 천을귀인, 문창귀인, 태극귀인, 천주귀인, 월덕귀인, 천덕귀인 등
-- 각 기둥(년/월/일/시)별로 해당 귀인 배열
+- 각 기둥(년/월/일${birthInfo.isTimeUnknown ? '' : '/시'})별로 해당 귀인 배열
 
-### 10단계: 대운표 (大運表)
+### 8단계: 대운표 (大運表)
 **대운 시작 나이 계산법:**
 1. 양년생(갑/병/무/경/임) 남자 또는 음년생(을/정/기/신/계) 여자 → **순행** (월주 다음 간지부터)
 2. 음년생 남자 또는 양년생 여자 → **역행** (월주 이전 간지부터)
@@ -280,7 +309,7 @@ function buildSajuPrompt(birthInfo: BirthInfo, nickname: string): string {
 - 각 대운의 천간/지지, 시작나이, 종료나이(시작나이+9), 오행, 핵심 1문장
 - **주의: 시작 나이는 사람마다 다릅니다 (1~9세). 반드시 위 계산법으로 산출하세요.**
 
-### 11단계: 신강신약 점수
+### 9단계: 신강신약 점수
 - balanceScore: 1(극약)~7(극왕) 사이 실수
 - 4=중화, 1~3=신약 계열, 5~7=신강 계열
 - 소수점 한 자리까지 (예: 5.5)
@@ -298,22 +327,10 @@ function buildSajuPrompt(birthInfo: BirthInfo, nickname: string): string {
 4. personality, summary 등 모든 텍스트 필드에서 위 규칙을 지키세요.
 
 {
-  "pillars": {
-    "year": { "heavenlyStem": "천간(갑~계)", "earthlyBranch": "지지(자~해)" },
-    "month": { "heavenlyStem": "천간", "earthlyBranch": "지지" },
-    "day": { "heavenlyStem": "천간", "earthlyBranch": "지지" },
-    "hour": ${birthInfo.isTimeUnknown ? 'null' : '{ "heavenlyStem": "천간", "earthlyBranch": "지지" }'}
-  },
-  "sipsin": {
-    "year": { "stem": "십신명", "branch": "십신명" },
-    "month": { "stem": "십신명", "branch": "십신명" },
-    "day": { "stem": "비견(본인)", "branch": "십신명" },
-    "hour": ${birthInfo.isTimeUnknown ? 'null' : '{ "stem": "십신명", "branch": "십신명" }'}
-  },
   "basic": {
-    "dayMaster": "일간(갑~계 중 하나)",
-    "dayMasterElement": "오행(목/화/토/금/수)",
-    "yinYang": "yang 또는 yin",
+    "dayMaster": "${preCalc.dayMaster}",
+    "dayMasterElement": "${preCalc.dayMasterElement}",
+    "yinYang": "${preCalc.yinYang}",
     "balance": "strong/weak/balanced 중 하나",
     "balanceReason": "신강/신약 판단 근거 - 원국의 어떤 글자들이 일간을 돕거나 약화시키는지 구체적으로 2-3문장",
     "yongShin": "용신 오행",
@@ -323,7 +340,7 @@ function buildSajuPrompt(birthInfo: BirthInfo, nickname: string): string {
     "geukGuk": "격국 이름(ex: 정관격)",
     "geukGukReason": "격국 판단 근거 - 월지에서 어떤 십신이 투출했는지 1-2문장",
     "elementDistribution": {
-      "wood": "원국의 목 개수 (정수)", "fire": "화 개수", "earth": "토 개수", "metal": "금 개수", "water": "수 개수"
+      "wood": ${elemDist.wood}, "fire": ${elemDist.fire}, "earth": ${elemDist.earth}, "metal": ${elemDist.metal}, "water": ${elemDist.water}
     }
   },
   "currentFortune": {
@@ -404,9 +421,7 @@ function buildSajuPrompt(birthInfo: BirthInfo, nickname: string): string {
 
 ★ 다시 한번 강조: 모든 풀이 텍스트에서 반드시 "${nickname}님"으로 호칭하고,
 "왜 그런지"를 사주 원국의 구체적 글자(천간/지지/십신)를 인용하여 설명하세요.
-일반론이 아닌, 이 사람의 사주에서만 나올 수 있는 고유한 분석을 작성하세요.
-
-정확한 만세력 계산을 기반으로 분석해주세요.`
+일반론이 아닌, 이 사람의 사주에서만 나올 수 있는 고유한 분석을 작성하세요.`
 }
 
 // ============================================
@@ -621,7 +636,12 @@ export async function analyzeSaju(birthInfo: BirthInfo, nickname = '회원'): Pr
     return generateDummySajuResult(birthInfo, nickname)
   }
 
-  const prompt = buildSajuPrompt(birthInfo, nickname)
+  // 1. 만세력으로 사주 원국 정확히 계산
+  const preCalc = calculateSajuFromBirthInfo(birthInfo)
+  console.log('[SAJU] 만세력 계산 완료:', preCalc.hanjaStrings, '일간:', preCalc.dayMaster, '오행:', preCalc.dayMasterElement)
+
+  // 2. GPT에게 해석만 요청 (원국은 이미 계산됨)
+  const prompt = buildSajuPrompt(birthInfo, nickname, preCalc)
 
   const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o',
@@ -630,7 +650,7 @@ export async function analyzeSaju(birthInfo: BirthInfo, nickname = '회원'): Pr
     messages: [
       {
         role: 'system',
-        content: '당신은 정확한 사주팔자 분석을 제공하는 명리학 전문가입니다. 항상 유효한 JSON 형식으로만 응답합니다.',
+        content: '당신은 정확한 사주팔자 분석을 제공하는 명리학 전문가입니다. 사주 원국(천간/지지)은 이미 만세력으로 계산되어 제공됩니다. 제공된 원국을 그대로 사용하고, 해석과 분석에 집중하세요. 항상 유효한 JSON 형식으로만 응답합니다.',
       },
       {
         role: 'user',
@@ -646,8 +666,6 @@ export async function analyzeSaju(birthInfo: BirthInfo, nickname = '회원'): Pr
 
   try {
     const result = JSON.parse(content) as {
-      pillars: SajuPillars
-      sipsin?: SipsinMapping
       basic: BasicAnalysis
       currentFortune?: CurrentFortune
       battleStats: BattleStats
@@ -660,11 +678,18 @@ export async function analyzeSaju(birthInfo: BirthInfo, nickname = '회원'): Pr
       balanceScore?: number
     }
 
+    // 3. 서버 계산값으로 확정 (GPT 응답 대신 manseryeok 값 사용)
     return {
       birthInfo,
-      pillars: result.pillars,
-      sipsin: result.sipsin || null,
-      basic: result.basic,
+      pillars: preCalc.pillars,
+      sipsin: preCalc.sipsin,
+      basic: {
+        ...result.basic,
+        dayMaster: preCalc.dayMaster,
+        dayMasterElement: preCalc.dayMasterElement,
+        yinYang: preCalc.yinYang,
+        elementDistribution: preCalc.elementDistribution,
+      },
       currentFortune: result.currentFortune || null,
       battleStats: result.battleStats,
       report: result.report,
@@ -1012,8 +1037,63 @@ function buildPremiumPrompt(
   gender: string,
   birthDate: string
 ): string {
+  // basic_analysis에서 추가 정보 추출 (DB에서 가져온 데이터)
+  const ext = basic as Record<string, unknown>
+  const sipsin = ext.sipsin as { year?: { stem: string; branch: string }; month?: { stem: string; branch: string }; day?: { branch: string }; hour?: { stem: string; branch: string } | null } | undefined
+  const elemDist = basic.elementDistribution
+  const daewoonTable = ext.daewoonTable as Array<{ stem: string; branch: string; startAge: number; endAge: number; element: string; brief: string }> | undefined
+  const twelveStages = ext.twelveStages as Record<string, string> | undefined
+  const specialStars = ext.specialStars as Record<string, string[]> | undefined
+
+  // 십신 정보
+  let sipsinInfo = ''
+  if (sipsin) {
+    sipsinInfo = `\n## 십신 배치
+- 년주: 천간=${sipsin.year?.stem || '?'}, 지지=${sipsin.year?.branch || '?'}
+- 월주: 천간=${sipsin.month?.stem || '?'}, 지지=${sipsin.month?.branch || '?'}
+- 일주: 천간=비견(본인), 지지=${sipsin.day?.branch || '?'} ← 배우자궁
+${sipsin.hour ? `- 시주: 천간=${sipsin.hour.stem}, 지지=${sipsin.hour.branch}` : '- 시주: 모름'}`
+  }
+
+  // 오행 분포
+  let elemInfo = ''
+  if (elemDist) {
+    elemInfo = `\n## 오행 분포
+- 목${elemDist.wood} 화${elemDist.fire} 토${elemDist.earth} 금${elemDist.metal} 수${elemDist.water}`
+  }
+
+  // 대운표
+  let daewoonInfo = ''
+  if (daewoonTable && daewoonTable.length > 0) {
+    const entries = daewoonTable.map(d => `  - ${d.stem}${d.branch} (${d.startAge}~${d.endAge}세, ${d.element}): ${d.brief}`).join('\n')
+    daewoonInfo = `\n## 대운표\n${entries}`
+  }
+
+  // 12운성
+  let twelveInfo = ''
+  if (twelveStages) {
+    twelveInfo = `\n## 십이운성
+- 년지: ${twelveStages.year || '?'}, 월지: ${twelveStages.month || '?'}, 일지: ${twelveStages.day || '?'}${twelveStages.hour ? `, 시지: ${twelveStages.hour}` : ''}`
+  }
+
+  // 신살
+  let starsInfo = ''
+  if (specialStars) {
+    const parts = []
+    if (specialStars.year?.length) parts.push(`년: ${specialStars.year.join(',')}`)
+    if (specialStars.month?.length) parts.push(`월: ${specialStars.month.join(',')}`)
+    if (specialStars.day?.length) parts.push(`일: ${specialStars.day.join(',')}`)
+    if (specialStars.hour?.length) parts.push(`시: ${specialStars.hour.join(',')}`)
+    if (parts.length) starsInfo = `\n## 신살\n- ${parts.join(' | ')}`
+  }
+
+  // 성별에 따른 배우자성 안내
+  const spouseGuide = gender === 'male'
+    ? `남성이므로 재성(편재/정재)이 배우자성입니다. 일지의 지장간과 재성의 위치·강약을 중심으로 배우자상을 추론하세요.`
+    : `여성이므로 관성(편관/정관)이 배우자성입니다. 일지의 지장간과 관성의 위치·강약을 중심으로 배우자상을 추론하세요.`
+
   return `당신은 50년 경력의 명리학 전문가입니다.
-다음 사주 원국을 바탕으로 심층 분석을 제공하세요.
+다음 사주 원국과 기본 분석 결과를 바탕으로 심층 분석을 제공하세요.
 
 ## 사주 원국 정보
 - 이름: ${nickname}
@@ -1024,46 +1104,59 @@ function buildPremiumPrompt(
 - 일주: ${pillars.day.heavenlyStem}${pillars.day.earthlyBranch}
 ${pillars.hour ? `- 시주: ${pillars.hour.heavenlyStem}${pillars.hour.earthlyBranch}` : '- 시주: 모름'}
 - 일간: ${basic.dayMaster} (${basic.dayMasterElement})
-- 격국: ${basic.geukGuk}
-- 신강/신약: ${basic.balance}
-- 용신: ${basic.yongShin}
+- 격국: ${basic.geukGuk} (${basic.geukGukReason || ''})
+- 신강/신약: ${basic.balance} (${basic.balanceReason || ''})
+- 용신: ${basic.yongShin} (${basic.yongShinReason || ''})
+- 희신: ${basic.heeShin || '?'}
+- 기신: ${basic.giShin || '?'}
+${sipsinInfo}${elemInfo}${twelveInfo}${starsInfo}${daewoonInfo}
 
 ## 분석 요청
 
 ### 1. 운명의 짝 (배우자상)
-- ${nickname}님의 일지(배우자궁)와 관성/재성 배치를 분석하여 어울리는 배우자의 특성을 추론
-- 성격, 직업, 외모 특성, 핵심 키워드, 궁합 근거를 사주학적으로 제시
+${spouseGuide}
+구체적으로 분석할 것:
+- 일지(배우자궁) ${pillars.day.earthlyBranch}의 지장간에 어떤 천간이 숨어있는지 → 배우자의 기질
+- 배우자성(${gender === 'male' ? '재성' : '관성'})이 원국 어디에 있는지, 몇 개인지, 강한지 약한지
+- 일지와 다른 지지 간의 합/충/형 관계 → 배우자와의 관계 패턴
+- 대운에서 배우자성이 들어오는 시기 → 인연이 열리는 시기
+- ${nickname}님만의 고유한 배우자상을 도출 (일반론 금지)
 
 ### 2. 시기별 재산운
-- 사주 원국과 대운 흐름을 기반으로 4개 시기의 재물 레벨(1~10)을 산출
-- 각 시기별 재물 운의 변동 이유를 명리학적으로 설명
+- 위 대운표를 참고하여 각 대운이 재성에 미치는 영향을 분석
+- 재성(편재/정재)의 원국 위치와 대운별 생극관계를 근거로 레벨 산출
+- 각 시기별로 "왜 이 레벨인지" 대운의 천간/지지를 구체적으로 인용
 
 ### 3. 운명의 고비 (5가지)
-- 사주 원국의 충/형/파/해, 기신 작용, 오행 불균형 등에서 5가지 인생의 고비 도출
-- 각 고비의 예상 시기, 제목, 상세 설명을 포함 (넘기면 더 강해진다는 뉘앙스로 작성)
+- 대운표에서 기신 오행(${basic.giShin || '?'})이 강하게 작용하는 시기 특정
+- 원국의 충/형/파/해가 대운에서 촉발되는 구체적 시점
+- 각 고비마다 "어떤 대운의 어떤 글자가 원국의 어떤 글자와 충돌하는지" 명시
+- 넘기면 어떤 성장이 오는지도 서술
 
 ## 작성 규칙
 - 반드시 "${nickname}님"이라고 호칭
-- 모든 분석에 사주학적 근거(천간/지지/십신/합충)를 인용
+- 모든 분석에 사주학적 근거(천간/지지/십신/합충)를 인용하며 "왜 그런지" 밝히기
+- 일반론("따뜻한 사람을 만납니다" 등) 금지 → 이 사주에서만 나올 수 있는 고유한 분석
 - 전문적이되 읽기 쉽게 서술
 
 ## 응답 (JSON만)
 {
   "destinyPartner": {
-    "personality": "${nickname}님의 배우자궁 분석을 근거로 한 배우자 성격 3-4문장",
-    "occupation": "어울리는 직업/분야",
-    "appearance": "외모 특성 2-3문장",
+    "personality": "${nickname}님의 일지·배우자성 분석을 근거로 한 배우자 성격. 어떤 십신이 어디에 있어서 이런 성격인지 구체적으로. 4-5문장.",
+    "occupation": "어울리는 직업/분야 — 배우자성의 오행에 근거하여 구체적으로",
+    "appearance": "외모 특성 — 배우자궁 지지의 오행과 12운성에 근거하여 2-3문장",
     "traits": ["키워드1", "키워드2", "키워드3", "키워드4"],
-    "compatibility": "궁합 근거 설명 (어떤 합/충이 작용하는지) 2-3문장"
+    "compatibility": "궁합 근거 — 일지와 다른 기둥의 합/충, 배우자성과 용신의 관계 등 3-4문장",
+    "meetingPeriod": "인연이 열리는 시기 — 대운에서 배우자성이 들어오는 시기와 근거 1-2문장"
   },
   "wealthByPeriod": {
-    "youth": { "period": "초년기 (0~20세)", "level": "1~10 사이 정수", "description": "명리학적 근거 포함 3-4문장" },
+    "youth": { "period": "초년기 (0~20세)", "level": "1~10 사이 정수", "description": "해당 시기 대운의 천간/지지가 재성에 미치는 영향 구체적으로 3-4문장" },
     "earlyAdult": { "period": "청년기 (21~35세)", "level": "1~10 사이 정수", "description": "3-4문장" },
     "midLife": { "period": "중년기 (36~55세)", "level": "1~10 사이 정수", "description": "3-4문장" },
     "lateLife": { "period": "말년기 (56세~)", "level": "1~10 사이 정수", "description": "3-4문장" }
   },
   "lifeCrises": [
-    { "title": "고비 제목", "description": "사주학적 근거 포함 상세 설명 + 이 고비를 넘기면 어떻게 성장하는지 3-4문장", "period": "예상 시기 (예: 30대 초반)" },
+    { "title": "고비 제목", "description": "어떤 대운(X세~Y세)의 어떤 글자가 원국의 어떤 글자와 충/형/극을 일으키는지 + 극복 후 성장 4-5문장", "period": "예상 시기 (예: 32~35세, XX대운)" },
     { "title": "고비 제목", "description": "설명", "period": "시기" },
     { "title": "고비 제목", "description": "설명", "period": "시기" },
     { "title": "고비 제목", "description": "설명", "period": "시기" },

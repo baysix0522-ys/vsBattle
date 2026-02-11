@@ -8,7 +8,6 @@ import {
   type Chemistry,
   type BattleStats,
   type SajuBasicAnalysis,
-  type SajuDetailedReport,
   type ComparisonAnalysis,
 } from '../api/client'
 import BattleOverlay from '../components/platformer/BattleOverlay'
@@ -23,6 +22,15 @@ const ELEMENT_NAMES: Record<string, string> = {
   water: '수',
 }
 
+// 오행 색상 (그라데이션 배경 + 글로우)
+const ELEMENT_AVATAR_STYLES: Record<string, { bg: string; shadow: string }> = {
+  wood:  { bg: 'linear-gradient(135deg, #1a4a2e, #22c55e)', shadow: '0 0 20px rgba(34, 197, 94, 0.3)' },
+  fire:  { bg: 'linear-gradient(135deg, #6e1a1a, #ef4444)', shadow: '0 0 20px rgba(239, 68, 68, 0.3)' },
+  earth: { bg: 'linear-gradient(135deg, #5c3a0e, #a16207)', shadow: '0 0 20px rgba(161, 98, 7, 0.3)' },
+  metal: { bg: 'linear-gradient(135deg, #4a4a1a, #eab308)', shadow: '0 0 20px rgba(234, 179, 8, 0.3)' },
+  water: { bg: 'linear-gradient(135deg, #1a3a6e, #3b82f6)', shadow: '0 0 20px rgba(59, 130, 246, 0.3)' },
+}
+
 type Participant = {
   id: string
   nickname: string
@@ -31,7 +39,6 @@ type Participant = {
   ilju: string
   stats: BattleStats
   basic: SajuBasicAnalysis
-  report: SajuDetailedReport
 }
 
 // 종합 스탯 합산
@@ -165,7 +172,13 @@ export default function BattleResult() {
         {/* VS 헤더 */}
         <div className="versus-header">
           <div className="vs-player">
-            <div className="vs-avatar blue">🐼</div>
+            <div
+              className="vs-avatar"
+              style={{
+                background: ELEMENT_AVATAR_STYLES[challengerData.dayMasterElement]?.bg ?? 'linear-gradient(135deg, #1a3a6e, #2a6acc)',
+                boxShadow: ELEMENT_AVATAR_STYLES[challengerData.dayMasterElement]?.shadow ?? '0 0 20px rgba(34,102,204,0.27)',
+              }}
+            >🐼</div>
             <div className="vs-name blue">{challengerData.nickname}</div>
             <div className="vs-sub">
               {challengerData.dayMaster}일간 · {challengerElement}오행
@@ -176,7 +189,13 @@ export default function BattleResult() {
           </div>
           <div className="vs-badge">VS</div>
           <div className="vs-player">
-            <div className="vs-avatar red">🐼</div>
+            <div
+              className="vs-avatar"
+              style={{
+                background: ELEMENT_AVATAR_STYLES[opponentData.dayMasterElement]?.bg ?? 'linear-gradient(135deg, #6e1a1a, #cc3a2a)',
+                boxShadow: ELEMENT_AVATAR_STYLES[opponentData.dayMasterElement]?.shadow ?? '0 0 20px rgba(204,51,51,0.2)',
+              }}
+            >🐼</div>
             <div className="vs-name red">{opponentData.nickname}</div>
             <div className="vs-sub">
               {opponentData.dayMaster}일간 · {opponentElement}오행
@@ -254,82 +273,6 @@ export default function BattleResult() {
             <p className="chemistry-relation">{chemistry.stemRelation.description}</p>
           </div>
         )}
-
-        {/* 사주 요약 */}
-        <div className="summary-section">
-          <div className="summary-title">📋 사주 요약</div>
-          <div className="summary-text">
-            <strong className="vs-name blue">{challengerData.nickname}</strong>{' '}
-            {challengerData.report.summary}
-          </div>
-          <div className="summary-text" style={{ marginTop: 12 }}>
-            <strong className="vs-name red">{opponentData.nickname}</strong>{' '}
-            {opponentData.report.summary}
-          </div>
-        </div>
-
-        {/* 대결 분석 */}
-        <div className="summary-section">
-          <div className="summary-title">🌟 대결 분석</div>
-          <div className="summary-text">
-            {(() => {
-              // 각 라운드에서 큰 차이 나는 항목 찾기
-              const bigWins = result.rounds
-                .filter(r => r.winner !== 'draw' && r.scoreDiff >= 10)
-                .sort((a, b) => b.scoreDiff - a.scoreDiff)
-
-              const winnerName = result.winner === 'challenger'
-                ? challengerData.nickname
-                : result.winner === 'opponent'
-                  ? opponentData.nickname
-                  : null
-
-              const parts: string[] = []
-
-              if (bigWins.length > 0) {
-                const top = bigWins.slice(0, 2)
-                const topDescs = top.map(r => {
-                  const who = r.winner === 'challenger' ? challengerData.nickname : opponentData.nickname
-                  return `${r.name}에서 ${who}가 ${r.scoreDiff}점 차이로 우세`
-                })
-                parts.push(topDescs.join('하고, ') + '합니다.')
-              }
-
-              if (winnerName) {
-                parts.push(
-                  `종합 ${result.challengerWins}승 ${result.draws > 0 ? `${result.draws}무 ` : ''}${result.opponentWins}패로 ${winnerName}의 승리입니다.`
-                )
-              } else {
-                parts.push(
-                  `종합 ${result.challengerWins}승 ${result.draws}무 ${result.opponentWins}패로 팽팽한 무승부입니다.`
-                )
-              }
-
-              if (challengerTotal !== opponentTotal) {
-                const diff = Math.abs(challengerTotal - opponentTotal)
-                const ahead = challengerTotal > opponentTotal
-                  ? challengerData.nickname
-                  : opponentData.nickname
-                parts.push(`스탯 총합으로는 ${ahead}가 ${diff}점 앞서고 있습니다.`)
-              }
-
-              return parts.join(' ')
-            })()}
-          </div>
-        </div>
-
-        {/* 인생 조언 */}
-        <div className="summary-section">
-          <div className="summary-title">💡 인생 조언</div>
-          <div className="summary-text">
-            <strong className="vs-name blue">{challengerData.nickname}</strong>{' '}
-            {challengerData.report.personality}
-          </div>
-          <div className="summary-text" style={{ marginTop: 12 }}>
-            <strong className="vs-name red">{opponentData.nickname}</strong>{' '}
-            {opponentData.report.personality}
-          </div>
-        </div>
 
         {/* AI 대결 해설 */}
         {scoresRevealed && (

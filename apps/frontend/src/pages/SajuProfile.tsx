@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { DatePicker, Select, Radio, Button, Spin, ConfigProvider, theme, App, message } from 'antd'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
@@ -174,10 +174,30 @@ const S = {
 // 컴포넌트
 // ============================================
 
+const RETURN_TO_KEY = 'saju_returnTo'
+
 export default function SajuProfile() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { user, token, isLoading: authLoading, updateRice } = useAuth()
   const [messageApi, contextHolder] = message.useMessage()
+
+  // returnTo: URL 파라미터 → sessionStorage 저장 / 없으면 sessionStorage에서 복원
+  const returnToParam = searchParams.get('returnTo')
+  const returnTo = returnToParam || sessionStorage.getItem(RETURN_TO_KEY)
+
+  useEffect(() => {
+    if (returnToParam) {
+      sessionStorage.setItem(RETURN_TO_KEY, returnToParam)
+    }
+  }, [returnToParam])
+
+  const navigateAfterAnalysis = useCallback(() => {
+    if (returnTo) {
+      sessionStorage.removeItem(RETURN_TO_KEY)
+      navigate(returnTo)
+    }
+  }, [returnTo, navigate])
 
   const [loading, setLoading] = useState(true)
   const [hasProfile, setHasProfile] = useState(false)
@@ -254,7 +274,11 @@ export default function SajuProfile() {
       const res = await sajuApi.analyze(token, birthInfo)
       updateRice(res.riceBalance)
       messageApi.success('사주 분석이 완료되었습니다!')
-      await fetchProfile()
+      if (returnTo) {
+        navigateAfterAnalysis()
+      } else {
+        await fetchProfile()
+      }
     } catch (err) {
       console.error('사주 분석 실패:', err)
       if (err instanceof ApiError && err.message.includes('쌀')) {
@@ -1092,9 +1116,15 @@ export default function SajuProfile() {
 
             {/* 액션 버튼 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <Button type="primary" size="large" block onClick={() => navigate('/battle')}
+              <Button type="primary" size="large" block onClick={() => {
+                  if (returnTo) {
+                    navigateAfterAnalysis()
+                  } else {
+                    navigate('/battle')
+                  }
+                }}
                 style={{ height: 56, fontSize: 18, fontWeight: 700, background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)' }}>
-                ⚔️ 대결하러 가기
+                {returnTo ? '⚔️ 대결로 돌아가기' : '⚔️ 대결하러 가기'}
               </Button>
               {!showEditForm && (
                 <Button size="large" block onClick={handleOpenEditForm}

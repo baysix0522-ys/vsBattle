@@ -125,14 +125,6 @@ router.post('/analyze', async (req: Request, res: Response) => {
       })
     }
 
-    // 기존 활성 프로필 비활성화
-    if (existingActive) {
-      await sql`
-        UPDATE saju_reports SET is_active = false, updated_at = NOW()
-        WHERE id = ${existingActive.id}
-      `
-    }
-
     // LLM 사주 분석 실행
     const birthInfo: BirthInfo = {
       birthDate,
@@ -142,6 +134,12 @@ router.post('/analyze', async (req: Request, res: Response) => {
     }
 
     const result = await analyzeSaju(birthInfo, nickname)
+
+    // 기존 활성 프로필 비활성화 (INSERT 직전에 수행하여 race condition 방지)
+    await sql`
+      UPDATE saju_reports SET is_active = false, updated_at = NOW()
+      WHERE user_id = ${userId} AND is_active = true
+    `
 
     // DB에 저장 (새 활성 프로필)
     const [inserted] = await sql`
@@ -162,6 +160,7 @@ router.post('/analyze', async (req: Request, res: Response) => {
         ${result.basic.yinYang},
         ${JSON.stringify({
           ...result.basic,
+          sipsin: result.sipsin,
           twelveStages: result.twelveStages,
           specialStars: result.specialStars,
           noblePeople: result.noblePeople,

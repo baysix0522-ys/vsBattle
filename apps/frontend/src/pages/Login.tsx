@@ -198,7 +198,7 @@ export default function Login() {
 
         {/* 하단 안내 */}
         <p className="login-notice">
-          로그인 시 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의합니다.
+          로그인 시 <a href="/terms" target="_blank">이용약관</a> 및 <a href="/privacy" target="_blank">개인정보처리방침</a>에 동의합니다.
         </p>
       </div>
     </div>

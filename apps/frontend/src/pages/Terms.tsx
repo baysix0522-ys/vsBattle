@@ -88,6 +88,19 @@ export default function Terms() {
           </p>
         </section>
 
+        <section>
+          <h2>사업자 정보</h2>
+          <p>
+            상호: 사주대결<br />
+            대표자: 박영식<br />
+            사업자등록번호: -<br />
+            통신판매업 신고번호: -<br />
+            주소: -<br />
+            이메일: iiiizxc123@naver.com<br />
+            호스팅 제공자: Vercel Inc., Render Services Inc.
+          </p>
+        </section>
+
         <div className="legal-footer">
           <p>시행일: 2025년 1월 1일</p>
         </div>

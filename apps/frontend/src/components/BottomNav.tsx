@@ -20,10 +20,10 @@ const navItems: NavItem[] = [
     matchPaths: ['/saju']
   },
   {
-    path: '/battle',
-    icon: '⚔️',
-    label: '대결',
-    matchPaths: ['/battle', '/battle/join', '/battle/result']
+    path: '/fortune/history',
+    icon: '📋',
+    label: '기록',
+    matchPaths: ['/fortune/history', '/fortune/record', '/battle/result']
   },
   {
     path: '/mypage',

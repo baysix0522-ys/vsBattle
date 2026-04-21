@@ -113,7 +113,7 @@ router.post('/analyze', requireAuth, async (req: Request, res: Response) => {
     // 쌀 거래 기록
     await sql`
       INSERT INTO rice_transactions (user_id, type, amount, balance_after, description, reference_type)
-      VALUES (${userId}, 'use', ${-NAME_ANALYSIS_COST}, ${newBalance}, '이름 풀이', 'name_analysis')
+      VALUES (${userId}, 'consume', ${-NAME_ANALYSIS_COST}, ${newBalance}, '이름 풀이', 'name_analysis')
     `
 
     // DB에 저장
